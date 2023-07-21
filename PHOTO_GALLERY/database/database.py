@@ -1,4 +1,5 @@
 import os, json
+from database.data_file import DataFile
 
 class Database(object):
     def __init__(self, path:str):
@@ -13,6 +14,10 @@ class Database(object):
     def read(self):
         with open(self._path, 'r') as f:
             return json.load(f)
+
+    def add_file(self, exif_data):
+        image_file = DataFile(exif_data)
+        self._files.append(image_file)
 
     def patch_data(self, data:dict):
         if not isinstance(data, dict):

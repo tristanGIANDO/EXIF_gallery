@@ -2,8 +2,8 @@ import os, sys
 from PyQt5 import QtWidgets,QtCore, QtGui
 import __infos__
 
-from api.file import File
-from api.database import Database
+from image.exif_file import ExifFile
+from database.database import Database
 
 I_IMAGE = "Image"
 I_NAME = "Name"
@@ -19,14 +19,14 @@ class FileItem(QtWidgets.QTreeWidgetItem):
     def __init__(self, file, *args, **kwargs):
         
         self._file = file
-        file_path = file.get_source()
+        file_path = file.get_path()
         headers = [
             "",
             file.get_name(),
             file_path,
             "",
-            file.get_author_from_data(),
-            file.get_comment_from_data()
+            file.get_author(),
+            file.get_comment()
         ]
 
         super(FileItem, self).__init__(headers, *args, **kwargs)
@@ -100,7 +100,7 @@ class MainUI( QtWidgets.QMainWindow):
 
     def add_tree_item(self, image_path):
         # create object
-        file = File(image_path)
+        file = ExifFile(image_path)
 
         # item
         item = FileItem(file)

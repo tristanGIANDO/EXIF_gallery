@@ -1,22 +1,21 @@
 import os, json
 from PIL import Image
 from PIL.ExifTags import TAGS
-from api.database import Database
 
 """
 Choisir version
 Marqueur sur image
 """
-class File(object):
+class ExifFile(object):
     def __init__(self, path):
 
         if not os.path.isfile(path):
             raise FileNotFoundError(f"{path} is not a file.")
         
-        self._name = os.path.basename(path)
-        self._source = path
+        self._path = path
         self._data = self.read_image(path)
-        self._data["path"] = path
+        
+        self.set_path(path)
 
     def read_image(self, image_path):
         data = {}
@@ -28,30 +27,23 @@ class File(object):
         return data
 
     def get_name(self):
-        return self._name
+        return os.path.splitext(os.path.basename(self._path))[0]
     
     def set_name(self, name):
-        self._name = name
-        return self._name
+        self._data["name"] = name
     
-    def get_source(self):
+    def get_path(self):
         return self._data.get("path","")
     
-    def set_source(self, source):
-        self._data["path"] = source
+    def set_path(self, path):
+        self._data["path"] = path
     
-    def get_author_from_data(self):
+    def get_author(self):
         return self._data.get("Artist", "")
     
-    def set_author(self, author):
-        self._data["Artist"] = author
-    
-    def get_comment_from_data(self):
+    def get_comment(self):
         return self._data.get("XPComment", "")
     
-    def set_comment(self, comment):
-        self._data["XPComment"] = comment
-
     def convert_bytes_to_str(self, data):
         if isinstance(data, bytes):
             try:
@@ -76,8 +68,3 @@ class File(object):
         except Exception as e:
             print(f"Error while getting EXIF data : {e}")
             return None
-        
-    def save(self):
-        database = Database(r"C:\Users\giand\.database.json")
-        database.patch_data(self._data)
-        database.save()
