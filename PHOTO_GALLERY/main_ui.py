@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets,QtCore, QtGui
 import __infos__
 
 from api.file import File
+from api.database import Database
 
 I_IMAGE = "Image"
 I_NAME = "Name"
@@ -41,6 +42,10 @@ class MainUI( QtWidgets.QMainWindow):
         self.create_layouts()
         self.create_connections()
 
+        database = Database(r"C:\Users\giand\.database.json")
+        self._files = database.read()
+        self._update()
+
     def create_widgets(self):
         # tree
         self.tree = QtWidgets.QTreeWidget(self)
@@ -49,10 +54,17 @@ class MainUI( QtWidgets.QMainWindow):
         self.tree.setRootIsDecorated(False)
         self.tree.setSortingEnabled(True)
         self.tree.header().sectionsMovable()
-        self.tree.header().setSectionResizeMode(HEADERS.index(I_IMAGE), QtWidgets.QHeaderView.ResizeToContents)
-        self.tree.header().setSectionResizeMode(HEADERS.index(I_NAME), QtWidgets.QHeaderView.ResizeToContents)
-        self.tree.header().setSectionResizeMode(HEADERS.index(I_AUTHOR), QtWidgets.QHeaderView.ResizeToContents)
-        self.tree.header().setSectionResizeMode(HEADERS.index(I_COMMENT), QtWidgets.QHeaderView.ResizeToContents)
+        self.tree.header().setSectionResizeMode(HEADERS.index(I_IMAGE),
+                                                QtWidgets.QHeaderView.ResizeToContents)
+        self.tree.header().setSectionResizeMode(HEADERS.index(I_NAME),
+                                                QtWidgets.QHeaderView.ResizeToContents)
+        self.tree.header().setSectionResizeMode(HEADERS.index(I_AUTHOR),
+                                                QtWidgets.QHeaderView.ResizeToContents)
+        self.tree.header().setSectionResizeMode(HEADERS.index(I_COMMENT),
+                                                QtWidgets.QHeaderView.ResizeToContents)
+
+        # button
+        self.save_btn = QtWidgets.QPushButton("Save album")
 
     def create_layouts(self):
         # toolbar
@@ -70,13 +82,21 @@ class MainUI( QtWidgets.QMainWindow):
         h_layout = QtWidgets.QHBoxLayout()
         h_layout.addWidget(self.tree)
         layout.addLayout(h_layout)
+        layout.addWidget(self.save_btn)
         central_widget = QtWidgets.QWidget(self)
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
     def create_connections(self):
+        self.tree.itemChanged.connect(self.on_item_changed)
+
         self.add_files_action.triggered.connect(self.on_add_files_clicked)
         self.remove_files_action.triggered.connect(self.on_remove_files_clicked)
+        self.save_btn.clicked.connect(self.on_save_btn_clicked)
+
+    def _update(self):
+        for file in self._files:
+            self.add_tree_item(file.get("path",""))
 
     def add_tree_item(self, image_path):
         # create object
@@ -104,14 +124,34 @@ class MainUI( QtWidgets.QMainWindow):
         file_dialog = QtWidgets.QFileDialog(self)
         file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
         if file_dialog.exec_():
-            for IDX_PATH in file_dialog.selectedFiles():
-                self.add_tree_item(IDX_PATH)
+            for path in file_dialog.selectedFiles():
+                self.add_tree_item(path)
+
+    def save(self):
+        items = self.tree.findItems(
+            "",
+            QtCore.Qt.MatchContains | QtCore.Qt.MatchRecursive,
+            0)
+        
+        for item in items:
+            item._file.save()
 
     def on_add_files_clicked(self):
         self.open_file_dialog()
 
     def on_remove_files_clicked(self):
         self.remove_tree_item()
+
+    def on_save_btn_clicked(self):
+        self.save()
+
+    def on_item_changed(self, item, column):
+        file = item._file
+        if column == HEADERS.index(I_NAME):
+            file.set_name(item.text(column))
+        
+        elif column == HEADERS.index(I_COMMENT):
+            file.set_comment(item.text(column))
 
 class ImageThumbnail(QtWidgets.QLabel):
     def __init__(self, image, *args, **kwargs):

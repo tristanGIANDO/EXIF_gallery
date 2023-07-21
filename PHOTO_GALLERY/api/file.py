@@ -1,7 +1,7 @@
-
-import os
+import os, json
 from PIL import Image
 from PIL.ExifTags import TAGS
+from api.database import Database
 
 """
 Choisir version
@@ -16,6 +16,7 @@ class File(object):
         self._name = os.path.basename(path)
         self._source = path
         self._data = self.read_image(path)
+        self._data["path"] = path
 
     def read_image(self, image_path):
         data = {}
@@ -34,11 +35,10 @@ class File(object):
         return self._name
     
     def get_source(self):
-        return self._source
+        return self._data.get("path","")
     
     def set_source(self, source):
-        self._source = source
-        return self._source
+        self._data["path"] = source
     
     def get_author_from_data(self):
         return self._data.get("Artist", "")
@@ -77,6 +77,7 @@ class File(object):
             print(f"Error while getting EXIF data : {e}")
             return None
         
-    def save(self, data):
-        with open("C:\\.database.json", "w") as file:
-            file.write(data)
+    def save(self):
+        database = Database(r"C:\Users\giand\.database.json")
+        database.patch_data(self._data)
+        database.save()
