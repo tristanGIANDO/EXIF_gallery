@@ -25,10 +25,13 @@ A very simple logger that uses very few libraries
 The script is written in **Python 3**.
 
 ### INSTALL
-The package needs PyQt5 and Pillow
+The package needs PyQt5 and Pillow.
+
 From a console, run :
-`pip install PyQt5`
-`pip install pillow`
+```
+pip install PyQt5
+pip install pillow
+```
 
 ## INSTRUCTIONS FOR USE
 ```py

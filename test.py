@@ -1,38 +1,36 @@
 from PIL import Image
-from PIL.ExifTags import TAGS
 
-def convert_bytes_to_str(data):
-    if isinstance(data, bytes):
-        try:
-            return data.decode('utf-8')
-        except UnicodeDecodeError:
-            return "Unable to decode"
-    return data
-
-def get_exif_data(image_path):
+def update_exif_data(image_path, new_author_name):
     try:
         with Image.open(image_path) as img:
-            exif_data = img._getexif()
+            # Obtenir les métadonnées EXIF
+            exif_data = img.info.get("exif")
 
-            if exif_data is not None:
-                exif_info = {}
-                for tag, value in exif_data.items():
-                    tag_name = TAGS.get(tag, tag)
-                    exif_info[tag_name] = convert_bytes_to_str(value)
-                return exif_info
+            # Vérifier si les métadonnées EXIF existent
+            if exif_data:
+                # Convertir les métadonnées en un dictionnaire
+                exif_dict = dict(exif_data)
+
+                # Définir le nouveau nom de l'auteur (ou tout autre tag EXIF que vous souhaitez modifier)
+                new_author_tag = 0x013B  # Exemple de tag pour le nom de l'auteur (0x013B)
+                exif_dict[new_author_tag] = new_author_name
+
+                # Convertir le dictionnaire des métadonnées en format bytes
+                exif_bytes = ExifIFD.format(exif_dict)
+
+                # Mettre à jour les métadonnées EXIF de l'image
+                img.save(image_path, exif=exif_bytes)
+
+                print("Métadonnées EXIF mises à jour avec succès.")
             else:
-                return None
-    except Exception as e:
-        print(f"Erreur lors de la récupération des données EXIF : {e}")
-        return None
+                print("Aucune métadonnée EXIF trouvée dans l'image.")
 
-# Exemple d'utilisation de la fonction
+    except Exception as e:
+        print(f"Erreur lors de la mise à jour des métadonnées EXIF : {e}")
+
+# Exemple d'utilisation
 if __name__ == "__main__":
     image_path = r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\example2.jpg"
-    exif_info = get_exif_data(image_path)
-    if exif_info:
-        print("Informations EXIF de l'image :")
-        for tag, value in exif_info.items():
-            print(f"{tag}: {value}")
-    else:
-        print("Aucune donnée EXIF trouvée pour cette image.")
+    new_author_name = "Nouvel auteur"  # Nouveau nom de l'auteur que vous souhaitez définir
+
+    update_exif_data(image_path, new_author_name)

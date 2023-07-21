@@ -3,6 +3,10 @@ import os
 from PIL import Image
 from PIL.ExifTags import TAGS
 
+"""
+Choisir version
+Marqueur sur image
+"""
 class File(object):
     def __init__(self, path):
 
@@ -12,9 +16,6 @@ class File(object):
         self._name = os.path.basename(path)
         self._source = path
         self._data = self.read_image(path)
-        self._camera = ""
-        self._author = self.get_author_from_data()
-        self._comment = self.get_comment_from_data()
 
     def read_image(self, image_path):
         data = {}
@@ -42,8 +43,14 @@ class File(object):
     def get_author_from_data(self):
         return self._data.get("Artist", "")
     
+    def set_author(self, author):
+        self._data["Artist"] = author
+    
     def get_comment_from_data(self):
         return self._data.get("XPComment", "")
+    
+    def set_comment(self, comment):
+        self._data["XPComment"] = comment
 
     def convert_bytes_to_str(self, data):
         if isinstance(data, bytes):
@@ -69,3 +76,7 @@ class File(object):
         except Exception as e:
             print(f"Error while getting EXIF data : {e}")
             return None
+        
+    def save(self, data):
+        with open("C:\\.database.json", "w") as file:
+            file.write(data)
