@@ -47,10 +47,12 @@ class DataFile(object):
 
         return built_data
 
-    def create(self, key:str, name:str=None, author:str=None, comment:str=None):
+    def create(self, key:str, path:str=None, name:str=None, author:str=None, comment:str=None):
         if not self.exists(key):
             print("not in database")
             self.set_key(key)
+            if path:
+                self.set_path(path)
             if name:
                 self.set_name(name)
             if author:
@@ -73,7 +75,7 @@ class DataFile(object):
         self._data[envs.NAME] = name
     
     def get_path(self):
-        return self._path
+        return self._data.get(envs.PATH,"")
     
     def set_path(self,path):
         self._data[envs.PATH] = path

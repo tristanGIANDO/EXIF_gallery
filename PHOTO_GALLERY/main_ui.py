@@ -2,7 +2,6 @@ import os, sys
 from PyQt5 import QtWidgets,QtCore, QtGui
 import __infos__
 
-from image.exif_file import ExifFile
 from database.database import Database
 
 I_IMAGE = "Image"
@@ -92,15 +91,11 @@ class MainUI( QtWidgets.QMainWindow):
 
     def _update(self):
         for file in self._server.get_files():
-            self.add_tree_item(file.get("path",""))
+            self.add_tree_item(file)
 
-    def add_tree_item(self, image_path):
-        # create object
-        file = ExifFile(image_path)
-
-        # item
-        item = FileItem(file)
-        thumbnail = ImageThumbnail(image_path)
+    def add_tree_item(self, data_file):
+        item = FileItem(data_file)
+        thumbnail = ImageThumbnail(data_file.get_path())
 
         self.tree.addTopLevelItem(item)
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)

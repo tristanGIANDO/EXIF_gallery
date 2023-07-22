@@ -7,15 +7,20 @@ file_path = r"C:\Users\giand\OneDrive\Images\@PORTFOLIO\230219_m31_04.jpg"
 
 server = Database(database_path)
 a_files = server.get_files()
+# file = a_files[0]
+# print (file.get_key())
 
 exif_file = ExifFile(file_path)
-file = server.create_file(exif_file.get_key(), name=exif_file.get_name())
+file = server.create_file(exif_file.get_key(),
+                          name=exif_file.get_name(),
+                          path=exif_file.get_path()
+                          )
 server.save()
 
 b_files = server.get_files()
 
-print(server)
-print(a_files)
-print(exif_file)
+# print(server)
+# print(a_files)
+# print(exif_file)
 print(file)
-print(b_files)
+# print(b_files)
