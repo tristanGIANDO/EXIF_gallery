@@ -40,6 +40,11 @@ class ExifFile(object):
 
                     data[tag] = value
 
+        # convert image to bytes
+        # with open(self._path, 'rb') as image_file:
+        #     bytes_data = image_file.read()
+        #     data[envs.IMAGE] = bytes_data
+
         return data
     
     def read(self):
@@ -59,3 +64,6 @@ class ExifFile(object):
     
     def get_comment(self):
         return self._data.get(envs.COMMENT, "")
+    
+    def get_image(self):
+        return self._data.get(envs.IMAGE, "")

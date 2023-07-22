@@ -55,9 +55,9 @@ class Database(object):
         with open(self._server, "w") as f:
             json.dump(self._data, f, indent=4)
 
-    def create_file(self, key:str, path:str=None, name:str=None, author:str=None, comment:str=None):
+    def create_file(self, key:str, image:str, path:str=None, name:str=None, author:str=None, comment:str=None):
         file = DataFile(self._server)
-        if file.create(key, name=name, path=path, author=author, comment=comment):
+        if file.create(key, image, name=name, path=path, author=author, comment=comment):
             if not "files" in self._data:
                 self._data["files"] = []
             self._data["files"].append(file.read())

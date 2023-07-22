@@ -1,6 +1,9 @@
 import json, os
 from database import envs
 
+from PIL import Image
+import io
+
 class DataFile(object):
     def __init__(self, server, file_data=None):
         
@@ -40,17 +43,20 @@ class DataFile(object):
             if not key:
                 raise KeyError("Need a key, incompatible data.")
             built_data[envs.KEY] = key
-
+            built_data[envs.IMAGE] = data.get(envs.IMAGE,"")
             built_data[envs.NAME] = data.get(envs.NAME, "")
             built_data[envs.AUTHOR] = data.get(envs.AUTHOR, "")
             built_data[envs.COMMENT] = data.get(envs.COMMENT, "")
 
         return built_data
 
-    def create(self, key:str, path:str=None, name:str=None, author:str=None, comment:str=None):
+    def create(self, key:str, image:str, path:str=None, name:str=None, author:str=None, comment:str=None):
         if not self.exists(key):
             print("not in database")
             self.set_key(key)
+
+            self.set_image(image)
+
             if path:
                 self.set_path(path)
             if name:
@@ -67,6 +73,17 @@ class DataFile(object):
     
     def set_key(self, key):
         self._data[envs.KEY] = key
+
+    def get_image(self):
+        bytes_data = self._data.get(envs.IMAGE,"")
+        if bytes_data:
+            print("bytes")
+            with io.BytesIO(eval(bytes_data)) as image_stream:
+                image = Image.open(image_stream)
+            return image
+
+    def set_image(self, image):
+        self._data[envs.IMAGE] = image
     
     def get_name(self):
         return self._data.get(envs.NAME,"")

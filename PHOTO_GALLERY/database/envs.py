@@ -1,6 +1,7 @@
 KEY = "_key"
 NAME = "_name"
 PATH = "_path"
+IMAGE = "_image"
 DESCRIPTION = 270
 MAKE = 271
 MODEL = 272
