@@ -20,6 +20,7 @@ from database.data_file import DataFile
 class Database(object):
     def __init__(self, path:str):
         self._server = path
+        self._data = self.read()
    
     def __repr__(self) -> str:
         return f"{self.__class__.__name__} : {self._server}"
@@ -52,9 +53,15 @@ class Database(object):
         
     def save(self):
         with open(self._server, "w") as f:
-            json.dump(self._files, f, indent=4)
+            json.dump(self._data, f, indent=4)
 
     def create_file(self, key:str, name:str=None, author:str=None, comment:str=None):
         file = DataFile(self._server)
         if file.create(key, name=name, author=author, comment=comment):
-            self._files.append(file)
+            if not "files" in self._data:
+                self._data["files"] = []
+            self._data["files"].append(file.read())
+
+            return file
+        else:
+            print("File already exists.")

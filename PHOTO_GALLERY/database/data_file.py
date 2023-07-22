@@ -1,21 +1,31 @@
-from image.exif_file import ExifFile
-import json
+import json, os
 from database import envs
 
 class DataFile(object):
-    def __init__(self, server, data):
+    def __init__(self, server, file_data=None):
         
         self._server = server
-        self._base = exif_file
-        self._data = {}
+        if not file_data:
+            self._data = {}
+        else:
+            self._data = self.from_data(file_data)
 
-    def get_all(self):
-        with open(self._server, 'r') as f:
-            return json.load(f).get("files", [])
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__} : {self._data}"
+
+    def read(self):
+        return self._data
     
+    def read_database(self): #temp
+        if os.path.isfile(self._server):
+            with open(self._server, 'r') as f:
+                return json.load(f)
+        else:
+            return {}
+        
     def exists(self, key):
-        for k in list(self.get_all().keys()):
-            if k == key:
+        for file in self.read_database().get("files", []):
+            if file.get(envs.KEY) == key:
                 return True
         else:
             return False
@@ -23,8 +33,23 @@ class DataFile(object):
     def modify(self):
         pass
 
+    def from_data(self, data):
+        built_data = {}
+        if isinstance(data, dict):
+            key = data.get(envs.KEY, "")
+            if not key:
+                raise KeyError("Need a key, incompatible data.")
+            built_data[envs.KEY] = key
+
+            built_data[envs.NAME] = data.get(envs.NAME, "")
+            built_data[envs.AUTHOR] = data.get(envs.AUTHOR, "")
+            built_data[envs.COMMENT] = data.get(envs.COMMENT, "")
+
+        return built_data
+
     def create(self, key:str, name:str=None, author:str=None, comment:str=None):
-        if not self.exists(self._base.get_key()):
+        if not self.exists(key):
+            print("not in database")
             self.set_key(key)
             if name:
                 self.set_name(name)

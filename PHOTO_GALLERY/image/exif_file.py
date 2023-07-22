@@ -12,7 +12,10 @@ class ExifFile(object):
         
         self._path = path
         self._data = self.from_data()
-    
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__} : {self._path}"
+
     def from_data(self):
         data = {}
 
