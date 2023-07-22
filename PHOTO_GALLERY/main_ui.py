@@ -1,6 +1,6 @@
 import os, sys
 from PyQt5 import QtWidgets,QtCore, QtGui
-import __infos__
+import __infos__, envs
 
 from database.database import Database
 from image.exif_file import ExifFile
@@ -67,10 +67,12 @@ class MainUI( QtWidgets.QMainWindow):
         self.toolbar = QtWidgets.QToolBar(self)
         self.addToolBar(self.toolbar)
 
-        self.add_files_action = QtWidgets.QAction("Add Files", self)
+        self.add_files_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["add_file"]), "Add Files", self)
         self.toolbar.addAction(self.add_files_action)
 
-        self.remove_files_action = QtWidgets.QAction("Remove Files", self)
+        self.remove_files_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["remove_file"]),"Remove Files", self)
         self.toolbar.addAction(self.remove_files_action)
 
         # main layout
@@ -96,7 +98,7 @@ class MainUI( QtWidgets.QMainWindow):
 
     def add_tree_item(self, data_file):
         item = FileItem(data_file)
-        thumbnail = ImageButton(data_file.get_image())
+        thumbnail = ImageThumbnail(data_file.get_path())
 
         self.tree.addTopLevelItem(item)
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
@@ -158,30 +160,27 @@ class MainUI( QtWidgets.QMainWindow):
         elif column == HEADERS.index(I_COMMENT):
             file.set_comment(item.text(column))
 
-class ImageButton(QtWidgets.QPushButton):
+class ImageThumbnail(QtWidgets.QLabel):
     def __init__(self, image, *args, **kwargs):
-        super(ImageButton, self).__init__(*args, **kwargs)
-        size = (300,200)
+        super(ImageThumbnail, self).__init__(*args, **kwargs)
+        size = (300,300)
         self.setFixedSize(size[0], size[1])
-        # pixmap = QtGui.QPixmap(image)
-        # image = QtGui.QImage(image)
-        # self.setIcon(QtGui.QIcon(image))
-        
+        self.setAlignment(QtCore.Qt.AlignCenter)
        
-        # if isinstance(image, str) and os.path.isfile(image):
-        #     image = QtGui.QImage(image)
-        #     pixmap = QtGui.QPixmap(image)
+        if isinstance(image, str) and os.path.isfile(image):
+            image = QtGui.QImage(image)
+            pixmap = QtGui.QPixmap(image)
 
-        # else:
-        #     pixmap = QtGui.QPixmap()
-        #     pixmap.loadFromData(image)
+        else:
+            pixmap = QtGui.QPixmap()
+            pixmap.loadFromData(image)
             
-        # if not pixmap.isNull():
-        #     pixmap = pixmap.scaled(self.width()-5, 
-        #                            self.height()-5, 
-        #                            QtCore.Qt.KeepAspectRatio, 
-        #                            QtCore.Qt.SmoothTransformation)
-        # self.setPixmap(pixmap)
+        if not pixmap.isNull():
+            pixmap = pixmap.scaled(self.width()-5, 
+                                   self.height()-5, 
+                                   QtCore.Qt.KeepAspectRatio, 
+                                   QtCore.Qt.SmoothTransformation)
+        self.setPixmap(pixmap)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
