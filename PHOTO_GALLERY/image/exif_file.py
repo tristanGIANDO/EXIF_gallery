@@ -2,10 +2,8 @@ import os, json
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-"""
-Choisir version
-Marqueur sur image
-"""
+from database import envs
+
 class ExifFile(object):
     def __init__(self, path):
 
@@ -13,58 +11,48 @@ class ExifFile(object):
             raise FileNotFoundError(f"{path} is not a file.")
         
         self._path = path
-        self._data = self.read_image(path)
-        
-        self.set_path(path)
-
-    def read_image(self, image_path):
+        self._data = self.from_data()
+    
+    def from_data(self):
         data = {}
-        exif_info = self.get_exif_data(image_path)
-        if exif_info:
-            for tag, value in exif_info.items():
-                data[tag] = value
+
+        # add custom data
+        data[envs.KEY] = os.stat(self._path).st_ino
+        data[envs.NAME] = os.path.splitext(os.path.basename(self._path))[0]
+        data[envs.PATH] = self._path
+        
+        # add exifs
+        with Image.open(self._path) as img:
+            exif_data = img._getexif()
+
+            if exif_data:
+                for tag, value in exif_data.items():
+                    # tag_name = TAGS.get(tag, tag)
+                    # decode bytes
+                    if isinstance(value, bytes):
+                        try:
+                            value = value.decode('utf-8')
+                        except UnicodeDecodeError:
+                            pass
+
+                    data[tag] = value
 
         return data
-
-    def get_name(self):
-        return os.path.splitext(os.path.basename(self._path))[0]
     
-    def set_name(self, name):
-        self._data["name"] = name
+    def read(self):
+        return self._data
+                
+    def get_key(self):
+        return self._data.get(envs.KEY,"")
+    
+    def get_name(self):
+        return self._data.get(envs.NAME,"")
     
     def get_path(self):
-        return self._data.get("path","")
-    
-    def set_path(self, path):
-        self._data["path"] = path
+        return self._path
     
     def get_author(self):
-        return self._data.get("Artist", "")
+        return self._data.get(envs.AUTHOR, "")
     
     def get_comment(self):
-        return self._data.get("XPComment", "")
-    
-    def convert_bytes_to_str(self, data):
-        if isinstance(data, bytes):
-            try:
-                return data.decode('utf-8')
-            except UnicodeDecodeError:
-                return "Unable to decode"
-        return data
-
-    def get_exif_data(self, image_path):
-        try:
-            with Image.open(image_path) as img:
-                exif_data = img._getexif()
-
-                if exif_data is not None:
-                    exif_info = {}
-                    for tag, value in exif_data.items():
-                        tag_name = TAGS.get(tag, tag)
-                        exif_info[tag_name] = self.convert_bytes_to_str(value)
-                    return exif_info
-                else:
-                    return None
-        except Exception as e:
-            print(f"Error while getting EXIF data : {e}")
-            return None
+        return self._data.get(envs.COMMENT, "")

@@ -19,31 +19,27 @@ class FileItem(QtWidgets.QTreeWidgetItem):
     def __init__(self, file, *args, **kwargs):
         
         self._file = file
-        file_path = file.get_path()
-        headers = [
-            "",
-            file.get_name(),
-            file_path,
-            "",
-            file.get_author(),
-            file.get_comment()
-        ]
+        headers = []
 
         super(FileItem, self).__init__(headers, *args, **kwargs)
+
+        self.setText(HEADERS.index(I_NAME), file.get_name())
+        self.setText(HEADERS.index(I_PATH), file.get_path())
+        self.setText(HEADERS.index(I_AUTHOR), file.get_author())
+        self.setText(HEADERS.index(I_COMMENT), file.get_comment())
 
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("%s v-%s"%(__infos__.__title__,__infos__.__version__))
-        self.resize(1400, 900)
+        self.resize(1200, 600)
 
         self.create_widgets()
         self.create_layouts()
         self.create_connections()
 
-        database = Database(r"C:\Users\giand\.database.json")
-        self._files = database.read()
+        self._server = Database(r"C:\Users\giand\.database.json")
         self._update()
 
     def create_widgets(self):
@@ -95,7 +91,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.save_btn.clicked.connect(self.on_save_btn_clicked)
 
     def _update(self):
-        for file in self._files:
+        for file in self._server.get_files():
             self.add_tree_item(file.get("path",""))
 
     def add_tree_item(self, image_path):
