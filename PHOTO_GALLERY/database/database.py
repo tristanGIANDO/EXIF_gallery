@@ -35,7 +35,6 @@ class Database(object):
     def get_files(self):
         files = []
         for file_data in self.read().get("files", []):
-            print(file_data)
             files.append(DataFile(self._server, file_data))
 
         return files

@@ -92,7 +92,6 @@ class MainUI( QtWidgets.QMainWindow):
 
     def _update(self):
         for file in self._server.get_files():
-            print(file)
             self.add_tree_item(file)
 
     def add_tree_item(self, data_file):
@@ -162,7 +161,7 @@ class MainUI( QtWidgets.QMainWindow):
 class ImageButton(QtWidgets.QPushButton):
     def __init__(self, image, *args, **kwargs):
         super(ImageButton, self).__init__(*args, **kwargs)
-        size = (300,300)
+        size = (300,200)
         self.setFixedSize(size[0], size[1])
         # pixmap = QtGui.QPixmap(image)
         # image = QtGui.QImage(image)
