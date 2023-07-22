@@ -39,14 +39,19 @@ class DataFile(object):
     def from_data(self, data):
         built_data = {}
         if isinstance(data, dict):
+            print("data", data)
             key = data.get(envs.KEY, "")
             if not key:
                 raise KeyError("Need a key, incompatible data.")
             built_data[envs.KEY] = key
-            built_data[envs.IMAGE] = data.get(envs.IMAGE,"")
-            built_data[envs.NAME] = data.get(envs.NAME, "")
-            built_data[envs.AUTHOR] = data.get(envs.AUTHOR, "")
-            built_data[envs.COMMENT] = data.get(envs.COMMENT, "")
+            print("fdsfdsfsfd")
+            built_data[envs.IMAGE] = data.get(envs.IMAGE)
+            print("sff")
+            built_data[envs.NAME] = data.get(envs.NAME)
+            built_data[envs.AUTHOR] = data.get(envs.AUTHOR)
+            built_data[envs.COMMENT] = data.get(envs.COMMENT)
+            built_data[envs.PATH] = data.get(envs.PATH)
+            print("aaa")
 
         return built_data
 
@@ -92,7 +97,7 @@ class DataFile(object):
         self._data[envs.NAME] = name
     
     def get_path(self):
-        return self._data.get(envs.PATH,"")
+        return self._data.get(envs.PATH)
     
     def set_path(self,path):
         self._data[envs.PATH] = path

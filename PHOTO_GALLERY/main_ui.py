@@ -92,6 +92,7 @@ class MainUI( QtWidgets.QMainWindow):
 
     def _update(self):
         for file in self._server.get_files():
+            print(file)
             self.add_tree_item(file)
 
     def add_tree_item(self, data_file):
