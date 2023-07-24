@@ -10,16 +10,17 @@ server = Database(database_path)
 # # file = a_files[0]
 # # print (file.get_key())
 
-exif_file = ExifFile(file_path)
-file = server.create_file(exif_file.get_key(),
-                          str(exif_file.get_image()),
-                          name=exif_file.get_name(),
-                          path=exif_file.get_path()
-                          )
-server.save()
+# exif_file = ExifFile(file_path)
+# file = server.create_file(exif_file.get_key(),
+#                           str(exif_file.get_image()),
+#                           name=exif_file.get_name(),
+#                           path=exif_file.get_path()
+#                           )
+# server.save()
+
 
 # b_files = server.get_files()
-
+server.remove_file(1688849860292696)
 # print(server)
 # print(a_files)
 # print(exif_file)

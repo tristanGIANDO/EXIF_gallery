@@ -65,3 +65,9 @@ class Database(object):
             return file
         else:
             print("File already exists.")
+
+    def remove_file(self, key):
+        for file in self.get_files():
+            if file.get_key() == key:
+                self._data.pop(file)
+        return self._data
