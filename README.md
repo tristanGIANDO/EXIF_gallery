@@ -46,6 +46,7 @@ From a console, run :
 ```
 pip install PyQt5
 pip install pillow
+pip install mysql-connector-python
 ```
 
 ## INSTRUCTIONS FOR USE
