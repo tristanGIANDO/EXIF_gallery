@@ -19,7 +19,22 @@
 *SOFTWARE.*
 
 # PHOTO GALLERY
-A very simple logger that uses very few libraries
+What every photographer will need:
+* a portfolio
+* a website
+* a review tool
+* an image viewer
+
+Each photo will be able to store more data than a conventional image:
+* EXIFs
+* comments
+* processing versions
+* location of the shot
+
+Features for astrophoto, it will be possible to indicate :
+* number of shots + exposure times
+* total exposure time calculated automatically
+* Bortle level
 
 ##
 The script is written in **Python 3**.
