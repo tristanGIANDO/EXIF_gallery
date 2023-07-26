@@ -1,4 +1,4 @@
-DB_NAME = "photo_gallery"
+DB_NAME = "db01"
 FILE_TABLE_NAME = "files"
 
 KEY = "_key"

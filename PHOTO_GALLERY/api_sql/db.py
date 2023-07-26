@@ -1,16 +1,24 @@
 import mysql.connector
-from api_sql import envs
+import envs
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:
     self._user = user
     self._password = password
 
+    self._server = mysql.connector.connect(
+      host = "localhost",
+      user = user,
+      password = password)
+    self._cursor = self._server.cursor()
+    
+    self.create()
+
     self._server = self.connect(user, password)
     self._cursor = self._server.cursor()
 
     # init database
-    self.create()
+    
     self.create_table(envs.FILE_TABLE_NAME)
   
   def connect(self, user, password):
@@ -35,7 +43,7 @@ class Database(object):
       
   def create(self):
     if not self._exists(envs.DB_NAME):
-      self._server.execute(f"CREATE DATABASE {envs.DB_NAME}")
+      self._cursor.execute(f"CREATE DATABASE {envs.DB_NAME}")
     else:
       print(f"{envs.DB_NAME} already exists.")
 
@@ -47,7 +55,8 @@ class Database(object):
       columns += "path VARCHAR(255)"
       columns += ")"
 
-      self._server.execute(f"CREATE TABLE {file_table_name} {columns}")
+      self._cursor.execute(f"CREATE TABLE {file_table_name} {columns}")
+      print("table created")
     else:
       print(f"{file_table_name} already exists.")
 
@@ -57,7 +66,7 @@ class Database(object):
 
   # fileTable
   def add(self, values:list):
-    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (id, name, path) VALUES (INT AUTO_INCREMENT PRIMARY KEY,%s,%s)"
+    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (name, path) VALUES (%s,%s)"
     self._cursor.execute(request, values)
     self._server.commit()
 
@@ -80,6 +89,7 @@ class Database(object):
 
 if __name__ == "__main__":
   db = Database()
-  db.add("file", ["example.jpg", "path/file"])
+  # db.delete_table(envs.FILE_TABLE_NAME)
+  db.add(["example.jpg", "path/file"])
 
   print(db.get_rows())
