@@ -27,10 +27,10 @@ class FileItem(QtWidgets.QTreeWidgetItem):
         if data:
             print(data)
             self.setText(HEADERS.index(I_ID), str(data[0]))
-            self.setText(HEADERS.index(I_NAME), data[4])
+            self.setText(HEADERS.index(I_NAME), data[1])
             self.setText(HEADERS.index(I_PATH), data[2])
             self.setText(HEADERS.index(I_AUTHOR), data[3])
-            self.setText(HEADERS.index(I_NAME), data[1])
+            self.setText(HEADERS.index(I_COMMENT), data[4])
             
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
@@ -78,6 +78,12 @@ class MainUI( QtWidgets.QMainWindow):
             "Remove Files", 
             self)
         self.toolbar.addAction(self.remove_files_action)
+
+        self.reload_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["reload"]),
+            "Reload", 
+            self)
+        self.toolbar.addAction(self.reload_action)
 
         # main layout
         layout = QtWidgets.QVBoxLayout()
