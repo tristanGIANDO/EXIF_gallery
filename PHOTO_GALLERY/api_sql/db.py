@@ -1,5 +1,5 @@
 import mysql.connector
-import envs
+from api_sql import envs
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:
@@ -88,8 +88,9 @@ class Database(object):
     self._server.commit()
 
 if __name__ == "__main__":
+  import envs
   db = Database()
   # db.delete_table(envs.FILE_TABLE_NAME)
-  db.add(["example.jpg", "path/file"])
+  db.add(["230521_IMG_7996_02", "C:/Users/giand/OneDrive/Images/@PORTFOLIO/230521_IMG_7996_02.jpg"])
 
   print(db.get_rows())

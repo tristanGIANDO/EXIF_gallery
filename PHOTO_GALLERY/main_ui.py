@@ -2,8 +2,8 @@ import os, sys
 from PyQt5 import QtWidgets,QtCore, QtGui
 import __infos__, envs
 
-from database.database import Database
-from image.exif_file import ExifFile
+from api_sql.db import Database
+from api.exif_file import ExifFile
 
 I_IMAGE = "Image"
 I_NAME = "Name"
@@ -19,20 +19,14 @@ HEADERS = [I_IMAGE, I_NAME, I_PATH, I_CAMERA, I_AUTHOR, I_COMMENT]
 NB_SECTIONS = len(HEADERS)
 
 class FileItem(QtWidgets.QTreeWidgetItem):
-    def __init__(self, file, *args, **kwargs):
-        
-        self._file = file
+    def __init__(self, data, *args, **kwargs):
 
         super(FileItem, self).__init__(*args, **kwargs)
 
         self.setText(HEADERS.index(I_NAME), 
-                     file.get_name())
+                     data[1])
         self.setText(HEADERS.index(I_PATH), 
-                     file.get_path())
-        self.setText(HEADERS.index(I_AUTHOR), 
-                     file.get_author())
-        self.setText(HEADERS.index(I_COMMENT), 
-                     file.get_comment())
+                     data[2])
 
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
@@ -46,7 +40,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.create_layouts()
         self.create_connections()
 
-        self._server = Database(r"C:\Users\giand\.database.json")
+        self._db = Database()
         self._update()
 
     def create_widgets(self):
@@ -104,12 +98,12 @@ class MainUI( QtWidgets.QMainWindow):
         self.save_btn.clicked.connect(self.on_save_btn_clicked)
 
     def _update(self):
-        for file in self._server.get_files():
-            self.add_tree_item(file)
+        for file_row in self._db.get_rows():
+            self.add_tree_item(file_row)
 
-    def add_tree_item(self, data_file):
-        item = FileItem(data_file)
-        thumbnail = ImageViewWidget(data_file.get_path())
+    def add_tree_item(self, file_row):
+        item = FileItem(file_row)
+        thumbnail = ImageViewWidget(file_row[2])
 
         self.tree.addTopLevelItem(item)
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
@@ -135,14 +129,14 @@ class MainUI( QtWidgets.QMainWindow):
 
     def create_file(self, path):
         exif_file = ExifFile(path)
-        file = self._server.create_file(exif_file.get_key(),
+        file = self._db.create_file(exif_file.get_key(),
                           str(exif_file.get_image()),
                           name=exif_file.get_name(),
                           path=exif_file.get_path(),
                           author=exif_file.get_author(),
                           comment=exif_file.get_comment()
                           )
-        self._server.save()
+        self._db.save()
         return file
 
     def save(self):
@@ -164,27 +158,28 @@ class MainUI( QtWidgets.QMainWindow):
         self.save()
 
     def on_item_changed(self, item, column):
-        file = item._file
-        if column == HEADERS.index(I_NAME):
-            file.set_name(item.text(column))
+        pass
+        # file = item._file
+        # if column == HEADERS.index(I_NAME):
+        #     file.set_name(item.text(column))
         
-        elif column == HEADERS.index(I_COMMENT):
-            file.set_comment(item.text(column))
+        # elif column == HEADERS.index(I_COMMENT):
+        #     file.set_comment(item.text(column))
 
 class ImageViewWidget(QtWidgets.QLabel):
-    def __init__(self, image, *args, **kwargs):
+    def __init__(self, image_path, *args, **kwargs):
         super(ImageViewWidget, self).__init__(*args, **kwargs)
         size = (300,200)
         self.setFixedSize(size[0], size[1])
         self.setAlignment(QtCore.Qt.AlignCenter)
-       
-        if isinstance(image, str) and os.path.isfile(image):
-            image = QtGui.QImage(image)
-            pixmap = QtGui.QPixmap(image)
 
-        else:
-            pixmap = QtGui.QPixmap()
-            pixmap.loadFromData(image)
+        pixmap = QtGui.QPixmap()
+        if os.path.isfile(image_path):   
+            if isinstance(image_path, str):
+                image = QtGui.QImage(image_path)
+                pixmap = QtGui.QPixmap(image)
+            else:
+                pixmap.loadFromData(image_path)
             
         if not pixmap.isNull():
             pixmap = pixmap.scaled(self.width()-2, 
