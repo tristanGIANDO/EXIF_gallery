@@ -1,3 +1,6 @@
+DB_NAME = "photo_gallery"
+FILE_TABLE_NAME = "files"
+
 KEY = "_key"
 NAME = "_name"
 PATH = "_path"
