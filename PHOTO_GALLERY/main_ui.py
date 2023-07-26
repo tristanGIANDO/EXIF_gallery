@@ -5,6 +5,7 @@ import __infos__, envs
 from api_sql.db import Database
 from api.exif_file import ExifFile
 
+I_ID = "ID"
 I_IMAGE = "Image"
 I_NAME = "Name"
 I_PATH = "Path"
@@ -15,7 +16,7 @@ I_APERTURE = "Aperture"
 I_AUTHOR = "Author"
 I_COMMENT = "Comment"
 
-HEADERS = [I_IMAGE, I_NAME, I_PATH, I_CAMERA, I_AUTHOR, I_COMMENT]
+HEADERS = [I_ID, I_IMAGE, I_NAME, I_PATH, I_CAMERA, I_AUTHOR, I_COMMENT]
 NB_SECTIONS = len(HEADERS)
 
 class FileItem(QtWidgets.QTreeWidgetItem):
@@ -23,6 +24,8 @@ class FileItem(QtWidgets.QTreeWidgetItem):
 
         super(FileItem, self).__init__(*args, **kwargs)
 
+        self.setText(HEADERS.index(I_ID), 
+                     str(data[0]))
         self.setText(HEADERS.index(I_NAME), 
                      data[1])
         self.setText(HEADERS.index(I_PATH), 
@@ -51,17 +54,10 @@ class MainUI( QtWidgets.QMainWindow):
         self.tree.setRootIsDecorated(False)
         self.tree.setSortingEnabled(True)
         self.tree.header().sectionsMovable()
-        self.tree.header().setSectionResizeMode(HEADERS.index(I_IMAGE),
-                                                QtWidgets.QHeaderView.ResizeToContents)
-        self.tree.header().setSectionResizeMode(HEADERS.index(I_NAME),
-                                                QtWidgets.QHeaderView.ResizeToContents)
-        self.tree.header().setSectionResizeMode(HEADERS.index(I_AUTHOR),
-                                                QtWidgets.QHeaderView.ResizeToContents)
-        self.tree.header().setSectionResizeMode(HEADERS.index(I_COMMENT),
-                                                QtWidgets.QHeaderView.ResizeToContents)
-
-        # button
-        self.save_btn = QtWidgets.QPushButton("Save album")
+        for header in HEADERS:
+            self.tree.header().setSectionResizeMode(HEADERS.index(header),
+                                                    QtWidgets.QHeaderView.ResizeToContents)
+        self.tree.header().setSectionHidden(HEADERS.index(I_ID), True)
 
     def create_layouts(self):
         # toolbar
@@ -82,10 +78,8 @@ class MainUI( QtWidgets.QMainWindow):
 
         # main layout
         layout = QtWidgets.QVBoxLayout()
-        h_layout = QtWidgets.QHBoxLayout()
-        h_layout.addWidget(self.tree)
-        layout.addLayout(h_layout)
-        layout.addWidget(self.save_btn)
+        layout.addWidget(self.tree)
+
         central_widget = QtWidgets.QWidget(self)
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
@@ -95,9 +89,9 @@ class MainUI( QtWidgets.QMainWindow):
 
         self.add_files_action.triggered.connect(self.on_add_files_clicked)
         self.remove_files_action.triggered.connect(self.on_remove_files_clicked)
-        self.save_btn.clicked.connect(self.on_save_btn_clicked)
 
     def _update(self):
+        self.tree.clear()
         for file_row in self._db.get_rows():
             self.add_tree_item(file_row)
 
@@ -118,26 +112,22 @@ class MainUI( QtWidgets.QMainWindow):
                 self.tree.takeTopLevelItem(index)
             else:
                 parent.removeChild(item)
+        return item
 
     def open_file_dialog(self):
         file_dialog = QtWidgets.QFileDialog(self)
         file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
         if file_dialog.exec_():
             for path in file_dialog.selectedFiles():
-                file = self.create_file(path)
-                self.add_tree_item(file)
+                self.create_file(path)
+                self._update()
 
     def create_file(self, path):
         exif_file = ExifFile(path)
-        file = self._db.create_file(exif_file.get_key(),
-                          str(exif_file.get_image()),
-                          name=exif_file.get_name(),
-                          path=exif_file.get_path(),
-                          author=exif_file.get_author(),
-                          comment=exif_file.get_comment()
-                          )
-        self._db.save()
-        return file
+        data = [exif_file.get_name(),
+                exif_file.get_path()
+            ]
+        self._db.add(data)
 
     def save(self):
         items = self.tree.findItems(
@@ -152,7 +142,8 @@ class MainUI( QtWidgets.QMainWindow):
         self.open_file_dialog()
 
     def on_remove_files_clicked(self):
-        self.remove_tree_item()
+        item = self.remove_tree_item()
+        self._db.remove_file(item.text(HEADERS.index(I_ID)))
 
     def on_save_btn_clicked(self):
         self.save()

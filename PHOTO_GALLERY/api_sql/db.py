@@ -82,8 +82,8 @@ class Database(object):
     return self._cursor.fetchall()
   
   # fileTable
-  def delete(self, column:str, value:str):
-    request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {column} = '{value}'"
+  def remove_file(self, id):
+    request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE id = '{str(id)}'"
     self._cursor.execute(request)
     self._server.commit()
 
