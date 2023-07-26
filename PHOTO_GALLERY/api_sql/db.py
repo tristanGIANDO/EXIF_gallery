@@ -49,13 +49,15 @@ class Database(object):
 
   def create_table(self, file_table_name):
     if not self._table_exists(file_table_name):
-      columns = "("
-      columns += "id INT AUTO_INCREMENT PRIMARY KEY," # auto increment db index but does not work, oh but it is for the table, not row
-      columns += "name VARCHAR(45),"
-      columns += "path VARCHAR(255)"
-      columns += ")"
+      data = "( \
+        id INT AUTO_INCREMENT PRIMARY KEY, \
+        name VARCHAR(45), \
+        path VARCHAR(255), \
+        author VARCHAR(45), \
+        comment VARCHAR(255) \
+        )"
 
-      self._cursor.execute(f"CREATE TABLE {file_table_name} {columns}")
+      self._cursor.execute(f"CREATE TABLE {file_table_name} {data}")
       print("table created")
     else:
       print(f"{file_table_name} already exists.")
@@ -66,7 +68,7 @@ class Database(object):
 
   # fileTable
   def add(self, values:list):
-    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (name, path) VALUES (%s,%s)"
+    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (name, path, author, comment) VALUES (%s,%s,%s,%s)"
     self._cursor.execute(request, values)
     self._server.commit()
 
@@ -82,6 +84,12 @@ class Database(object):
     return self._cursor.fetchall()
   
   # fileTable
+  def update(self, column:str, id:str, new_value:str):
+    sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE (id = '{id}')"
+    self._cursor.execute(sql)
+    self._server.commit()
+  
+  # fileTable
   def remove_file(self, id):
     request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE id = '{str(id)}'"
     self._cursor.execute(request)
@@ -91,6 +99,6 @@ if __name__ == "__main__":
   import envs
   db = Database()
   # db.delete_table(envs.FILE_TABLE_NAME)
-  db.add(["230521_IMG_7996_02", "C:/Users/giand/OneDrive/Images/@PORTFOLIO/230521_IMG_7996_02.jpg"])
+  # db.add(["230521_IMG_7996_02", "C:/Users/giand/OneDrive/Images/@PORTFOLIO/230521_IMG_7996_02.jpg"])
 
   print(db.get_rows())

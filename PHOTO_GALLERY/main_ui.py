@@ -24,20 +24,21 @@ class FileItem(QtWidgets.QTreeWidgetItem):
 
         super(FileItem, self).__init__(*args, **kwargs)
 
-        self.setText(HEADERS.index(I_ID), 
-                     str(data[0]))
-        self.setText(HEADERS.index(I_NAME), 
-                     data[1])
-        self.setText(HEADERS.index(I_PATH), 
-                     data[2])
-
+        if data:
+            print(data)
+            self.setText(HEADERS.index(I_ID), str(data[0]))
+            self.setText(HEADERS.index(I_NAME), data[4])
+            self.setText(HEADERS.index(I_PATH), data[2])
+            self.setText(HEADERS.index(I_AUTHOR), data[3])
+            self.setText(HEADERS.index(I_NAME), data[1])
+            
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("%s v-%s"%(__infos__.__title__,
                                        __infos__.__version__))
-        self.resize(1200, 600)
+        self.resize(1200, 700)
 
         self.create_widgets()
         self.create_layouts()
@@ -55,9 +56,11 @@ class MainUI( QtWidgets.QMainWindow):
         self.tree.setSortingEnabled(True)
         self.tree.header().sectionsMovable()
         for header in HEADERS:
+            if HEADERS.index(header) == HEADERS.index(I_NAME):
+                continue
             self.tree.header().setSectionResizeMode(HEADERS.index(header),
-                                                    QtWidgets.QHeaderView.ResizeToContents)
-        self.tree.header().setSectionHidden(HEADERS.index(I_ID), True)
+                                    QtWidgets.QHeaderView.ResizeToContents)
+        self.tree.header().setSectionHidden(HEADERS.index(I_ID), False)
 
     def create_layouts(self):
         # toolbar
@@ -125,7 +128,9 @@ class MainUI( QtWidgets.QMainWindow):
     def create_file(self, path):
         exif_file = ExifFile(path)
         data = [exif_file.get_name(),
-                exif_file.get_path()
+                exif_file.get_path(),
+                exif_file.get_author(),
+                exif_file.get_comment()
             ]
         self._db.add(data)
 
