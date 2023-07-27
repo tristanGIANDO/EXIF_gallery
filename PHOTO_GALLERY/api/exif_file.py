@@ -50,7 +50,7 @@ class ExifFile(object):
     def read(self):
         return self._data
                 
-    def get_key(self):
+    def get_id(self):
         return self._data.get(envs.KEY,"")
     
     def get_name(self):

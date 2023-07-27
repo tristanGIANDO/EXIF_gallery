@@ -135,7 +135,8 @@ class MainUI( QtWidgets.QMainWindow):
         data = {"name" : exif_file.get_name(),
                 "path" : exif_file.get_path(),
                 "author" : exif_file.get_author(),
-                "comment" : exif_file.get_comment()
+                "comment" : exif_file.get_comment(),
+                "id" : exif_file.get_id()
         }
         self._db.add(data)
 
@@ -153,7 +154,8 @@ class MainUI( QtWidgets.QMainWindow):
 
     def on_remove_files_clicked(self):
         item = self.remove_tree_item()
-        self._db.remove_file(item.text(HEADERS.index(I_ID)))
+        self._db.remove_file(item.text(HEADERS.index(I_ID)),
+                             item.text(HEADERS.index(I_PATH)))
 
     def on_save_btn_clicked(self):
         self.save()

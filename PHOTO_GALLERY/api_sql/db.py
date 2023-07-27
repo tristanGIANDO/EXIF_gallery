@@ -41,6 +41,11 @@ class Database(object):
       if x[0] == table:
         return True
       
+  def _row_exists(self, row_id):
+    for file in self.get_rows():
+      if file[0] == str(row_id):
+        return True
+      
   def create(self):
     if not self._exists(envs.DB_NAME):
       self._cursor.execute(f"CREATE DATABASE {envs.DB_NAME}")
@@ -50,7 +55,7 @@ class Database(object):
   def create_table(self, file_table_name):
     if not self._table_exists(file_table_name):
       data = f"( \
-        id INT AUTO_INCREMENT PRIMARY KEY, \
+        id VARCHAR(20), \
         {envs.NAME} VARCHAR(45), \
         {envs.PATH} VARCHAR(255), \
         {envs.AUTHOR} VARCHAR(45), \
@@ -68,25 +73,35 @@ class Database(object):
 
   # fileTable
   def add(self, data:dict):
-    values = ()
+    id = data.get("id")
+    if self._row_exists(id):
+      return
+    
+    # id
+    values = (id,)
+
+    # name
     values += (data.get(envs.NAME, None),)
 
+    # path
     path = data.get(envs.PATH)
     if os.path.isfile(path):
       if not os.path.isdir(envs.ROOT):
         os.mkdir(envs.ROOT)
       new_path = os.path.join(envs.ROOT,
-                               os.path.basename(path))
+                              f"{id}{os.path.splitext(path)[-1]}")
       shutil.copy(path,
                   new_path)
       values += (new_path,)
     
+    # author
     values += (data.get(envs.AUTHOR, "-"),)
 
+    # comment
     values += (data.get(envs.COMMENT, ""),)
 
-    request = f"INSERT INTO {envs.FILE_TABLE_NAME} ({envs.NAME},{envs.PATH},{envs.AUTHOR},{envs.COMMENT}) VALUES (%s,%s,%s,%s)"
-    print(request)
+    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (id, {envs.NAME},{envs.PATH},{envs.AUTHOR},{envs.COMMENT}) VALUES (%s,%s,%s,%s,%s)"
+
     self._cursor.execute(request, values)
     self._server.commit()
 
@@ -108,10 +123,12 @@ class Database(object):
     self._server.commit()
   
   # fileTable
-  def remove_file(self, id):
+  def remove_file(self, id, path):
     request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE id = '{str(id)}'"
     self._cursor.execute(request)
     self._server.commit()
+
+    os.remove(path)
 
 if __name__ == "__main__":
   import envs
