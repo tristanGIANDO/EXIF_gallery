@@ -59,7 +59,8 @@ class MainUI( QtWidgets.QMainWindow):
                 continue
             self.tree.header().setSectionResizeMode(HEADERS.index(header),
                                     QtWidgets.QHeaderView.ResizeToContents)
-        self.tree.header().setSectionHidden(HEADERS.index(I_ID), False)
+        self.tree.header().setSectionHidden(HEADERS.index(I_ID), True)
+        self.tree.header().setSectionHidden(HEADERS.index(I_PATH), True)
 
     def create_layouts(self):
         # toolbar
@@ -132,6 +133,7 @@ class MainUI( QtWidgets.QMainWindow):
 
     def create_file(self, path):
         exif_file = ExifFile(path)
+        print(exif_file.read())
         data = {"name" : exif_file.get_name(),
                 "path" : exif_file.get_path(),
                 "author" : exif_file.get_author(),

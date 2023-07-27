@@ -76,31 +76,26 @@ class Database(object):
     id = data.get("id")
     if self._row_exists(id):
       return
-    
+    # print(data)
     # id
     values = (id,)
-
     # name
     values += (data.get(envs.NAME, None),)
-
     # path
     path = data.get(envs.PATH)
     if os.path.isfile(path):
       if not os.path.isdir(envs.ROOT):
         os.mkdir(envs.ROOT)
-      new_path = os.path.join(envs.ROOT,
-                              f"{id}{os.path.splitext(path)[-1]}")
-      shutil.copy(path,
-                  new_path)
+      new_path = os.path.join(envs.ROOT, f"{id}{os.path.splitext(path)[-1]}")
+      shutil.copy(path, new_path)
       values += (new_path,)
     
     # author
-    values += (data.get(envs.AUTHOR, "-"),)
-
+    values += (data.get(envs.AUTHOR, None),)
     # comment
-    values += (data.get(envs.COMMENT, ""),)
+    values += (data.get(envs.COMMENT, None),)
 
-    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (id, {envs.NAME},{envs.PATH},{envs.AUTHOR},{envs.COMMENT}) VALUES (%s,%s,%s,%s,%s)"
+    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (id,name,path,author,comment) VALUES (%s,%s,%s,%s,%s)"
 
     self._cursor.execute(request, values)
     self._server.commit()

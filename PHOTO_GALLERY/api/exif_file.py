@@ -2,7 +2,7 @@ import os, json
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-from api_sql import envs
+from api import envs
 
 class ExifFile(object):
     def __init__(self, path):
