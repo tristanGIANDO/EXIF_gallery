@@ -1,4 +1,4 @@
-import mysql.connector
+import mysql.connector, os, shutil
 from api_sql import envs
 
 class Database(object):
@@ -49,12 +49,12 @@ class Database(object):
 
   def create_table(self, file_table_name):
     if not self._table_exists(file_table_name):
-      data = "( \
+      data = f"( \
         id INT AUTO_INCREMENT PRIMARY KEY, \
-        name VARCHAR(45), \
-        path VARCHAR(255), \
-        author VARCHAR(45), \
-        comment VARCHAR(255) \
+        {envs.NAME} VARCHAR(45), \
+        {envs.PATH} VARCHAR(255), \
+        {envs.AUTHOR} VARCHAR(45), \
+        {envs.COMMENT} VARCHAR(255) \
         )"
 
       self._cursor.execute(f"CREATE TABLE {file_table_name} {data}")
@@ -67,8 +67,26 @@ class Database(object):
     self._cursor.execute(request)
 
   # fileTable
-  def add(self, values:list):
-    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (name, path, author, comment) VALUES (%s,%s,%s,%s)"
+  def add(self, data:dict):
+    values = ()
+    values += (data.get(envs.NAME, None),)
+
+    path = data.get(envs.PATH)
+    if os.path.isfile(path):
+      if not os.path.isdir(envs.ROOT):
+        os.mkdir(envs.ROOT)
+      new_path = os.path.join(envs.ROOT,
+                               os.path.basename(path))
+      shutil.copy(path,
+                  new_path)
+      values += (new_path,)
+    
+    values += (data.get(envs.AUTHOR, "-"),)
+
+    values += (data.get(envs.COMMENT, ""),)
+
+    request = f"INSERT INTO {envs.FILE_TABLE_NAME} ({envs.NAME},{envs.PATH},{envs.AUTHOR},{envs.COMMENT}) VALUES (%s,%s,%s,%s)"
+    print(request)
     self._cursor.execute(request, values)
     self._server.commit()
 

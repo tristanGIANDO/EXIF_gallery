@@ -25,7 +25,6 @@ class FileItem(QtWidgets.QTreeWidgetItem):
         super(FileItem, self).__init__(*args, **kwargs)
 
         if data:
-            print(data)
             self.setText(HEADERS.index(I_ID), str(data[0]))
             self.setText(HEADERS.index(I_NAME), data[1])
             self.setText(HEADERS.index(I_PATH), data[2])
@@ -133,11 +132,11 @@ class MainUI( QtWidgets.QMainWindow):
 
     def create_file(self, path):
         exif_file = ExifFile(path)
-        data = [exif_file.get_name(),
-                exif_file.get_path(),
-                exif_file.get_author(),
-                exif_file.get_comment()
-            ]
+        data = {"name" : exif_file.get_name(),
+                "path" : exif_file.get_path(),
+                "author" : exif_file.get_author(),
+                "comment" : exif_file.get_comment()
+        }
         self._db.add(data)
 
     def save(self):
