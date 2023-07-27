@@ -133,7 +133,6 @@ class MainUI( QtWidgets.QMainWindow):
 
     def create_file(self, path):
         exif_file = ExifFile(path)
-        print(exif_file.read())
         data = {"name" : exif_file.get_name(),
                 "path" : exif_file.get_path(),
                 "author" : exif_file.get_author(),
@@ -163,13 +162,16 @@ class MainUI( QtWidgets.QMainWindow):
         self.save()
 
     def on_item_changed(self, item, column):
-        pass
-        # file = item._file
-        # if column == HEADERS.index(I_NAME):
-        #     file.set_name(item.text(column))
+        id = item.text(HEADERS.index(I_ID))
+
+        if column == HEADERS.index(I_NAME):
+            self._db.update("name", id, item.text(column))
         
-        # elif column == HEADERS.index(I_COMMENT):
-        #     file.set_comment(item.text(column))
+        elif column == HEADERS.index(I_AUTHOR):
+            self._db.update("author", id, item.text(column))
+
+        elif column == HEADERS.index(I_COMMENT):
+            self._db.update("comment", id, item.text(column))
 
 class ImageViewWidget(QtWidgets.QLabel):
     def __init__(self, image_path, *args, **kwargs):

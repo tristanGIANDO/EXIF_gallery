@@ -89,7 +89,6 @@ class Database(object):
       new_path = os.path.join(envs.ROOT, f"{id}{os.path.splitext(path)[-1]}")
       shutil.copy(path, new_path)
       values += (new_path,)
-    
     # author
     values += (data.get(envs.AUTHOR, None),)
     # comment
@@ -113,7 +112,7 @@ class Database(object):
   
   # fileTable
   def update(self, column:str, id:str, new_value:str):
-    sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE (id = '{id}')"
+    sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE (id = '{str(id)}')"
     self._cursor.execute(sql)
     self._server.commit()
   
@@ -130,5 +129,5 @@ if __name__ == "__main__":
   db = Database()
   # db.delete_table(envs.FILE_TABLE_NAME)
   # db.add(["230521_IMG_7996_02", "C:/Users/giand/OneDrive/Images/@PORTFOLIO/230521_IMG_7996_02.jpg"])
-
+  db.update("name", 7599824371229639, "nouveau nom")
   print(db.get_rows())
