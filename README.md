@@ -49,9 +49,27 @@ pip install pillow
 pip install mysql-connector-python
 ```
 
+# API DOCUMENTATION
+
 ## INSTRUCTIONS FOR USE
 ```py
-#
+# create database
+db = Database()
+
+# add image
+data = {
+  "id" : 012345678
+  "name" : "image_name"
+  "path" : "path/file.png"
+}
+db.add(data)
+
+# update image
+db.update("name", 012345678, "new_name_value")
+
+# get images
+db.get_rows()
+
 ```
 
 ## PARAMETERS
