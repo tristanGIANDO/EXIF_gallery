@@ -73,8 +73,18 @@ db.get_rows()
 ```
 
 ## PARAMETERS
-Here are all the arguments to fill in before running the script.
+#### ASTROPHOTOGRAPHY
+|ID|Image|Subject|Description|Author|Camera|Focal length|Mount|Aperture|ISO|NB lights|Exposure time|Total time|Place|Sky darkness|Moon Illumination|Processed with|Brut|Versions|Date|Comment|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|0|-|M31|some test|me|Canon70D|135mm|SA2i|2.8|1600|50|120|-|here|2|35%|Siril/Photoshop|-|-|24/12/23|bla bla bla|
 
-|         Parameter           |   Type    |                                      Description                                     |
-|:---------------------------:|:---------:|--------------------------------------------------------------------------------------|
-|                             |           |                                                                                      |
+#### OUTDOOR
+|ID|Image|Subject|Description|Author|Camera|Focal length|Aperture|ISO|Exposure time|Place|Processed with|Brut|Versions|Date|Comment|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|0|-|tiger|some test|me|Canon70D|135mm|2.8|1600|1/1200|here|Photoshop|-|-|24/12/23|bla bla bla|
+
+#### STUDIO
+|ID|Image|Subject|Type|Description|Author|Camera|Focal length|Aperture|ISO|Exposure time|Lighting|Place|Processed with|Brut|Versions|Date|Comment|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|0|-|Manon S.|Portrait|some test|me|Canon70D|135mm|2.8|1600|1/1200|-|here|Photoshop|-|-|24/12/23|bla bla bla|
+
