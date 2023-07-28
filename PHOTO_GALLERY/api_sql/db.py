@@ -21,7 +21,7 @@ class Database(object):
     
     self.create_table(envs.FILE_TABLE_NAME)
   
-  def connect(self, user, password):
+  def connect(self, user:str, password:str):
     return mysql.connector.connect(
       host = "localhost",
       user = user,
@@ -29,19 +29,19 @@ class Database(object):
       database = envs.DB_NAME
     )
 
-  def _exists(self, file_table_name=None):
+  def _exists(self, file_table_name:str=None) ->bool:
     self._cursor.execute("SHOW DATABASES")
     for x in self._cursor:
       if x[0] == file_table_name:
         return True
       
-  def _table_exists(self, table=None):
+  def _table_exists(self, table:str=None) ->bool:
     self._cursor.execute("SHOW TABLES")
     for x in self._cursor:
       if x[0] == table:
         return True
       
-  def _row_exists(self, row_id):
+  def _row_exists(self, row_id:int) ->bool:
     for file in self.get_rows():
       if file[0] == str(row_id):
         return True
