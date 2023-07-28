@@ -49,10 +49,8 @@ class Database(object):
   def create(self):
     if not self._exists(envs.DB_NAME):
       self._cursor.execute(f"CREATE DATABASE {envs.DB_NAME}")
-    else:
-      print(f"{envs.DB_NAME} already exists.")
 
-  def create_table(self, file_table_name):
+  def create_table(self, file_table_name:str):
     if not self._table_exists(file_table_name):
       data = f"( \
         id VARCHAR(20), \
@@ -63,9 +61,6 @@ class Database(object):
         )"
 
       self._cursor.execute(f"CREATE TABLE {file_table_name} {data}")
-      print("table created")
-    else:
-      print(f"{file_table_name} already exists.")
 
   def delete_table(self, table:str):
     request = f"DROP TABLE {table}"
@@ -117,7 +112,7 @@ class Database(object):
     self._server.commit()
   
   # fileTable
-  def remove_file(self, id, path):
+  def remove_file(self, id:int, path:str):
     request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE id = '{str(id)}'"
     self._cursor.execute(request)
     self._server.commit()
