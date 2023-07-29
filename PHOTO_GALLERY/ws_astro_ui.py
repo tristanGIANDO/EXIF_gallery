@@ -56,11 +56,22 @@ class AstroWorkspaceTree(WorkspaceTree):
     def add_tree_item(self, file_row):
         item = AstroFileItem(file_row)
         thumbnail = ImageViewWidget(file_row[2])
+        focal_box = QtWidgets.QSpinBox()
 
         self.addTopLevelItem(item)
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
         self.setItemWidget(item, HEADERS.index(I_IMAGE), thumbnail)
+        self.setItemWidget(item, HEADERS.index(I_FOCAL), focal_box)
 
     def get_column_index(self, item, column):
         if column == HEADERS.index(I_SUBJECT):
             return HEADERS.index(I_SUBJECT)
+        
+    def update_item(self, server, item, column):
+        db_column = None
+        if column == HEADERS.index(I_SUBJECT):
+            db_column = "name"
+        elif column == HEADERS.index(I_AUTHOR):
+            db_column = "author"
+        
+        server.update(db_column, item.text(0), item.text(column))

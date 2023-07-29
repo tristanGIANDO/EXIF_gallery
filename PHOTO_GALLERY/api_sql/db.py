@@ -107,9 +107,12 @@ class Database(object):
   
   # fileTable
   def update(self, column:str, id:str, new_value:str):
-    sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE (id = '{str(id)}')"
-    self._cursor.execute(sql)
-    self._server.commit()
+    try:
+      sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE (id = '{str(id)}')"
+      self._cursor.execute(sql)
+      self._server.commit()
+    except:
+      pass
   
   # fileTable
   def remove_file(self, id:int, path:str):

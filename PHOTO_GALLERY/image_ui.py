@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets,QtCore, QtGui
 class ImageViewWidget(QtWidgets.QLabel):
     def __init__(self, image_path, *args, **kwargs):
         super(ImageViewWidget, self).__init__(*args, **kwargs)
-        size = (300,200)
+        size = (150,100)
         self.setFixedSize(size[0], size[1])
         self.setAlignment(QtCore.Qt.AlignCenter)
 

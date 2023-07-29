@@ -90,16 +90,8 @@ class MainUI( QtWidgets.QMainWindow):
         self._db.remove_file(item.text(0),
                              item.text(1))
 
-    def on_save_btn_clicked(self):
-        self.save()
-
     def on_item_changed(self, item, column):
-        index = self.tree.get_column_index(item, column)
-
-        id = item.text(0)
-
-        if index == 3:
-            self._db.update("name", id, item.text(column))
+        self.tree.update_item(self._db, item, column)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
