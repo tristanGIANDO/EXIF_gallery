@@ -65,6 +65,7 @@ class MainUI( QtWidgets.QMainWindow):
     def create_layouts(self):
         # toolbar
         self.toolbar = QtWidgets.QToolBar(self)
+        self.toolbar.setIconSize(QtCore.QSize(30,30))
         self.addToolBar(self.toolbar)
 
         self.add_files_action = QtWidgets.QAction(
@@ -79,11 +80,11 @@ class MainUI( QtWidgets.QMainWindow):
             self)
         self.toolbar.addAction(self.remove_files_action)
 
-        self.reload_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["reload"]),
-            "Reload", 
-            self)
-        self.toolbar.addAction(self.reload_action)
+        # self.reload_action = QtWidgets.QAction(
+        #     QtGui.QIcon(envs.ICONS["reload"]),
+        #     "Reload", 
+        #     self)
+        # self.toolbar.addAction(self.reload_action)
 
         # main layout
         layout = QtWidgets.QVBoxLayout()
@@ -114,6 +115,8 @@ class MainUI( QtWidgets.QMainWindow):
 
     def remove_tree_item(self):
         selected_items = self.tree.selectedItems()
+        if not selected_items:
+            return
         for item in selected_items:
             parent = item.parent()
             if parent is None:
@@ -155,6 +158,8 @@ class MainUI( QtWidgets.QMainWindow):
 
     def on_remove_files_clicked(self):
         item = self.remove_tree_item()
+        if not item:
+            return
         self._db.remove_file(item.text(HEADERS.index(I_ID)),
                              item.text(HEADERS.index(I_PATH)))
 
