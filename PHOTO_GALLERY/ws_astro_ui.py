@@ -86,7 +86,11 @@ class AstroWorkspaceTree(WorkspaceTree):
     def update_item(self, server, item, column):
         db_column = None
         if column == HEADERS.index(I_SUBJECT):
-            db_column = "name"
+            db_column = "subject"
+        elif column == HEADERS.index(I_DESC):
+            db_column = "description"
+        elif column == HEADERS.index(I_CAMERA):
+            db_column = "camera"
         elif column == HEADERS.index(I_AUTHOR):
             db_column = "author"
         
