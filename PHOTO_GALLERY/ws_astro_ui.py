@@ -48,20 +48,20 @@ class AstroWorkspaceTree(WorkspaceTree):
         self.setHeaderLabels(HEADERS)
 
         for header in HEADERS:
-            if HEADERS.index(header) == HEADERS.index(I_SUBJECT):
-                continue
             self.header().setSectionResizeMode(HEADERS.index(header),
                                     QtWidgets.QHeaderView.ResizeToContents)
+            
+        self.header().setSectionHidden(1, True) # Path
 
     def add_tree_item(self, file_row):
         item = AstroFileItem(file_row)
         thumbnail = ImageViewWidget(file_row[2])
-        focal_box = QtWidgets.QSpinBox()
+        # focal_box = QtWidgets.QSpinBox()
 
         self.addTopLevelItem(item)
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
         self.setItemWidget(item, HEADERS.index(I_IMAGE), thumbnail)
-        self.setItemWidget(item, HEADERS.index(I_FOCAL), focal_box)
+        # self.setItemWidget(item, HEADERS.index(I_FOCAL), focal_box)
 
     def get_column_index(self, item, column):
         if column == HEADERS.index(I_SUBJECT):

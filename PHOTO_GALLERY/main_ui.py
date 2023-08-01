@@ -4,7 +4,7 @@ import __infos__, envs
 
 from api_sql.db import Database
 from api.exif_file import ExifFile
-from ws_astro_ui import AstroWorkspaceTree, AstroFileItem
+from ws_astro_ui import AstroWorkspaceTree
    
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
