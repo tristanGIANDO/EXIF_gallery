@@ -8,24 +8,26 @@ I_IMAGE = "Image"
 I_SUBJECT = "Subject"
 I_DESC = "Description"
 I_CAMERA = "Camera"
-I_FOCAL = "Focal Length"
+I_FOCAL = "Focal Length (mm)"
 I_MOUNT = "Mount"
 I_APERTURE = "Aperture"
 I_ISO = "ISO"
 I_LIGHTS = "NB Lights"
-I_EXPOSURE_TIME = "Exposure Time"
+I_EXPOSURE_TIME = "Exposure Time (s)"
 I_TIME = "Total Time"
-I_PLACE = "Sky Darkness"
+I_PLACE = "Place"
+I_BORTLE = "Sky Darkness"
 I_MOON = "Moon Illumination"
 I_PROCESS = "Processed with"
 I_AUTHOR = "Author"
 I_COMMENT = "Comment"
+I_DATE = "Date"
 
 HEADERS = [I_ID, I_PATH, I_IMAGE, I_SUBJECT, I_DESC,
            I_CAMERA, I_FOCAL, I_MOUNT, I_APERTURE,
            I_ISO, I_LIGHTS, I_EXPOSURE_TIME, 
-           I_TIME, I_PLACE, I_MOON, 
-           I_PROCESS, I_AUTHOR, I_COMMENT]
+           I_TIME, I_PLACE, I_BORTLE, I_MOON, 
+           I_PROCESS, I_AUTHOR, I_COMMENT, I_DATE]
 NB_SECTIONS = len(HEADERS)
 
 class AstroFileItem(QtWidgets.QTreeWidgetItem):
@@ -33,12 +35,26 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
 
         super(AstroFileItem, self).__init__(*args, **kwargs)
 
-        if data:
+        if data and len(data) == 19:
             self.setText(HEADERS.index(I_ID), str(data[0]))
-            self.setText(HEADERS.index(I_SUBJECT), data[1])
-            self.setText(HEADERS.index(I_PATH), data[2])
-            self.setText(HEADERS.index(I_AUTHOR), data[3])
-            self.setText(HEADERS.index(I_COMMENT), data[4])
+            self.setText(HEADERS.index(I_PATH), data[1])
+            self.setText(HEADERS.index(I_SUBJECT), data[2])
+            self.setText(HEADERS.index(I_DESC), data[3])
+            self.setText(HEADERS.index(I_CAMERA), data[4])
+            self.setText(HEADERS.index(I_MOUNT), data[5])
+            self.setText(HEADERS.index(I_FOCAL), str(data[6]))
+            self.setText(HEADERS.index(I_APERTURE), "f/" + str(data[7]))
+            self.setText(HEADERS.index(I_ISO), str(data[8]))
+            self.setText(HEADERS.index(I_LIGHTS), str(data[9]))
+            self.setText(HEADERS.index(I_EXPOSURE_TIME), str(data[10]))
+            self.setText(HEADERS.index(I_TIME), str(data[11]))
+            self.setText(HEADERS.index(I_PLACE), data[12])
+            self.setText(HEADERS.index(I_BORTLE), str(data[13]))
+            self.setText(HEADERS.index(I_MOON), str(data[14]) + "%")
+            self.setText(HEADERS.index(I_PROCESS), data[15])
+            self.setText(HEADERS.index(I_AUTHOR), data[16])
+            self.setText(HEADERS.index(I_COMMENT), data[17])
+            self.setText(HEADERS.index(I_DATE), data[18])
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self):
@@ -55,7 +71,7 @@ class AstroWorkspaceTree(WorkspaceTree):
 
     def add_tree_item(self, file_row):
         item = AstroFileItem(file_row)
-        thumbnail = ImageViewWidget(file_row[2])
+        thumbnail = ImageViewWidget(file_row[1])
         # focal_box = QtWidgets.QSpinBox()
 
         self.addTopLevelItem(item)

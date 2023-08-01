@@ -72,11 +72,26 @@ class MainUI( QtWidgets.QMainWindow):
 
     def create_file(self, path):
         exif_file = ExifFile(path)
-        data = {"name" : exif_file.get_name(),
+        data = {"id" : exif_file.get_id(),
+                "subject" : exif_file.get_name(),
                 "path" : exif_file.get_path(),
+                "description" : "description",
+                "camera" : "Canon 70D",
+                "mount" : "Star Adventurer 2i",
+                "focal" : 300,
+                "aperture" : 2.8,
+                "iso" : 3200,
+                "lights" : 50,
+                "exposure" : 120,
+                "time" : 0,
+                "place" : "145, passage de Montpellier",
+                "bortle" : 4,
+                "moon" : 12,
+                "process" : "Photoshop",
                 "author" : exif_file.get_author(),
                 "comment" : exif_file.get_comment(),
-                "id" : exif_file.get_id()
+                "date" : "24-08-2023"
+                
         }
         self._db.add(data)
 

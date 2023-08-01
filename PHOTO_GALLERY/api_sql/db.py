@@ -53,14 +53,29 @@ class Database(object):
   def create_table(self, file_table_name:str):
     if not self._table_exists(file_table_name):
       data = f"( \
-        id VARCHAR(20), \
-        {envs.NAME} VARCHAR(45), \
-        {envs.PATH} VARCHAR(255), \
-        {envs.AUTHOR} VARCHAR(45), \
-        {envs.COMMENT} VARCHAR(255) \
+        {envs.ID} VARCHAR(20),\
+        {envs.PATH} VARCHAR(250),\
+        {envs.SUBJECT} VARCHAR(20),\
+        {envs.DESC} VARCHAR(100),\
+        {envs.CAMERA} VARCHAR(20),\
+        {envs.MOUNT} VARCHAR(30),\
+        {envs.FOCAL} INT(4),\
+        {envs.APERTURE} VARCHAR(3),\
+        {envs.ISO} INT(5),\
+        {envs.LIGHTS} INT(5),\
+        {envs.EXPOSURE_TIME} INT(3),\
+        {envs.TIME} VARCHAR(5),\
+        {envs.PLACE} VARCHAR(50),\
+        {envs.BORTLE} INT(1),\
+        {envs.MOON} INT(2),\
+        {envs.PROCESS} VARCHAR(20),\
+        {envs.AUTHOR} VARCHAR(25),\
+        {envs.COMMENT} VARCHAR(255),\
+        {envs.DATE} VARCHAR(10)\
         )"
 
-      self._cursor.execute(f"CREATE TABLE {file_table_name} {data}")
+      request = f"CREATE TABLE {file_table_name} {data}"
+      self._cursor.execute(request)
 
   def delete_table(self, table:str):
     request = f"DROP TABLE {table}"
@@ -68,15 +83,13 @@ class Database(object):
 
   # fileTable
   def add(self, data:dict):
-    id = data.get("id")
+    id = data.get(envs.ID)
     if self._row_exists(id):
       return
-    # print(data)
     # id
     values = (id,)
-    # name
-    values += (data.get(envs.NAME, None),)
-    # path
+
+    # copy path
     path = data.get(envs.PATH)
     if os.path.isfile(path):
       if not os.path.isdir(envs.ROOT):
@@ -84,12 +97,49 @@ class Database(object):
       new_path = os.path.join(envs.ROOT, f"{id}{os.path.splitext(path)[-1]}")
       shutil.copy(path, new_path)
       values += (new_path,)
-    # author
-    values += (data.get(envs.AUTHOR, None),)
-    # comment
-    values += (data.get(envs.COMMENT, None),)
 
-    request = f"INSERT INTO {envs.FILE_TABLE_NAME} (id,name,path,author,comment) VALUES (%s,%s,%s,%s,%s)"
+    # subject
+    values += (data.get(envs.SUBJECT, "None"),)
+    # description
+    values += (data.get(envs.DESC, "None"),)
+    # camera
+    values += (data.get(envs.CAMERA, "None"),)
+    # mount
+    values += (data.get(envs.MOUNT, "None"),)
+    # focal
+    values += (int(data.get(envs.FOCAL, 0)),)
+    # aperture
+    values += (float(data.get(envs.APERTURE, 0.0)),)
+    # iso
+    values += (int(data.get(envs.ISO, 0)),)
+    # lights
+    values += (int(data.get(envs.LIGHTS, 0)),)
+    # exposure time
+    values += (int(data.get(envs.EXPOSURE_TIME, 0)),)
+    # total time
+    values += (0,)
+    # place
+    values += (data.get(envs.PLACE, "None"),)
+    # bortle
+    values += (int(data.get(envs.BORTLE, 0)),)
+    # moon
+    values += (int(data.get(envs.MOON, 0)),)
+    # process
+    values += (data.get(envs.PROCESS, "None"),)
+    # author
+    values += (data.get(envs.AUTHOR, "None"),)
+    # comment
+    values += (data.get(envs.COMMENT, "None"),)
+    # date
+    values += ("None",)
+
+    request = f"INSERT INTO {envs.FILE_TABLE_NAME} \
+      ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
+      {envs.DESC},{envs.CAMERA},{envs.MOUNT},{envs.FOCAL}, \
+      {envs.APERTURE},{envs.ISO},{envs.LIGHTS},{envs.EXPOSURE_TIME}, \
+      {envs.TIME},{envs.PLACE},{envs.BORTLE},{envs.MOON}, \
+      {envs.PROCESS},{envs.AUTHOR},{envs.COMMENT},{envs.DATE} \
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
     self._cursor.execute(request, values)
     self._server.commit()
@@ -108,7 +158,7 @@ class Database(object):
   # fileTable
   def update(self, column:str, id:str, new_value:str):
     try:
-      sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE (id = '{str(id)}')"
+      sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE ({envs.ID} = '{str(id)}')"
       self._cursor.execute(sql)
       self._server.commit()
     except:
@@ -116,7 +166,7 @@ class Database(object):
   
   # fileTable
   def remove_file(self, id:int, path:str):
-    request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE id = '{str(id)}'"
+    request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
     self._cursor.execute(request)
     self._server.commit()
 
@@ -125,7 +175,5 @@ class Database(object):
 if __name__ == "__main__":
   import envs
   db = Database()
-  # db.delete_table(envs.FILE_TABLE_NAME)
-  # db.add(["230521_IMG_7996_02", "C:/Users/giand/OneDrive/Images/@PORTFOLIO/230521_IMG_7996_02.jpg"])
   db.update("name", 7599824371229639, "nouveau nom")
   print(db.get_rows())
