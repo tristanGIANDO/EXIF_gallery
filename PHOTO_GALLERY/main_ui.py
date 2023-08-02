@@ -85,22 +85,22 @@ class MainUI( QtWidgets.QMainWindow):
         data = {"id" : exif_file.get_id(),
                 "subject" : exif_file.get_name(),
                 "path" : exif_file.get_path(),
-                "description" : "description",
-                "camera" : "Canon 70D",
-                "mount" : "Star Adventurer 2i",
-                "focal" : 300,
+                "description" : exif_file.get_description(),
+                "camera" : exif_file.get_camera(),
+                "mount" : "",
+                "focal" : 0,
                 "aperture" : 2.8,
-                "iso" : 3200,
+                "iso" : exif_file.get_iso(),
                 "lights" : 50,
                 "exposure" : 120,
                 "time" : 0,
-                "place" : "145, passage de Montpellier",
-                "bortle" : 4,
-                "moon" : 12,
-                "process" : "Photoshop",
+                "place" : "",
+                "bortle" : 0,
+                "moon" : 0,
+                "process" : "",
                 "author" : exif_file.get_author(),
                 "comment" : exif_file.get_comment(),
-                "date" : "24-08-2023"
+                "date" : exif_file.get_date()
                 
         }
         self._db.add(data)

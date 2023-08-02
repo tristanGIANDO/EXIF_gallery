@@ -67,3 +67,16 @@ class ExifFile(object):
     
     def get_image(self):
         return self._data.get(envs.IMAGE, "")
+    
+    def get_description(self):
+        return self._data.get(envs.DESCRIPTION,"")
+    
+    def get_camera(self):
+        return f"{self._data.get(envs.MAKE)} {self._data.get(envs.MODEL)}"
+    
+    def get_iso(self):
+        return self._data.get(envs.ISO, 0)
+    
+    def get_date(self):
+        return self._data.get(envs.DATE, 0)
+    
