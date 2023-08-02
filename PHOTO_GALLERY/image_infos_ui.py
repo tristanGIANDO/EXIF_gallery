@@ -6,14 +6,14 @@ from PyQt5.QtCore import Qt
 from api.exif_file import ExifFile
 import envs
 
-class ImageInfosUI(QtWidgets.QDialog):
+class ImageInfosUI(QtWidgets.QWidget):
     def __init__(self, path):
         super().__init__()
         self._path = path
         self._exif = ExifFile(path)
 
-        self.setWindowTitle("Image Data")
-        self.resize(700, 900)
+        self.setWindowTitle("Image Details")
+        self.resize(1000, 600)
 
         self.create_widgets()
         self.create_layouts()
@@ -23,31 +23,25 @@ class ImageInfosUI(QtWidgets.QDialog):
         # Image
         self.image_lbl = QtWidgets.QLabel()
         pixmap = QPixmap(self._path)
-        pixmap = pixmap.scaled(690, 500, Qt.KeepAspectRatio)
+        pixmap = pixmap.scaled(700, 500, Qt.KeepAspectRatio)
         self.image_lbl.setPixmap(pixmap)
 
-        # Title
-        self.title_le = QtWidgets.QLineEdit()
-        title_font = QFont("Arial", 18, QFont.Bold)  # Set font size to 18 and make it bold
-        self.title_le.setFont(title_font)
-        self.title_le.setAlignment(Qt.AlignCenter)
-
-        # Description
-        self.description_le = QtWidgets.QTextEdit("Description")
-
         # in the grids
-        self.date_le = QtWidgets.QLineEdit()
+        self.subject_le = QtWidgets.QLineEdit()
+        self.description_le = QtWidgets.QTextEdit()
+        self.date_le = QtWidgets.QDateEdit()
         self.location_le = QtWidgets.QLineEdit()
-        self.lights_le = QtWidgets.QLineEdit()
-        self.exposure_le = QtWidgets.QLineEdit()
-        self.focal_le = QtWidgets.QLineEdit()
-        self.iso_le = QtWidgets.QLineEdit()
-        self.aperture_le = QtWidgets.QLineEdit()
+        self.lights_le = QtWidgets.QSpinBox()
+        self.exposure_le = QtWidgets.QSpinBox()
+        self.focal_le = QtWidgets.QSpinBox()
+        self.iso_le = QtWidgets.QSpinBox()
+        self.aperture_le = QtWidgets.QDoubleSpinBox()
         self.camera_le = QtWidgets.QLineEdit()
         
         self.mount_le = QtWidgets.QLineEdit()
         self.process_le = QtWidgets.QLineEdit()
         self.author_le = QtWidgets.QLineEdit()
+        self.comment_le = QtWidgets.QTextEdit()
 
         # Button
         self.ok_btn = QtWidgets.QPushButton("Add image")
@@ -55,13 +49,15 @@ class ImageInfosUI(QtWidgets.QDialog):
         
     def create_layouts(self):
         # Main layout
-        main_layout = QtWidgets.QVBoxLayout(self)
+        main_layout = QtWidgets.QHBoxLayout(self)
+        v_layout = QtWidgets.QVBoxLayout()
 
         main_layout.addWidget(self.image_lbl, alignment=Qt.AlignCenter)
-        main_layout.addWidget(self.title_le, alignment=Qt.AlignCenter)
-        main_layout.addWidget(self.description_le, alignment=Qt.AlignCenter)
+        main_layout.addLayout(v_layout)
         
         # Labels
+        subject_lbl = QtWidgets.QLabel(envs.G_SUBJECT)
+        desc_lbl = QtWidgets.QLabel(envs.G_DESC)
         # acquisition
         date_lbl = QtWidgets.QLabel(envs.G_DATE)
         location_lbl = QtWidgets.QLabel(envs.G_LOCATION)
@@ -76,13 +72,27 @@ class ImageInfosUI(QtWidgets.QDialog):
         # 
         author_lbl = QtWidgets.QLabel(envs.G_AUTHOR)
         process_lbl = QtWidgets.QLabel(envs.G_PROCESS)
+        comment_lbl = QtWidgets.QLabel(envs.G_COMMENT)
         
         font_bold = QFont("Arial", 8, QFont.Bold)
-        for column_lbl in [date_lbl, location_lbl, lights_lbl,
+        for column_lbl in [subject_lbl, desc_lbl, date_lbl, location_lbl, lights_lbl,
                            exposure_lbl, iso_lbl, aperture_lbl,
                            focal_lbl, mount_lbl, author_lbl, camera_lbl,
-                           process_lbl]:
+                           process_lbl, comment_lbl]:
                 column_lbl.setFont(font_bold)
+
+        # global grid
+        global_gb = QtWidgets.QGroupBox()
+        grid_layout = QtWidgets.QGridLayout(global_gb)
+        
+        pos = 0
+        for label, wdg in zip([subject_lbl, desc_lbl],
+                              [self.subject_le, self.description_le]):
+            grid_layout.addWidget(label, pos, 0)
+            grid_layout.addWidget(wdg, pos, 1)
+            pos += 1
+ 
+        v_layout.addWidget(global_gb)
 
         # Acquisition grid
         acquisition_gb = QtWidgets.QGroupBox("Acquisition Details")
@@ -97,7 +107,7 @@ class ImageInfosUI(QtWidgets.QDialog):
             grid_layout.addWidget(wdg, pos, 1)
             pos += 1
  
-        main_layout.addWidget(acquisition_gb)
+        v_layout.addWidget(acquisition_gb)
 
         # Equipment grid
         equipment_gb = QtWidgets.QGroupBox("Equipment Details")
@@ -110,22 +120,30 @@ class ImageInfosUI(QtWidgets.QDialog):
             grid_layout.addWidget(wdg, pos, 1)
             pos += 1
  
-        main_layout.addWidget(equipment_gb)
+        v_layout.addWidget(equipment_gb)
 
-        # Comment Textfield
-        main_layout.addWidget(QtWidgets.QLabel("Comment"))
-        self.comment_le = QtWidgets.QLineEdit()
-        main_layout.addWidget(self.comment_le)
+        # more grid
+        more_gb = QtWidgets.QGroupBox("More info")
+        grid_layout = QtWidgets.QGridLayout(more_gb)
+        
+        pos = 0
+        for label, wdg in zip([author_lbl, process_lbl, comment_lbl],
+                              [self.author_le, self.process_le, self.comment_le]):
+            grid_layout.addWidget(label, pos, 0)
+            grid_layout.addWidget(wdg, pos, 1)
+            pos += 1
+ 
+        v_layout.addWidget(more_gb)
 
         # Buttons
         h_layout = QtWidgets.QHBoxLayout()
         h_layout.addWidget(self.ok_btn)
         h_layout.addWidget(self.cancel_btn)
         h_layout.addStretch(1)
-        main_layout.addLayout(h_layout)
+        v_layout.addLayout(h_layout)
  
     def set_default_values(self):
-        self.title_le.setText(self._exif.get_name())
+        self.subject_le.setText(self._exif.get_name())
         self.description_le.setText(self._exif.get_description())
         self.author_le.setText(self._exif.get_author())
         self.camera_le.setText(self._exif.get_camera())
