@@ -4,6 +4,7 @@ from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 from api.exif_file import ExifFile
+import envs
 
 class ImageInfosUI(QtWidgets.QDialog):
     def __init__(self, path):
@@ -12,6 +13,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         self._exif = ExifFile(path)
 
         self.setWindowTitle("Image Data")
+        self.resize(700, 900)
 
         self.create_widgets()
         self.create_layouts()
@@ -33,53 +35,82 @@ class ImageInfosUI(QtWidgets.QDialog):
         # Description
         self.description_le = QtWidgets.QTextEdit("Description")
 
+        # in the grids
+        self.date_le = QtWidgets.QLineEdit()
+        self.location_le = QtWidgets.QLineEdit()
+        self.lights_le = QtWidgets.QLineEdit()
+        self.exposure_le = QtWidgets.QLineEdit()
+        self.focal_le = QtWidgets.QLineEdit()
+        self.iso_le = QtWidgets.QLineEdit()
+        self.aperture_le = QtWidgets.QLineEdit()
+        self.camera_le = QtWidgets.QLineEdit()
+        
+        self.mount_le = QtWidgets.QLineEdit()
+        self.process_le = QtWidgets.QLineEdit()
+        self.author_le = QtWidgets.QLineEdit()
+
         # Button
         self.ok_btn = QtWidgets.QPushButton("Add image")
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
         
     def create_layouts(self):
         # Main layout
-        main_layout = QtWidgets.QVBoxLayout()
+        main_layout = QtWidgets.QVBoxLayout(self)
 
         main_layout.addWidget(self.image_lbl, alignment=Qt.AlignCenter)
         main_layout.addWidget(self.title_le, alignment=Qt.AlignCenter)
         main_layout.addWidget(self.description_le, alignment=Qt.AlignCenter)
         
-        # EQUIPMENT GroupBox
-        equipment_gb = QtWidgets.QGroupBox("Acquisition Details")
+        # Labels
+        # acquisition
+        date_lbl = QtWidgets.QLabel(envs.G_DATE)
+        location_lbl = QtWidgets.QLabel(envs.G_LOCATION)
+        lights_lbl = QtWidgets.QLabel(envs.A_LIGHTS)
+        exposure_lbl = QtWidgets.QLabel(envs.G_EXPOSURE_TIME)
+        iso_lbl = QtWidgets.QLabel(envs.G_ISO)
+        aperture_lbl = QtWidgets.QLabel(envs.G_APERTURE)
+        # equipment
+        camera_lbl = QtWidgets.QLabel(envs.G_CAMERA)
+        focal_lbl = QtWidgets.QLabel(envs.G_FOCAL)
+        mount_lbl = QtWidgets.QLabel(envs.A_MOUNT)
+        # 
+        author_lbl = QtWidgets.QLabel(envs.G_AUTHOR)
+        process_lbl = QtWidgets.QLabel(envs.G_PROCESS)
+        
+        font_bold = QFont("Arial", 8, QFont.Bold)
+        for column_lbl in [date_lbl, location_lbl, lights_lbl,
+                           exposure_lbl, iso_lbl, aperture_lbl,
+                           focal_lbl, mount_lbl, author_lbl, camera_lbl,
+                           process_lbl]:
+                column_lbl.setFont(font_bold)
+
+        # Acquisition grid
+        acquisition_gb = QtWidgets.QGroupBox("Acquisition Details")
+        grid_layout = QtWidgets.QGridLayout(acquisition_gb)
+        
+        pos = 0
+        for label, wdg in zip([date_lbl, location_lbl, lights_lbl,
+                               exposure_lbl, iso_lbl, aperture_lbl],
+                              [self.date_le, self.location_le, self.lights_le,
+                               self.exposure_le, self.iso_le, self.aperture_le]):
+            grid_layout.addWidget(label, pos, 0)
+            grid_layout.addWidget(wdg, pos, 1)
+            pos += 1
+ 
+        main_layout.addWidget(acquisition_gb)
+
+        # Equipment grid
+        equipment_gb = QtWidgets.QGroupBox("Equipment Details")
         grid_layout = QtWidgets.QGridLayout(equipment_gb)
         
-        author_lbl = QtWidgets.QLabel("Author")
-        camera_lbl = QtWidgets.QLabel("Camera")
-        lens_lbl = QtWidgets.QLabel("Lens")
-        font_bold = QFont("Arial", 8, QFont.Bold)
-        for column_lbl in [author_lbl, camera_lbl, lens_lbl]:
-                column_lbl.setFont(font_bold)
-
-        self.author_le = QtWidgets.QLineEdit()
-        self.camera_le = QtWidgets.QLineEdit()
-
-        grid_layout.addWidget(author_lbl, 0, 0)
-        grid_layout.addWidget(camera_lbl, 1, 0)
-        grid_layout.addWidget(lens_lbl, 2, 0)
-        grid_layout.addWidget(self.author_le, 0, 1)
-        grid_layout.addWidget(self.camera_le, 1, 1)
+        pos = 0
+        for label, wdg in zip([camera_lbl, focal_lbl, mount_lbl],
+                              [self.camera_le, self.focal_le, self.mount_le]):
+            grid_layout.addWidget(label, pos, 0)
+            grid_layout.addWidget(wdg, pos, 1)
+            pos += 1
+ 
         main_layout.addWidget(equipment_gb)
-
-        # ASTRO GroupBox
-        astro_gb = QtWidgets.QGroupBox("Sky & Moon")
-        astro_grid_layout = QtWidgets.QGridLayout(astro_gb)
-        
-        moon_lbl = QtWidgets.QLabel("Moon Illumination")
-        font_bold = QFont("Arial", 8, QFont.Bold)
-        for column_lbl in [moon_lbl]:
-                column_lbl.setFont(font_bold)
-
-        self.moon_le = QtWidgets.QLineEdit()
-
-        astro_grid_layout.addWidget(moon_lbl, 0, 0)
-        astro_grid_layout.addWidget(self.moon_le, 0, 1)
-        main_layout.addWidget(astro_gb)
 
         # Comment Textfield
         main_layout.addWidget(QtWidgets.QLabel("Comment"))
@@ -92,10 +123,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         h_layout.addWidget(self.cancel_btn)
         h_layout.addStretch(1)
         main_layout.addLayout(h_layout)
-        
-
-        self.setLayout(main_layout)
-
+ 
     def set_default_values(self):
         self.title_le.setText(self._exif.get_name())
         self.description_le.setText(self._exif.get_description())
