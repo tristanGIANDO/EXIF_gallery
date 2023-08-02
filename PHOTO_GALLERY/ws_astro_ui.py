@@ -91,7 +91,31 @@ class AstroWorkspaceTree(WorkspaceTree):
             db_column = "description"
         elif column == HEADERS.index(I_CAMERA):
             db_column = "camera"
+        elif column == HEADERS.index(I_MOUNT):
+            db_column = "mount"
+        elif column == HEADERS.index(I_FOCAL):
+            db_column = "focal"
+        elif column == HEADERS.index(I_APERTURE):
+            db_column = "aperture"
+        elif column == HEADERS.index(I_ISO):
+            db_column = "iso"
+        elif column == HEADERS.index(I_LIGHTS):
+            db_column = "lights"
+        elif column == HEADERS.index(I_EXPOSURE_TIME):
+            db_column = "exposure"
+        elif column == HEADERS.index(I_PLACE):
+            db_column = "place"
+        elif column == HEADERS.index(I_BORTLE):
+            db_column = "bortle"
+        elif column == HEADERS.index(I_MOON):
+            db_column = "moon"
+        elif column == HEADERS.index(I_PROCESS):
+            db_column = "processed"
         elif column == HEADERS.index(I_AUTHOR):
             db_column = "author"
+        elif column == HEADERS.index(I_COMMENT):
+            db_column = "comment"
+        elif column == HEADERS.index(I_DATE):
+            db_column = "date"
         
         server.update(db_column, item.text(0), item.text(column))

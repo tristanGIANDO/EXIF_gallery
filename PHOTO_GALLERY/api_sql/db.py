@@ -53,17 +53,17 @@ class Database(object):
   def create_table(self, file_table_name:str):
     if not self._table_exists(file_table_name):
       data = f"( \
-        {envs.ID} VARCHAR(20),\
+        {envs.ID} VARCHAR(30),\
         {envs.PATH} VARCHAR(250),\
-        {envs.SUBJECT} VARCHAR(20),\
+        {envs.SUBJECT} VARCHAR(45),\
         {envs.DESC} VARCHAR(100),\
-        {envs.CAMERA} VARCHAR(20),\
-        {envs.MOUNT} VARCHAR(30),\
+        {envs.CAMERA} VARCHAR(45),\
+        {envs.MOUNT} VARCHAR(45),\
         {envs.FOCAL} INT(4),\
         {envs.APERTURE} VARCHAR(3),\
         {envs.ISO} INT(5),\
         {envs.LIGHTS} INT(5),\
-        {envs.EXPOSURE_TIME} INT(3),\
+        {envs.EXPOSURE_TIME} INT(4),\
         {envs.TIME} VARCHAR(5),\
         {envs.PLACE} VARCHAR(50),\
         {envs.BORTLE} INT(1),\
