@@ -1,4 +1,5 @@
 import os, shutil, math, decimal, datetime
+from skyfield.api import Topos, load
 from api_sql import envs
 
 def copy_file(path:str,id:str) ->str:
@@ -34,6 +35,45 @@ def get_moon_phase(date):
       6: "Last Quarter", 
       7: "Waning Crescent"
    }[int(index) & 7]
+
+# pip install skyfield
+def get_bortle_level():
+    try:
+        latitude = float(input("48.8566"))
+        longitude = float(input("2.3522"))
+
+        ts = load.timescale()
+        planete = load('de421.bsp')
+        lieu = Topos(latitude_degrees=latitude, longitude_degrees=longitude)
+
+        t = ts.now()
+        astres = planete['hip']
+        astres_at_lieu = astres.at(t).observe(lieu)
+        apparent = astres_at_lieu.apparent()
+        magnitude_limite = apparent.mag
+
+        if magnitude_limite <= 2.0:
+                return 1
+        elif magnitude_limite <= 4.0:
+            return 2
+        elif magnitude_limite <= 4.5:
+            return 3
+        elif magnitude_limite <= 5.0:
+            return 4
+        elif magnitude_limite <= 5.5:
+            return 5
+        elif magnitude_limite <= 6.0:
+            return 6
+        elif magnitude_limite <= 7.0:
+            return 7
+        elif magnitude_limite <= 8.0:
+            return 8
+        elif magnitude_limite <= 9.0:
+            return 9
+        else:
+            return 10
+    except ValueError:
+        print("Coordonnées invalides. Assurez-vous d'entrer des valeurs numériques valides pour la latitude et la longitude.")
 
 if __name__=="__main__":
    date = datetime.datetime(2030, 2, 1)
