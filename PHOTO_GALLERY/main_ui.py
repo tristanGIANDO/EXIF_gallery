@@ -3,8 +3,8 @@ from PyQt5 import QtWidgets,QtCore, QtGui
 import __infos__, envs
 
 from api_sql.db import Database
-from api.exif_file import ExifFile
 from ws_astro_ui import AstroWorkspaceTree
+from image_infos_ui import ImageInfosUI
    
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
@@ -77,33 +77,10 @@ class MainUI( QtWidgets.QMainWindow):
         file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
         if file_dialog.exec_():
             for path in file_dialog.selectedFiles():
-                self.create_file(path)
-                self._update()
-
-    def create_file(self, path):
-        exif_file = ExifFile(path)
-        data = {"id" : exif_file.get_id(),
-                "subject" : exif_file.get_name(),
-                "path" : exif_file.get_path(),
-                "description" : exif_file.get_description(),
-                "camera" : exif_file.get_camera(),
-                "mount" : "",
-                "focal" : 0,
-                "aperture" : 2.8,
-                "iso" : exif_file.get_iso(),
-                "lights" : 50,
-                "exposure" : 120,
-                "time" : 0,
-                "place" : "",
-                "bortle" : 0,
-                "moon" : 0,
-                "process" : "",
-                "author" : exif_file.get_author(),
-                "comment" : exif_file.get_comment(),
-                "date" : exif_file.get_date()
-                
-        }
-        self._db.add(data)
+                ui = ImageInfosUI(path)
+                if ui.exec_():
+                    self._db.add(ui.read())
+                    self._update()
 
     def on_add_files_clicked(self):
         self.open_file_dialog()

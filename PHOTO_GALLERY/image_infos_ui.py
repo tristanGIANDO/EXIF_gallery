@@ -3,35 +3,50 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 
+from api.exif_file import ExifFile
 
-class ImageInfosUI(QtWidgets.QWidget):
-    def __init__(self):
+class ImageInfosUI(QtWidgets.QDialog):
+    def __init__(self, path):
         super().__init__()
+        self._path = path
+        self._exif = ExifFile(path)
 
-        # Main layout
-        main_layout = QtWidgets.QVBoxLayout()
+        self.setWindowTitle("Image Data")
 
+        self.create_widgets()
+        self.create_layouts()
+        self.set_default_values()
+
+    def create_widgets(self):
         # Image
-        image_label = QtWidgets.QLabel()
-        pixmap = QPixmap(r"C:\Users\giand\OneDrive\Images\@PORTFOLIO\america_001.jpg")
-        pixmap = pixmap.scaled(690, 600, Qt.KeepAspectRatio)
-        image_label.setPixmap(pixmap)
-        main_layout.addWidget(image_label, alignment=Qt.AlignCenter)
+        self.image_lbl = QtWidgets.QLabel()
+        pixmap = QPixmap(self._path)
+        pixmap = pixmap.scaled(690, 500, Qt.KeepAspectRatio)
+        self.image_lbl.setPixmap(pixmap)
 
         # Title
-        self.title_le = QtWidgets.QLineEdit("NAME")
+        self.title_le = QtWidgets.QLineEdit()
         title_font = QFont("Arial", 18, QFont.Bold)  # Set font size to 18 and make it bold
         self.title_le.setFont(title_font)
         self.title_le.setAlignment(Qt.AlignCenter)
+
+        # Description
+        self.description_le = QtWidgets.QTextEdit("Description")
+
+        # Button
+        self.ok_btn = QtWidgets.QPushButton("Add image")
+        self.cancel_btn = QtWidgets.QPushButton("Cancel")
+        
+    def create_layouts(self):
+        # Main layout
+        main_layout = QtWidgets.QVBoxLayout()
+
+        main_layout.addWidget(self.image_lbl, alignment=Qt.AlignCenter)
         main_layout.addWidget(self.title_le, alignment=Qt.AlignCenter)
-
-        # Subtitle
-        self.description_le = QtWidgets.QLineEdit("Description")
-        self.description_le.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(self.description_le, alignment=Qt.AlignCenter)
-
+        
         # EQUIPMENT GroupBox
-        equipment_gb = QtWidgets.QGroupBox("Equipment")
+        equipment_gb = QtWidgets.QGroupBox("Acquisition Details")
         grid_layout = QtWidgets.QGridLayout(equipment_gb)
         
         author_lbl = QtWidgets.QLabel("Author")
@@ -71,15 +86,46 @@ class ImageInfosUI(QtWidgets.QWidget):
         self.comment_le = QtWidgets.QLineEdit()
         main_layout.addWidget(self.comment_le)
 
-        # Set the fixed size for the window
+        # Buttons
+        h_layout = QtWidgets.QHBoxLayout()
+        h_layout.addWidget(self.ok_btn)
+        h_layout.addWidget(self.cancel_btn)
+        h_layout.addStretch(1)
+        main_layout.addLayout(h_layout)
         
 
         self.setLayout(main_layout)
-        self.setWindowTitle("PyQt Vertical Interface Example")
 
+    def set_default_values(self):
+        self.title_le.setText(self._exif.get_name())
+        self.description_le.setText(self._exif.get_description())
+        self.author_le.setText(self._exif.get_author())
+        self.camera_le.setText(self._exif.get_camera())
+        self.comment_le.setText(self._exif.get_comment())
+
+    def read(self):
+        return {"id" : self._exif.get_id(),
+                "subject" : self.title_le.text(),
+                "path" : self._path,
+                "description" : self.description_le.text(),
+                "camera" : self.camera_le.text(),
+                "mount" : "",
+                "focal" : 0,
+                "aperture" : 2.8,
+                "iso" : self._exif.get_iso(),
+                "lights" : 50,
+                "exposure" : 120,
+                "time" : 0,
+                "place" : "",
+                "bortle" : 0,
+                "moon" : 0,
+                "process" : "",
+                "author" : self.author_le.text(),
+                "comment" : self.comment_le.text(),
+                "date" : self._exif.get_date()}
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    window = ImageInfosUI()
+    window = ImageInfosUI(r"C:\Users\giand\OneDrive\Images\@PORTFOLIO\230219_m31_04.jpg")
     window.show()
     sys.exit(app.exec_())
