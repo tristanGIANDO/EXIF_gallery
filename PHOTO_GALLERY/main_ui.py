@@ -76,11 +76,14 @@ class MainUI( QtWidgets.QMainWindow):
         file_dialog = QtWidgets.QFileDialog(self)
         file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
         if file_dialog.exec_():
-            for path in file_dialog.selectedFiles():
-                ui = ImageInfosUI(path)
-                if ui.exec_():
-                    self._db.add(ui.read())
-                    self._update()
+            path = file_dialog.selectedFiles()[0]
+
+            image_ui = ImageInfosUI(path)
+            if image_ui.exec_ == QtWidgets.QDialog.Accepted: # ask Gabriel
+                data = image_ui.read()
+        
+                self._db.add(data)
+                self._update()
 
     def on_add_files_clicked(self):
         self.open_file_dialog()

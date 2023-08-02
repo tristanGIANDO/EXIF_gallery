@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from api.exif_file import ExifFile
 import envs
 
-class ImageInfosUI(QtWidgets.QWidget):
+class ImageInfosUI(QtWidgets.QDialog):
     def __init__(self, path):
         super().__init__()
         self._path = path
@@ -28,7 +28,7 @@ class ImageInfosUI(QtWidgets.QWidget):
 
         # in the grids
         self.subject_le = QtWidgets.QLineEdit()
-        self.description_le = QtWidgets.QTextEdit()
+        self.description_le = QtWidgets.QLineEdit()
         self.date_le = QtWidgets.QDateEdit()
         self.location_le = QtWidgets.QLineEdit()
         self.lights_le = QtWidgets.QSpinBox()
@@ -41,11 +41,13 @@ class ImageInfosUI(QtWidgets.QWidget):
         self.mount_le = QtWidgets.QLineEdit()
         self.process_le = QtWidgets.QLineEdit()
         self.author_le = QtWidgets.QLineEdit()
-        self.comment_le = QtWidgets.QTextEdit()
+        self.comment_le = QtWidgets.QLineEdit()
 
         # Button
         self.ok_btn = QtWidgets.QPushButton("Add image")
+        self.ok_btn.clicked.connect(self.accept)
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
+        self.cancel_btn.clicked.connect(self.close)
         
     def create_layouts(self):
         # Main layout
@@ -151,24 +153,38 @@ class ImageInfosUI(QtWidgets.QWidget):
 
     def read(self):
         return {"id" : self._exif.get_id(),
-                "subject" : self.title_le.text(),
+                "subject" : self.subject_le.text(),
                 "path" : self._path,
                 "description" : self.description_le.text(),
                 "camera" : self.camera_le.text(),
-                "mount" : "",
-                "focal" : 0,
-                "aperture" : 2.8,
-                "iso" : self._exif.get_iso(),
-                "lights" : 50,
-                "exposure" : 120,
-                "time" : 0,
-                "place" : "",
+                "mount" : self.mount_le.text(),
+                "focal" : int(self.focal_le.text()),
+                "aperture" : float(input(self.aperture_le.text())),
+                "iso" : int(self.iso_le.text()),
+                "lights" : int(self.lights_le.text()),
+                "exposure" : int(self.exposure_le.text()),
+                "place" : self.location_le.text(),
                 "bortle" : 0,
                 "moon" : 0,
-                "process" : "",
+                "process" : self.process_le.text(),
                 "author" : self.author_le.text(),
                 "comment" : self.comment_le.text(),
-                "date" : self._exif.get_date()}
+                "date" : self.date_le.text()}
+    
+def show():
+    try:
+        app = QtWidgets.QApplication(sys.argv)
+    except:
+        try:
+            ui.close()
+        except:
+            pass
+    ui = ImageInfosUI()
+    ui.show()
+    try:
+        sys.exit(app.exec_())
+    except:
+        pass
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
