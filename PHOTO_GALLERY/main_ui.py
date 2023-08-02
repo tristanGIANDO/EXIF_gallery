@@ -15,6 +15,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.resize(1200, 700)
 
         self.create_widgets()
+        self.create_actions()
         self.create_layouts()
         self.create_connections()
 
@@ -25,23 +26,31 @@ class MainUI( QtWidgets.QMainWindow):
         # tree
         self.tree = AstroWorkspaceTree()
 
+    def create_actions(self):
+        self.add_files_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["add_file"]), 
+            "Add Files", 
+            self)
+        
+        self.remove_files_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["remove_file"]),
+            "Remove Files", 
+            self)
+        
+        self.reload_files_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["reload"]),
+            "Reload Files", 
+            self)
+
     def create_layouts(self):
         # toolbar
         self.toolbar = QtWidgets.QToolBar(self)
         self.toolbar.setIconSize(QtCore.QSize(30,30))
         self.addToolBar(self.toolbar)
 
-        self.add_files_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["add_file"]), 
-            "Add Files", 
-            self)
         self.toolbar.addAction(self.add_files_action)
-
-        self.remove_files_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["remove_file"]),
-            "Remove Files", 
-            self)
         self.toolbar.addAction(self.remove_files_action)
+        self.toolbar.addAction(self.reload_files_action)
 
         # main layout
         layout = QtWidgets.QVBoxLayout()
@@ -56,6 +65,7 @@ class MainUI( QtWidgets.QMainWindow):
 
         self.add_files_action.triggered.connect(self.on_add_files_clicked)
         self.remove_files_action.triggered.connect(self.on_remove_files_clicked)
+        self.reload_files_action.triggered.connect(self._update)
 
     def _update(self):
         self.tree.clear()

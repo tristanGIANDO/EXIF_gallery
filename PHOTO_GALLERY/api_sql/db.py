@@ -1,5 +1,5 @@
-import mysql.connector, os, shutil
-from api_sql import envs
+import mysql.connector, os
+from api_sql import envs, db_utils
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:
@@ -64,7 +64,7 @@ class Database(object):
         {envs.ISO} INT(5),\
         {envs.LIGHTS} INT(5),\
         {envs.EXPOSURE_TIME} INT(4),\
-        {envs.TIME} VARCHAR(5),\
+        {envs.TIME} VARCHAR(10),\
         {envs.PLACE} VARCHAR(50),\
         {envs.BORTLE} INT(1),\
         {envs.MOON} INT(2),\
@@ -89,35 +89,41 @@ class Database(object):
     # id
     values = (id,)
 
-    # copy path
-    path = data.get(envs.PATH)
-    if os.path.isfile(path):
-      if not os.path.isdir(envs.ROOT):
-        os.mkdir(envs.ROOT)
-      new_path = os.path.join(envs.ROOT, f"{id}{os.path.splitext(path)[-1]}")
-      shutil.copy(path, new_path)
-      values += (new_path,)
+    # path
+    values += (db_utils.copy_file(data.get(envs.PATH), id),)
 
     # subject
     values += (data.get(envs.SUBJECT, "None"),)
+
     # description
     values += (data.get(envs.DESC, "None"),)
+
     # camera
     values += (data.get(envs.CAMERA, "None"),)
+
     # mount
     values += (data.get(envs.MOUNT, "None"),)
+
     # focal
     values += (int(data.get(envs.FOCAL, 0)),)
+
     # aperture
     values += (float(data.get(envs.APERTURE, 0.0)),)
+
     # iso
     values += (int(data.get(envs.ISO, 0)),)
+
     # lights
-    values += (int(data.get(envs.LIGHTS, 0)),)
+    lights = int(data.get(envs.LIGHTS, 0))
+    values += (lights,)
+
     # exposure time
-    values += (int(data.get(envs.EXPOSURE_TIME, 0)),)
+    exposure = int(data.get(envs.EXPOSURE_TIME, 0))
+    values += (exposure,)
+
     # total time
-    values += (0,)
+    values += (db_utils.convert_minutes_to_datetime(lights * exposure / 60),)
+
     # place
     values += (data.get(envs.PLACE, "None"),)
     # bortle
@@ -157,12 +163,23 @@ class Database(object):
   
   # fileTable
   def update(self, column:str, id:str, new_value:str):
+    # global update
     try:
       sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE ({envs.ID} = '{str(id)}')"
       self._cursor.execute(sql)
       self._server.commit()
     except:
       pass
+    # update total time
+    if column == "lights" or column == "exposure":
+      time_in_minutes = self.get_exposure_total_time(id)
+      total_time = db_utils.convert_minutes_to_datetime(time_in_minutes)
+      try:
+        sql = f"UPDATE {envs.FILE_TABLE_NAME} SET time = '{total_time}' WHERE ({envs.ID} = '{str(id)}')"
+        self._cursor.execute(sql)
+        self._server.commit()
+      except:
+        pass
   
   # fileTable
   def remove_file(self, id:int, path:str):
@@ -172,8 +189,19 @@ class Database(object):
 
     os.remove(path)
 
+  def get_exposure_total_time(self, id:int):
+    request = f"SELECT lights,exposure FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
+    self._cursor.execute(request)
+    result = self._cursor.fetchall()
+    return result[0][0] * result[0][1] / 60
+
 if __name__ == "__main__":
   import envs
+  id = 3377699720531883
   db = Database()
-  db.update("name", 7599824371229639, "nouveau nom")
-  print(db.get_rows())
+  request = f"SELECT lights,exposure FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
+  db._cursor.execute(request)
+  result = db._cursor.fetchall()
+  time = result[0][0] * result[0][1] / 60
+  print(time)
+
