@@ -78,19 +78,18 @@ class MainUI( QtWidgets.QMainWindow):
         if not file_dialog.exec_():
             return
         path = file_dialog.selectedFiles()[0] # temp
-        self.open_image_info(path)
+        self.open_image_info()
         
-    def open_image_info(self, path):
-        app = QtWidgets.QApplication(sys.argv)
-        window = ImageInfosUI(path)
-        window.show()
-        data = window.read()
+    def open_image_info(self):
+        ui_image = ImageInfosUI()
+        if not ui_image.exec_():
+            return
+        data = ui_image.read()
         self._db.add(data)
         self._update()
-        sys.exit(app.exec_())
 
     def on_add_files_clicked(self):
-        self.open_file_dialog()
+        self.open_image_info()
 
     def on_remove_files_clicked(self):
         item = self.tree.remove_tree_item()

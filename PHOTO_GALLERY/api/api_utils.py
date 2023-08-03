@@ -1,6 +1,6 @@
 import os, shutil, math, decimal, datetime
 from skyfield.api import Topos, load
-from api_sql import envs
+from api import envs
 
 def copy_file(path:str,id:str) ->str:
        if os.path.isfile(path):

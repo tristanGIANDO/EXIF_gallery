@@ -1,7 +1,6 @@
 import os
 from PIL import Image
 from PIL.ExifTags import TAGS
-from pathlib import Path
 
 # exif conventions nomenclature
 ID = "_key"
@@ -38,8 +37,7 @@ GPS_ALT = 0x0006
 
 class ExifFile(object):
     def __init__(self, path):
-        path = Path(path)
-        if not path.is_file():
+        if not os.path.isfile(path):
             raise FileNotFoundError(f"{path} is not a file.")
         
         self._path = path

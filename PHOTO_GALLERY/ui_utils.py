@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
+from pathlib import Path
 
 class WorkspaceTree( QtWidgets.QTreeWidget):
     def __init__(self):
@@ -32,7 +33,8 @@ class ImageViewWidget(QtWidgets.QLabel):
         self.setAlignment(QtCore.Qt.AlignCenter)
 
         pixmap = QtGui.QPixmap()
-        if os.path.isfile(image_path):   
+        path = Path(image_path)
+        if path.is_file():   
             if isinstance(image_path, str):
                 image = QtGui.QImage(image_path)
                 pixmap = QtGui.QPixmap(image)

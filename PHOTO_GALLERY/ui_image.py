@@ -7,24 +7,28 @@ from api.exif_file import ExifFile
 import envs
 
 class ImageInfosUI(QtWidgets.QDialog):
-    def __init__(self, path):
+    def __init__(self, path=None):
         super().__init__()
-        self._path = path
-        self._exif = ExifFile(path)
+        if path:
+            self._path = path
+            self._exif = ExifFile(path)
+        else:
+            self._path = ""
 
         self.setWindowTitle("Image Details")
         self.resize(1000, 600)
 
         self.create_widgets()
         self.create_layouts()
-        self.set_default_values()
 
     def create_widgets(self):
+        # Image buttons
+        self.add_image_btn = QtWidgets.QPushButton("Add Image(JPG,PNG)")
+        self.add_image_btn.clicked.connect(self.on_add_image_clicked)
+        self.add_brut_btn = QtWidgets.QPushButton("Add Brut(JPG,PNG)")
+
         # Image
-        self.image_lbl = QtWidgets.QLabel()
-        pixmap = QPixmap(self._path)
-        pixmap = pixmap.scaled(700, 500, Qt.KeepAspectRatio)
-        self.image_lbl.setPixmap(pixmap)
+        self.image_lbl = QtWidgets.QWidget()
 
         # in the grids
         self.subject_le = QtWidgets.QLineEdit()
@@ -45,16 +49,26 @@ class ImageInfosUI(QtWidgets.QDialog):
 
         # Button
         self.ok_btn = QtWidgets.QPushButton("Add image")
-        self.ok_btn.clicked.connect(self.accept)
+        self.ok_btn.clicked.connect(self._accept)
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
-        self.cancel_btn.clicked.connect(self.close)
+        self.cancel_btn.clicked.connect(self.deleteLater)
         
     def create_layouts(self):
         # Main layout
         main_layout = QtWidgets.QHBoxLayout(self)
-        v_layout = QtWidgets.QVBoxLayout()
 
-        main_layout.addWidget(self.image_lbl, alignment=Qt.AlignCenter)
+        # Images
+        adds_layout = QtWidgets.QHBoxLayout()
+        adds_layout.addWidget(self.add_image_btn)
+        adds_layout.addWidget(self.add_brut_btn)
+
+        self.v_image_layout = QtWidgets.QVBoxLayout()
+        self.v_image_layout.addLayout(adds_layout)
+
+        main_layout.addLayout(self.v_image_layout)
+
+        # Grids
+        v_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(v_layout)
         
         # Labels
@@ -144,12 +158,32 @@ class ImageInfosUI(QtWidgets.QDialog):
         h_layout.addStretch(1)
         v_layout.addLayout(h_layout)
  
-    def set_default_values(self):
+    def _update(self):
+        self.v_image_layout.removeWidget(self.image_lbl)
+
         self.subject_le.setText(self._exif.get_name())
         self.description_le.setText(self._exif.get_description())
         self.author_le.setText(self._exif.get_author())
         self.camera_le.setText(self._exif.get_camera())
         self.comment_le.setText(self._exif.get_comment())
+
+        self.image_lbl = QtWidgets.QLabel()
+        pixmap = QPixmap(self._exif.get_path())
+        pixmap = pixmap.scaled(700, 500, Qt.KeepAspectRatio)
+        self.image_lbl.setPixmap(pixmap)
+        self.v_image_layout.addWidget(self.image_lbl)
+
+    def _accept(self):
+        self.deleteLater()
+        self.accept()
+        
+    def open_file_dialog(self):
+        file_dialog = QtWidgets.QFileDialog(self)
+        file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
+        if not file_dialog.exec_():
+            return
+        file_dialog.deleteLater()
+        return file_dialog.selectedFiles()[0] # temp
 
     def read(self):
         return {"id" : self._exif.get_id(),
@@ -170,9 +204,14 @@ class ImageInfosUI(QtWidgets.QDialog):
                 "author" : self.author_le.text(),
                 "comment" : self.comment_le.text(),
                 "date" : self.date_le.text()}
+    
+    def on_add_image_clicked(self):
+        path = self.open_file_dialog()
+        self._exif = ExifFile(path)
+        self._update()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    window = ImageInfosUI(r"C:\Users\giand\OneDrive\Images\@PORTFOLIO\230219_m31_04.jpg")
+    window = ImageInfosUI()
     window.show()
     sys.exit(app.exec_())
