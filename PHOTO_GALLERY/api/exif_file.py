@@ -3,8 +3,6 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 from pathlib import Path
 
-from api import envs
-
 # exif conventions nomenclature
 ID = "_key"
 SUBJECT = "_name"
