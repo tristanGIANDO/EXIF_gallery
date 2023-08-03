@@ -5,6 +5,39 @@ from pathlib import Path
 
 from api import envs
 
+# exif conventions nomenclature
+ID = "_key"
+SUBJECT = "_name"
+PATH = "_path"
+IMAGE = "_image"
+DESCRIPTION = 270
+MAKE = 271
+MODEL = 272
+AUTHOR = 315
+COPYRIGHT = 33432
+COMMENT = 40092
+ISO = 34855
+DATE = 36867
+DATE_LAST_MODIFIED = 306
+WIDTH = 256
+HEIGHT = 257
+BITS_PER_SAMPLE =  258
+COMPRESSION = 259
+SOFTWARE = 305
+COLORSPACE = 40961
+EXPOSURE_TIME = 33434
+APERTURE = 33437
+FLASH = 37385
+FOCAL = 37386
+
+GPS = 34853
+GPS_LAT = 0x0002
+GPS_LON = 0x0004
+GPS_ALT = 0x0006
+
+# ShutterSpeedValue (Valeur de vitesse d'obturation) : TAG 37377
+# ApertureValue (Valeur d'ouverture) : TAG 37378
+
 class ExifFile(object):
     def __init__(self, path):
         path = Path(path)
@@ -21,9 +54,9 @@ class ExifFile(object):
         data = {}
 
         # add custom data
-        data[envs.F_KEY] = os.stat(self._path).st_ino
-        data[envs.F_NAME] = os.path.splitext(os.path.basename(self._path))[0]
-        data[envs.F_PATH] = self._path
+        data[ID] = os.stat(self._path).st_ino
+        data[SUBJECT] = os.path.splitext(os.path.basename(self._path))[0]
+        data[PATH] = self._path
         
         # add exifs
         with Image.open(self._path) as img:
@@ -47,35 +80,32 @@ class ExifFile(object):
         return self._data
                 
     def get_id(self) ->str:
-        return self._data.get(envs.F_KEY,"")
+        return self._data.get(ID,"")
     
     def get_name(self) ->str:
-        return self._data.get(envs.F_NAME,"")
+        return self._data.get(SUBJECT,"")
     
     def get_path(self) ->str:
         return self._path
     
     def get_author(self) ->str:
-        return self._data.get(envs.F_AUTHOR, "")
+        return self._data.get(AUTHOR, "")
     
     def get_comment(self) ->str:
-        return self._data.get(envs.F_COMMENT, "")
-    
-    def get_image(self) ->str:
-        return self._data.get(envs.F_IMAGE, "")
+        return self._data.get(COMMENT, "")
     
     def get_description(self) ->str:
-        return self._data.get(envs.F_DESCRIPTION,"")
+        return self._data.get(DESCRIPTION,"")
     
     def get_camera(self) ->str:
-        camera = self._data.get(envs.F_MAKE)
-        model = self._data.get(envs.F_MODEL)
+        camera = self._data.get(MAKE)
+        model = self._data.get(MODEL)
         if camera and model:
             return f"{camera} {model}"
     
     def get_iso(self) ->int:
-        return self._data.get(envs.F_ISO, 0)
+        return self._data.get(ISO, 0)
     
     def get_date(self) ->str:
-        return self._data.get(envs.F_DATE, "")
+        return self._data.get(DATE, "")
     
