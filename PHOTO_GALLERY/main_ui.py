@@ -12,7 +12,7 @@ class MainUI( QtWidgets.QMainWindow):
 
         self.setWindowTitle("%s v-%s"%(__infos__.__title__,
                                        __infos__.__version__))
-        self.resize(1200, 700)
+        self.resize(1500, 800)
 
         self.create_widgets()
         self.create_actions()
@@ -75,15 +75,19 @@ class MainUI( QtWidgets.QMainWindow):
     def open_file_dialog(self):
         file_dialog = QtWidgets.QFileDialog(self)
         file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-        if file_dialog.exec_():
-            path = file_dialog.selectedFiles()[0]
-
-            image_ui = ImageInfosUI(path)
-            if image_ui.exec_ == QtWidgets.QDialog.Accepted: # ask Gabriel
-                data = image_ui.read()
+        if not file_dialog.exec_():
+            return
+        path = file_dialog.selectedFiles()[0] # temp
+        self.open_image_info(path)
         
-                self._db.add(data)
-                self._update()
+    def open_image_info(self, path):
+        app = QtWidgets.QApplication(sys.argv)
+        window = ImageInfosUI(path)
+        window.show()
+        data = window.read()
+        self._db.add(data)
+        self._update()
+        sys.exit(app.exec_())
 
     def on_add_files_clicked(self):
         self.open_file_dialog()

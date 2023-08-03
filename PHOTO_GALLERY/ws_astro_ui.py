@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets,QtCore
+from PyQt5 import QtWidgets,QtCore, QtGui
 from image_ui import ImageViewWidget
 from ws_ui import WorkspaceTree
 import envs
@@ -30,11 +30,13 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
             self.setText(HEADERS.index(envs.A_TIME), str(data[11]))
             self.setText(HEADERS.index(envs.G_LOCATION), data[12])
             self.setText(HEADERS.index(envs.A_BORTLE), str(data[13]))
-            self.setText(HEADERS.index(envs.A_MOON), str(data[14]) + "%")
+            self.setText(HEADERS.index(envs.A_MOON), envs.MOON_PHASES.get(data[14]))
             self.setText(HEADERS.index(envs.G_PROCESS), data[15])
             self.setText(HEADERS.index(envs.G_AUTHOR), data[16])
             self.setText(HEADERS.index(envs.G_COMMENT), data[17])
             self.setText(HEADERS.index(envs.G_DATE), data[18])
+
+            self.setIcon(HEADERS.index(envs.A_MOON), QtGui.QIcon(envs.ICONS[data[14]]))
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self):
@@ -48,6 +50,7 @@ class AstroWorkspaceTree(WorkspaceTree):
                                     QtWidgets.QHeaderView.ResizeToContents)
             
         self.header().setSectionHidden(1, True) # Path
+        self.setIconSize(QtCore.QSize(30,30))
 
     def add_tree_item(self, file_row):
         item = AstroFileItem(file_row)

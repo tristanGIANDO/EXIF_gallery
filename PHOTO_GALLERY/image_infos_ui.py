@@ -158,11 +158,11 @@ class ImageInfosUI(QtWidgets.QDialog):
                 "description" : self.description_le.text(),
                 "camera" : self.camera_le.text(),
                 "mount" : self.mount_le.text(),
-                "focal" : int(self.focal_le.text()),
+                "focal" : int(input(self.focal_le.text())),
                 "aperture" : float(input(self.aperture_le.text())),
-                "iso" : int(self.iso_le.text()),
-                "lights" : int(self.lights_le.text()),
-                "exposure" : int(self.exposure_le.text()),
+                "iso" : int(input(self.iso_le.text())),
+                "lights" : int(input(self.lights_le.text())),
+                "exposure" : int(input(self.exposure_le.text())),
                 "place" : self.location_le.text(),
                 "bortle" : 0,
                 "moon" : 0,
@@ -170,21 +170,6 @@ class ImageInfosUI(QtWidgets.QDialog):
                 "author" : self.author_le.text(),
                 "comment" : self.comment_le.text(),
                 "date" : self.date_le.text()}
-    
-def show():
-    try:
-        app = QtWidgets.QApplication(sys.argv)
-    except:
-        try:
-            ui.close()
-        except:
-            pass
-    ui = ImageInfosUI()
-    ui.show()
-    try:
-        sys.exit(app.exec_())
-    except:
-        pass
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

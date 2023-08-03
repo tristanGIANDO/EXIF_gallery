@@ -129,7 +129,7 @@ class Database(object):
     # bortle
     values += (int(data.get(envs.BORTLE, 0)),)
     # moon
-    values += (int(data.get(envs.MOON, 0)),)
+    values += (db_utils.get_moon_phase(data.get(envs.DATE)),)
     # process
     values += (data.get(envs.PROCESS, "None"),)
     # author
@@ -137,7 +137,7 @@ class Database(object):
     # comment
     values += (data.get(envs.COMMENT, "None"),)
     # date
-    values += ("None",)
+    values += (data.get(envs.DATE),)
 
     request = f"INSERT INTO {envs.FILE_TABLE_NAME} \
       ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
@@ -180,6 +180,15 @@ class Database(object):
         self._server.commit()
       except:
         pass
+    # update moon phase
+    elif column == "date":
+      moon_phase = db_utils.get_moon_phase(new_value)
+      try:
+        sql = f"UPDATE {envs.FILE_TABLE_NAME} SET moon = '{moon_phase}' WHERE ({envs.ID} = '{str(id)}')"
+        self._cursor.execute(sql)
+        self._server.commit()
+      except:
+        pass
   
   # fileTable
   def remove_file(self, id:int, path:str):
@@ -199,9 +208,6 @@ if __name__ == "__main__":
   import envs
   id = 3377699720531883
   db = Database()
-  request = f"SELECT lights,exposure FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
-  db._cursor.execute(request)
-  result = db._cursor.fetchall()
-  time = result[0][0] * result[0][1] / 60
-  print(time)
+
+  db.add()
 

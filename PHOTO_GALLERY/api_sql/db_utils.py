@@ -16,7 +16,9 @@ def convert_minutes_to_datetime(time):
       minutes, seconds = divmod(seconds, 60)
       return f"{hours:02.0f}:{minutes:02.0f}:{seconds:02.0f}"
        
-def get_moon_phase(date): 
+def get_moon_phase(date):
+   parts = date.split("/")
+   date = datetime.datetime(int(parts[0]), int(parts[1]), int(parts[2]))
    dec = decimal.Decimal
    diff = date - datetime.datetime(2001, 1, 1)
    days = dec(diff.days) + (dec(diff.seconds) / dec(86400))
@@ -25,16 +27,8 @@ def get_moon_phase(date):
    pos = lunations % dec(1)
    index = (pos * dec(8)) + dec("0.5")
    index = math.floor(index)
-   return {
-      0: "New Moon", 
-      1: "Waxing Crescent", 
-      2: "First Quarter", 
-      3: "Waxing Gibbous", 
-      4: "Full Moon", 
-      5: "Waning Gibbous", 
-      6: "Last Quarter", 
-      7: "Waning Crescent"
-   }[int(index) & 7]
+
+   return int(index) & 7
 
 def get_bortle_level():
     latitude = 43.599916923299425
@@ -72,7 +66,8 @@ def get_bortle_level():
         return 10
 
 if __name__=="__main__":
-    date = datetime.datetime(2030, 2, 1)
+    # date = datetime.datetime(2030, 2, 1)
+    date = "2000/02/29"
     # date = datetime.datetime.now()
-    #    print(get_moon_phase(date))
-    print(get_bortle_level())
+    print(get_moon_phase(date))
+    # print(get_bortle_level())
