@@ -1,13 +1,14 @@
-import os, json
+import os
 from PIL import Image
 from PIL.ExifTags import TAGS
+from pathlib import Path
 
 from api import envs
 
 class ExifFile(object):
     def __init__(self, path):
-
-        if not os.path.isfile(path):
+        path = Path(path)
+        if not path.is_file():
             raise FileNotFoundError(f"{path} is not a file.")
         
         self._path = path
@@ -20,9 +21,9 @@ class ExifFile(object):
         data = {}
 
         # add custom data
-        data[envs.KEY] = os.stat(self._path).st_ino
-        data[envs.NAME] = os.path.splitext(os.path.basename(self._path))[0]
-        data[envs.PATH] = self._path
+        data[envs.F_KEY] = os.stat(self._path).st_ino
+        data[envs.F_NAME] = os.path.splitext(os.path.basename(self._path))[0]
+        data[envs.F_PATH] = self._path
         
         # add exifs
         with Image.open(self._path) as img:
@@ -40,43 +41,41 @@ class ExifFile(object):
 
                     data[tag] = value
 
-        # convert image to bytes
-        # with open(self._path, 'rb') as image_file:
-        #     bytes_data = image_file.read()
-        #     data[envs.IMAGE] = bytes_data
-
         return data
     
-    def read(self):
+    def read(self) ->dict:
         return self._data
                 
-    def get_id(self):
-        return self._data.get(envs.KEY,"")
+    def get_id(self) ->str:
+        return self._data.get(envs.F_KEY,"")
     
-    def get_name(self):
-        return self._data.get(envs.NAME,"")
+    def get_name(self) ->str:
+        return self._data.get(envs.F_NAME,"")
     
-    def get_path(self):
+    def get_path(self) ->str:
         return self._path
     
-    def get_author(self):
-        return self._data.get(envs.AUTHOR, "")
+    def get_author(self) ->str:
+        return self._data.get(envs.F_AUTHOR, "")
     
-    def get_comment(self):
-        return self._data.get(envs.COMMENT, "")
+    def get_comment(self) ->str:
+        return self._data.get(envs.F_COMMENT, "")
     
-    def get_image(self):
-        return self._data.get(envs.IMAGE, "")
+    def get_image(self) ->str:
+        return self._data.get(envs.F_IMAGE, "")
     
-    def get_description(self):
-        return self._data.get(envs.DESCRIPTION,"")
+    def get_description(self) ->str:
+        return self._data.get(envs.F_DESCRIPTION,"")
     
-    def get_camera(self):
-        return f"{self._data.get(envs.MAKE)} {self._data.get(envs.MODEL)}"
+    def get_camera(self) ->str:
+        camera = self._data.get(envs.F_MAKE)
+        model = self._data.get(envs.F_MODEL)
+        if camera and model:
+            return f"{camera} {model}"
     
-    def get_iso(self):
-        return self._data.get(envs.ISO, 0)
+    def get_iso(self) ->int:
+        return self._data.get(envs.F_ISO, 0)
     
-    def get_date(self):
-        return self._data.get(envs.DATE, 0)
+    def get_date(self) ->str:
+        return self._data.get(envs.F_DATE, "")
     

@@ -1,5 +1,5 @@
 import mysql.connector, os
-from api_sql import envs, db_utils
+from api import envs, api_utils
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:
@@ -90,7 +90,7 @@ class Database(object):
     values = (id,)
 
     # path
-    values += (db_utils.copy_file(data.get(envs.PATH), id),)
+    values += (api_utils.copy_file(data.get(envs.PATH), id),)
 
     # subject
     values += (data.get(envs.SUBJECT, "None"),)
@@ -122,14 +122,14 @@ class Database(object):
     values += (exposure,)
 
     # total time
-    values += (db_utils.convert_minutes_to_datetime(lights * exposure / 60),)
+    values += (api_utils.convert_minutes_to_datetime(lights * exposure / 60),)
 
     # place
     values += (data.get(envs.PLACE, "None"),)
     # bortle
     values += (int(data.get(envs.BORTLE, 0)),)
     # moon
-    values += (db_utils.get_moon_phase(data.get(envs.DATE)),)
+    values += (api_utils.get_moon_phase(data.get(envs.DATE)),)
     # process
     values += (data.get(envs.PROCESS, "None"),)
     # author
@@ -173,7 +173,7 @@ class Database(object):
     # update total time
     if column == "lights" or column == "exposure":
       time_in_minutes = self.get_exposure_total_time(id)
-      total_time = db_utils.convert_minutes_to_datetime(time_in_minutes)
+      total_time = api_utils.convert_minutes_to_datetime(time_in_minutes)
       try:
         sql = f"UPDATE {envs.FILE_TABLE_NAME} SET time = '{total_time}' WHERE ({envs.ID} = '{str(id)}')"
         self._cursor.execute(sql)
@@ -182,7 +182,7 @@ class Database(object):
         pass
     # update moon phase
     elif column == "date":
-      moon_phase = db_utils.get_moon_phase(new_value)
+      moon_phase = api_utils.get_moon_phase(new_value)
       try:
         sql = f"UPDATE {envs.FILE_TABLE_NAME} SET moon = '{moon_phase}' WHERE ({envs.ID} = '{str(id)}')"
         self._cursor.execute(sql)

@@ -1,4 +1,4 @@
-from api_sql.db import Database
+from api.database import Database
 from api.exif_file import ExifFile
 
 db = Database()

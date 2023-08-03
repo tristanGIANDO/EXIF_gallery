@@ -1,6 +1,7 @@
-import os
+from pathlib import Path
 
-icons_root = os.path.join(os.path.dirname(__file__), "icons")
+path = Path(__file__)
+icons_root = path.parent / "icons"
 
 ICONS = {
     "add_file" : f"{icons_root}/add_image.png",

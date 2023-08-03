@@ -1,10 +1,10 @@
-import os, sys
+import sys
 from PyQt5 import QtWidgets,QtCore, QtGui
 import __infos__, envs
 
-from api_sql.db import Database
-from ws_astro_ui import AstroWorkspaceTree
-from image_infos_ui import ImageInfosUI
+from api.database import Database
+from ui_astrophoto import AstroWorkspaceTree
+from ui_image import ImageInfosUI
    
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):

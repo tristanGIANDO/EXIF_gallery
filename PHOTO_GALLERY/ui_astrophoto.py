@@ -1,6 +1,5 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
-from image_ui import ImageViewWidget
-from ws_ui import WorkspaceTree
+from ui_utils import WorkspaceTree, ImageViewWidget
 import envs
 
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, envs.G_SUBJECT, envs.G_DESC,
