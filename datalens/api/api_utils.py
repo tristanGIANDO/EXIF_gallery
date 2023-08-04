@@ -96,4 +96,4 @@ def get_exifs(path):
 
 if __name__=="__main__":
     import json
-    print(json.dumps(get_exifs(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\eg.jpg"), indent=4))
+    print(json.dumps(get_exifs(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\a.jpg"), indent=4))
