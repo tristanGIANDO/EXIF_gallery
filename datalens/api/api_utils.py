@@ -2,6 +2,7 @@ import os, shutil, math, decimal, datetime
 # from skyfield.api import Topos, load
 from datalens.api import envs
 
+from pathlib import Path
 from PIL import Image
 # from PIL.ExifTags import TAGS
 
@@ -99,6 +100,14 @@ def get_exifs(path):
 
     return data
 
+def resize_image(path:str, w:int, h:int):
+    path = Path(path)
+    image = Image.open(path)
+    image.thumbnail((w,h))
+    result = path.parent / (path.stem + "-" + str(h) + path.suffix)
+    image.save(result)
+    
+    return result
+
 if __name__=="__main__":
-    import json
-    print(json.dumps(get_exifs(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\a.jpg"), indent=4))
+    print(resize_image(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\a.jpg", 150, 100))
