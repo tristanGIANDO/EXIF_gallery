@@ -72,6 +72,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.tree.clear()
         for file_row in self._db.get_rows():
             self.tree.add_tree_item(file_row)
+        self.tree.blockSignals(False)
         
     def open_image_info(self):
         ui = ImageInfosUI()

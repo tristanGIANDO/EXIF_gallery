@@ -18,7 +18,6 @@ def convert_minutes_to_datetime(time):
        
 def get_moon_phase(date):
    parts = date.split(",")
-   print(parts)
    date = datetime.datetime(int(parts[0]), int(parts[1]), int(parts[2]))
    dec = decimal.Decimal
    diff = date - datetime.datetime(2001, 1, 1)
