@@ -69,6 +69,9 @@ def get_bortle_level():
         return 10
 
 def get_exifs(path):
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"{path} is not a file.")
+    
     data = {}
     # add custom data
     data[envs.ID] = os.stat(path).st_ino

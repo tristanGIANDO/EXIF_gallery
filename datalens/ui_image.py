@@ -4,14 +4,15 @@ from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import envs
-from api import envs as api_envs
+from datalens.api import envs as api_envs
+from datalens.api import api_utils
 
 class ImageInfosUI(QtWidgets.QDialog):
     def __init__(self, path=None):
         super().__init__(path)
         if path:
             self._path = path
-            self._exif = ExifFile(path)
+            self._exif = api_utils.get_exifs(path)
         else:
             self._path = ""
 
@@ -185,9 +186,9 @@ class ImageInfosUI(QtWidgets.QDialog):
             return file_dialog.selectedFiles()[0] # temp
 
     def read(self):
-        return {"id" : self._exif.get_id(),
+        return {"id" : self._exif.get(api_envs.ID),
                 "subject" : self.subject_le.text(),
-                "path" : self._exif.get_path(),
+                "path" : self._exif.get(api_envs.PATH),
                 "description" : self.description_le.text(),
                 "camera" : self.camera_le.text(),
                 "mount" : self.mount_le.text(),
@@ -206,7 +207,7 @@ class ImageInfosUI(QtWidgets.QDialog):
     
     def on_add_image_clicked(self):
         path = self.open_file_dialog()
-        self._exif = ExifFile(path)
+        self._exif = api_utils.get_exifs(path)
         self._update()
 
 if __name__ == "__main__":
