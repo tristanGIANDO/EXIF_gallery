@@ -34,6 +34,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.subject_le = QtWidgets.QLineEdit()
         self.description_le = QtWidgets.QLineEdit()
         self.date_le = QtWidgets.QDateEdit()
+        self.date_le.setDisplayFormat("yyyy, MM, dd")
         self.location_le = QtWidgets.QLineEdit()
         self.lights_le = QtWidgets.QSpinBox()
         self.exposure_le = QtWidgets.QSpinBox()

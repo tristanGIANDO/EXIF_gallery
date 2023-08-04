@@ -67,11 +67,11 @@ class Database(object):
         {envs.TIME} VARCHAR(10),\
         {envs.PLACE} VARCHAR(50),\
         {envs.BORTLE} INT(1),\
-        {envs.MOON} INT(2),\
+        {envs.MOON} INT(1),\
         {envs.PROCESS} VARCHAR(20),\
         {envs.AUTHOR} VARCHAR(25),\
         {envs.COMMENT} VARCHAR(255),\
-        {envs.DATE} VARCHAR(10)\
+        {envs.DATE} VARCHAR(25)\
         )"
 
       request = f"CREATE TABLE {file_table_name} {data}"
