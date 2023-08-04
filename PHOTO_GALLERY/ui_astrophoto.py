@@ -10,7 +10,7 @@ HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, envs.G_SUBJECT, envs.G_DESC,
 NB_SECTIONS = len(HEADERS)
 
 class AstroFileItem(QtWidgets.QTreeWidgetItem):
-    def __init__(self, data, *args, **kwargs):
+    def __init__(self, parent, data, *args, **kwargs):
 
         super(AstroFileItem, self).__init__(*args, **kwargs)
 
@@ -36,6 +36,13 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
             self.setText(HEADERS.index(envs.G_DATE), data[18])
 
             self.setIcon(HEADERS.index(envs.A_MOON), QtGui.QIcon(envs.ICONS[data[14]]))
+        
+        thumbnail = ImageViewWidget(data[1])
+        # focal_box = QtWidgets.QSpinBox()
+
+        parent.addTopLevelItem(self)
+        self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
+        parent.setItemWidget(self, HEADERS.index(envs.G_IMAGE), thumbnail)
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self):
@@ -52,15 +59,8 @@ class AstroWorkspaceTree(WorkspaceTree):
         self.setIconSize(QtCore.QSize(30,30))
 
     def add_tree_item(self, file_row):
-        item = AstroFileItem(file_row)
-        thumbnail = ImageViewWidget(file_row[1])
-        # focal_box = QtWidgets.QSpinBox()
-
-        self.addTopLevelItem(item)
-        item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-        self.setItemWidget(item, HEADERS.index(envs.G_IMAGE), thumbnail)
-        # self.setItemWidget(item, HEADERS.index(envs.G_FOCAL), focal_box)
-
+        item = AstroFileItem(self, file_row)
+  
     def get_column_index(self, item, column):
         if column == HEADERS.index(envs.G_SUBJECT):
             return HEADERS.index(envs.G_SUBJECT)
