@@ -1,12 +1,15 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
 from ui_utils import WorkspaceTree, ImageViewWidget
 import envs
+from api import envs as api_envs
 
-HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, envs.G_SUBJECT, envs.G_DESC,
-           envs.G_CAMERA, envs.G_FOCAL, envs.A_MOUNT, envs.G_APERTURE,
-           envs.G_ISO, envs.A_LIGHTS, envs.G_EXPOSURE_TIME, 
-           envs.A_TIME, envs.G_LOCATION, envs.A_BORTLE, envs.A_MOON, 
-           envs.G_PROCESS, envs.G_AUTHOR, envs.G_COMMENT, envs.G_DATE]
+HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
+           envs.G_SUBJECT, envs.G_DESC, envs.G_MAKE, envs.G_MODEL,
+           envs.A_MOUNT, envs.G_FOCAL, envs.G_F_NUMBER, envs.G_ISO,
+           envs.A_LIGHTS, envs.G_EXPOSURE_TIME, envs.A_TOTAL_TIME,
+           envs.G_LOCATION, envs.A_BORTLE, envs.A_MOON_PHASE, 
+           envs.G_SOFTWARE, envs.G_AUTHOR, envs.G_COMMENT, envs.G_DATE,
+           envs.G_PATH_BRUT]
 NB_SECTIONS = len(HEADERS)
 
 class AstroFileItem(QtWidgets.QTreeWidgetItem):
@@ -14,29 +17,22 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
 
         super(AstroFileItem, self).__init__(*args, **kwargs)
 
-        if data and len(data) == 19:
-            self.setText(HEADERS.index(envs.G_ID), str(data[0]))
-            self.setText(HEADERS.index(envs.G_PATH), data[1])
-            self.setText(HEADERS.index(envs.G_SUBJECT), data[2])
-            self.setText(HEADERS.index(envs.G_DESC), data[3])
-            self.setText(HEADERS.index(envs.G_CAMERA), data[4])
-            self.setText(HEADERS.index(envs.A_MOUNT), data[5])
-            self.setText(HEADERS.index(envs.G_FOCAL), str(data[6]))
-            self.setText(HEADERS.index(envs.G_APERTURE), str(data[7]))
-            self.setText(HEADERS.index(envs.G_ISO), str(data[8]))
-            self.setText(HEADERS.index(envs.A_LIGHTS), str(data[9]))
-            self.setText(HEADERS.index(envs.G_EXPOSURE_TIME), str(data[10]))
-            self.setText(HEADERS.index(envs.A_TIME), str(data[11]))
-            self.setText(HEADERS.index(envs.G_LOCATION), data[12])
-            self.setText(HEADERS.index(envs.A_BORTLE), str(data[13]))
-            self.setText(HEADERS.index(envs.A_MOON), envs.MOON_PHASES.get(data[14]))
-            self.setText(HEADERS.index(envs.G_PROCESS), data[15])
-            self.setText(HEADERS.index(envs.G_AUTHOR), data[16])
-            self.setText(HEADERS.index(envs.G_COMMENT), data[17])
-            self.setText(HEADERS.index(envs.G_DATE), data[18])
-
-            self.setIcon(HEADERS.index(envs.A_MOON), QtGui.QIcon(envs.ICONS[data[14]]))
+        if not data:
+            return
         
+        self.setText(0, data[0]) #id
+        for i in range(2,NB_SECTIONS):
+            if i == HEADERS.index(envs.A_MOON_PHASE):
+                self.setText(i, envs.MOON_PHASES.get(data[i-1]))
+            else:
+                try:
+                    self.setText(i+1, str(data[i]))
+                except:
+                    pass
+        
+        
+        self.setIcon(HEADERS.index(envs.A_MOON_PHASE), QtGui.QIcon(envs.ICONS[data[15]]))
+    
         thumbnail = ImageViewWidget(data[1])
         # focal_box = QtWidgets.QSpinBox()
 
@@ -55,7 +51,7 @@ class AstroWorkspaceTree(WorkspaceTree):
             self.header().setSectionResizeMode(HEADERS.index(header),
                                     QtWidgets.QHeaderView.ResizeToContents)
             
-        self.header().setSectionHidden(1, True) # Path
+        # self.header().setSectionHidden(1, True) # Path
         self.setIconSize(QtCore.QSize(30,30))
 
     def add_tree_item(self, file_row):
@@ -68,36 +64,38 @@ class AstroWorkspaceTree(WorkspaceTree):
     def update_item(self, server, item, column):
         db_column = None
         if column == HEADERS.index(envs.G_SUBJECT):
-            db_column = "subject"
+            db_column = api_envs.SUBJECT
         elif column == HEADERS.index(envs.G_DESC):
-            db_column = "description"
-        elif column == HEADERS.index(envs.G_CAMERA):
-            db_column = "camera"
+            db_column = api_envs.DESC
+        elif column == HEADERS.index(envs.G_MAKE):
+            db_column = api_envs.MAKE
+        elif column == HEADERS.index(envs.G_MODEL):
+            db_column = api_envs.MODEL
         elif column == HEADERS.index(envs.A_MOUNT):
-            db_column = "mount"
+            db_column = api_envs.MOUNT
         elif column == HEADERS.index(envs.G_FOCAL):
-            db_column = "focal"
-        elif column == HEADERS.index(envs.G_APERTURE):
-            db_column = "aperture"
+            db_column = api_envs.FOCAL
+        elif column == HEADERS.index(envs.G_F_NUMBER):
+            db_column = api_envs.F_NUMBER
         elif column == HEADERS.index(envs.G_ISO):
-            db_column = "iso"
+            db_column = api_envs.ISO
         elif column == HEADERS.index(envs.A_LIGHTS):
-            db_column = "lights"
+            db_column = api_envs.LIGHTS
         elif column == HEADERS.index(envs.G_EXPOSURE_TIME):
-            db_column = "exposure"
+            db_column = api_envs.EXPOSURE_TIME
         elif column == HEADERS.index(envs.G_LOCATION):
-            db_column = "place"
+            db_column = api_envs.LOCATION
         elif column == HEADERS.index(envs.A_BORTLE):
-            db_column = "bortle"
-        elif column == HEADERS.index(envs.A_MOON):
-            db_column = "moon"
-        elif column == HEADERS.index(envs.G_PROCESS):
-            db_column = "processed"
+            db_column = api_envs.BORTLE
+        elif column == HEADERS.index(envs.A_MOON_PHASE):
+            db_column = api_envs.MOON_PHASE
+        elif column == HEADERS.index(envs.G_SOFTWARE):
+            db_column = api_envs.SOFTWARE
         elif column == HEADERS.index(envs.G_AUTHOR):
-            db_column = "author"
+            db_column = api_envs.AUTHOR
         elif column == HEADERS.index(envs.G_COMMENT):
-            db_column = "comment"
+            db_column = api_envs.COMMENT
         elif column == HEADERS.index(envs.G_DATE):
-            db_column = "date"
+            db_column = api_envs.DATE
         
-        server.update(db_column, item.text(0), item.text(column))
+        server._files.update(db_column, item.text(0), item.text(column))

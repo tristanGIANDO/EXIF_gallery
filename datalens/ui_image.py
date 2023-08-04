@@ -82,14 +82,14 @@ class ImageInfosUI(QtWidgets.QDialog):
         lights_lbl = QtWidgets.QLabel(envs.A_LIGHTS)
         exposure_lbl = QtWidgets.QLabel(envs.G_EXPOSURE_TIME)
         iso_lbl = QtWidgets.QLabel(envs.G_ISO)
-        aperture_lbl = QtWidgets.QLabel(envs.G_APERTURE)
+        aperture_lbl = QtWidgets.QLabel(envs.G_F_NUMBER)
         # equipment
-        camera_lbl = QtWidgets.QLabel(envs.G_CAMERA)
+        camera_lbl = QtWidgets.QLabel(envs.G_MODEL)
         focal_lbl = QtWidgets.QLabel(envs.G_FOCAL)
         mount_lbl = QtWidgets.QLabel(envs.A_MOUNT)
         # 
         author_lbl = QtWidgets.QLabel(envs.G_AUTHOR)
-        process_lbl = QtWidgets.QLabel(envs.G_PROCESS)
+        process_lbl = QtWidgets.QLabel(envs.G_SOFTWARE)
         comment_lbl = QtWidgets.QLabel(envs.G_COMMENT)
         
         font_bold = QFont("Arial", 8, QFont.Bold)
@@ -163,14 +163,14 @@ class ImageInfosUI(QtWidgets.QDialog):
     def _update(self):
         self.v_image_layout.removeWidget(self.image_lbl)
 
-        self.subject_le.setText(self._exif.get_name())
-        self.description_le.setText(self._exif.get_description())
-        self.author_le.setText(self._exif.get_author())
-        self.camera_le.setText(self._exif.get_camera())
-        self.comment_le.setText(self._exif.get_comment())
+        self.subject_le.setText(self._exif.get(api_envs.SUBJECT))
+        self.description_le.setText(self._exif.get(api_envs.DESC))
+        self.author_le.setText(self._exif.get(api_envs.AUTHOR))
+        self.camera_le.setText(self._exif.get(api_envs.MODEL))
+        self.comment_le.setText(self._exif.get(api_envs.COMMENT))
 
         self.image_lbl = QtWidgets.QLabel()
-        pixmap = QPixmap(self._exif.get_path())
+        pixmap = QPixmap(self._exif.get(api_envs.PATH))
         pixmap = pixmap.scaled(700, 500, Qt.KeepAspectRatio)
         self.image_lbl.setPixmap(pixmap)
         self.v_image_layout.addWidget(self.image_lbl)

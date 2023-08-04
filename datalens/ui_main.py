@@ -70,15 +70,15 @@ class MainUI( QtWidgets.QMainWindow):
     def _update(self):
         self.tree.blockSignals(True)
         self.tree.clear()
-        for file_row in self._db.get_rows():
-            self.tree.add_tree_item(file_row)
+        for file_data in self._db._files.select_rows():
+            self.tree.add_tree_item(file_data)
         self.tree.blockSignals(False)
         
     def open_image_info(self):
         ui = ImageInfosUI()
         if ui.exec_():
             data = ui.read()
-            self._db.add(data)
+            self._db._files.insert_into(data)
             self._update()
 
     def on_add_files_clicked(self):
@@ -88,7 +88,7 @@ class MainUI( QtWidgets.QMainWindow):
         item = self.tree.remove_tree_item()
         if not item:
             return
-        self._db.remove_file(item.text(0),
+        self._db._files.delete_from(item.text(0),
                              item.text(1))
 
     def on_item_changed(self, item, column):
