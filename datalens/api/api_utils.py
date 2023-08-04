@@ -1,18 +1,20 @@
 import os, shutil, math, decimal, datetime
 # from skyfield.api import Topos, load
-from gallery.api import envs
+from datalens.api import envs
 
 from PIL import Image
-from PIL.ExifTags import TAGS
+# from PIL.ExifTags import TAGS
 
 def copy_file(path:str,id:str) ->str:
-       if os.path.isfile(path):
+    if os.path.isfile(path):
         if not os.path.isdir(envs.ROOT):
-              os.mkdir(envs.ROOT)
+            os.mkdir(envs.ROOT)
         new_path = os.path.join(envs.ROOT, f"{id}{os.path.splitext(path)[-1]}")
         shutil.copy(path, new_path)
 
         return new_path
+    else:
+        return ""
        
 def convert_minutes_to_datetime(time):
       hours, seconds = divmod(time * 60, 3600)

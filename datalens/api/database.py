@@ -1,5 +1,6 @@
 import mysql.connector, os
 from api import envs, api_utils
+import traceback
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:
@@ -143,14 +144,16 @@ class Database(object):
     values += (data.get(envs.COMMENT, ""),)
     # date
     values += (data.get(envs.DATE),)
+    # brut
+    values += (api_utils.copy_file(data.get(envs.PATH_BRUT), id),)
 
     request = f"INSERT INTO {envs.FILE_TABLE_NAME} \
       ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
       {envs.DESC},{envs.MAKE},{envs.MODEL},{envs.MOUNT},{envs.FOCAL}, \
       {envs.F_NUMBER},{envs.ISO},{envs.LIGHTS},{envs.EXPOSURE_TIME}, \
       {envs.TOTAL_TIME},{envs.LOCATION},{envs.BORTLE},{envs.MOON_PHASE}, \
-      {envs.SOFTWARE},{envs.AUTHOR},{envs.COMMENT},{envs.DATE} \
-        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+      {envs.SOFTWARE},{envs.AUTHOR},{envs.COMMENT},{envs.DATE},{envs.PATH_BRUT} \
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
     self._cursor.execute(request, values)
     self._server.commit()
@@ -175,36 +178,39 @@ class Database(object):
       self._server.commit()
     except:
       pass
-    # update total time
+
     if column == envs.LIGHTS or column == envs.EXPOSURE_TIME:
-      time_in_minutes = self.get_exposure_total_time(id)
-      total_time = api_utils.convert_minutes_to_datetime(time_in_minutes)
-      try:
-        sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.TOTAL_TIME} = '{total_time}' WHERE ({envs.ID} = '{str(id)}')"
-        self._cursor.execute(sql)
-        self._server.commit()
-      except:
-        pass
-    # update moon phase
+      self._update_total_time(str(id))
     elif column == envs.DATE:
-      moon_phase = api_utils.get_moon_phase(new_value)
-      try:
-        sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.MOON_PHASE} = '{moon_phase}' WHERE ({envs.ID} = '{str(id)}')"
-        self._cursor.execute(sql)
-        self._server.commit()
-      except:
-        pass
+      self._update_moon_phase(str(id))
   
   # fileTable
   def remove_file(self, id:int, path:str):
     request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
     self._cursor.execute(request)
     self._server.commit()
-
     os.remove(path)
-
-  def get_exposure_total_time(self, id:int):
-    request = f"SELECT {envs.LIGHTS},{envs.EXPOSURE_TIME} FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
+  
+  def _update_total_time(self, id:str):
+    # get epxosure total time
+    request = f"SELECT {envs.LIGHTS},{envs.EXPOSURE_TIME} FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{id}'"
     self._cursor.execute(request)
     result = self._cursor.fetchall()
-    return result[0][0] * result[0][1] / 60
+    total_time = api_utils.convert_minutes_to_datetime(result[0][0] * result[0][1] / 60)
+
+    try:
+      sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.TOTAL_TIME} = '{total_time}' WHERE ({envs.ID} = '{id}')"
+      self._cursor.execute(sql)
+      self._server.commit()
+    except:
+      print(traceback.print_exc())
+
+  def _update_moon_phase(self, date, id:str):
+    moon_phase = api_utils.get_moon_phase(date)
+    
+    try:
+      sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.MOON_PHASE} = '{moon_phase}' WHERE ({envs.ID} = '{id}')"
+      self._cursor.execute(sql)
+      self._server.commit()
+    except:
+      print(traceback.print_exc())
