@@ -43,3 +43,5 @@ EXIF_TO_DATABASE_MAPPING = {
         305 : SOFTWARE, #"Adobe Photoshop CC 2015.5 (Macintosh)"
         # 37385 : FLASH #"16"
     }
+
+IMAGE_SMALL_SUFFIX = "-small"

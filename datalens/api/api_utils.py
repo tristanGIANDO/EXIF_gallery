@@ -104,7 +104,7 @@ def resize_image(path:str, w:int, h:int):
     path = Path(path)
     image = Image.open(path)
     image.thumbnail((w,h))
-    result = path.parent / (path.stem + "-" + str(h) + path.suffix)
+    result = path.parent / (path.stem + envs.IMAGE_SMALL_SUFFIX + path.suffix)
     image.save(result)
     
     return result

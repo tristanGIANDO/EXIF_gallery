@@ -93,7 +93,7 @@ class Database(object):
     values = (id,)
 
     # path
-    values += (api_utils.copy_file(data.get(envs.PATH), id),)
+    values += (self.conform_file(data.get(envs.PATH), id),)
 
     # subject
     values += (data.get(envs.SUBJECT, ""),)
@@ -145,7 +145,7 @@ class Database(object):
     # date
     values += (data.get(envs.DATE),)
     # brut
-    values += (api_utils.copy_file(data.get(envs.PATH_BRUT), id),)
+    values += (self.conform_file(data.get(envs.PATH_BRUT), id),)
 
     request = f"INSERT INTO {envs.FILE_TABLE_NAME} \
       ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
@@ -207,10 +207,18 @@ class Database(object):
 
   def _update_moon_phase(self, date, id:str):
     moon_phase = api_utils.get_moon_phase(date)
-    
+
     try:
       sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.MOON_PHASE} = '{moon_phase}' WHERE ({envs.ID} = '{id}')"
       self._cursor.execute(sql)
       self._server.commit()
     except:
       print(traceback.print_exc())
+
+  def conform_file(sekf, path, id):
+    if not os.path.isfile(path):
+      return
+    image_large_path = api_utils.copy_file(path, id)
+    image_small_path = api_utils.resize_image(image_large_path, 150, 100)
+
+    return image_large_path
