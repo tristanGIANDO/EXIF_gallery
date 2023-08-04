@@ -108,7 +108,9 @@ class Database(object):
     values += (int(data.get(envs.FOCAL, 0)),)
 
     # aperture
-    values += (float(data.get(envs.APERTURE, 0.0)),)
+    aperture = data.get(envs.APERTURE)
+    aperture = aperture.replace(",", ".")
+    values += (float(aperture),)
 
     # iso
     values += (int(data.get(envs.ISO, 0)),)

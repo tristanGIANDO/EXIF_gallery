@@ -68,25 +68,17 @@ class MainUI( QtWidgets.QMainWindow):
         self.reload_files_action.triggered.connect(self._update)
 
     def _update(self):
+        self.tree.blockSignals(True)
         self.tree.clear()
         for file_row in self._db.get_rows():
             self.tree.add_tree_item(file_row)
-
-    def open_file_dialog(self):
-        file_dialog = QtWidgets.QFileDialog(self)
-        file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-        if not file_dialog.exec_():
-            return
-        path = file_dialog.selectedFiles()[0] # temp
-        self.open_image_info()
         
     def open_image_info(self):
-        ui_image = ImageInfosUI()
-        if not ui_image.exec_():
-            return
-        data = ui_image.read()
-        self._db.add(data)
-        self._update()
+        ui = ImageInfosUI()
+        if ui.exec_():
+            data = ui.read()
+            self._db.add(data)
+            self._update()
 
     def on_add_files_clicked(self):
         self.open_image_info()

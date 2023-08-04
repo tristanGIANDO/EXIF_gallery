@@ -8,7 +8,7 @@ import envs
 
 class ImageInfosUI(QtWidgets.QDialog):
     def __init__(self, path=None):
-        super().__init__()
+        super().__init__(path)
         if path:
             self._path = path
             self._exif = ExifFile(path)
@@ -180,23 +180,21 @@ class ImageInfosUI(QtWidgets.QDialog):
     def open_file_dialog(self):
         file_dialog = QtWidgets.QFileDialog(self)
         file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-        if not file_dialog.exec_():
-            return
-        file_dialog.deleteLater()
-        return file_dialog.selectedFiles()[0] # temp
+        if file_dialog.exec_():
+            return file_dialog.selectedFiles()[0] # temp
 
     def read(self):
         return {"id" : self._exif.get_id(),
                 "subject" : self.subject_le.text(),
-                "path" : self._path,
+                "path" : self._exif.get_path(),
                 "description" : self.description_le.text(),
                 "camera" : self.camera_le.text(),
                 "mount" : self.mount_le.text(),
-                "focal" : int(input(self.focal_le.text())),
-                "aperture" : float(input(self.aperture_le.text())),
-                "iso" : int(input(self.iso_le.text())),
-                "lights" : int(input(self.lights_le.text())),
-                "exposure" : int(input(self.exposure_le.text())),
+                "focal" : self.focal_le.text(),
+                "aperture" : self.aperture_le.text(),
+                "iso" : self.iso_le.text(),
+                "lights" : self.lights_le.text(),
+                "exposure" : self.exposure_le.text(),
                 "place" : self.location_le.text(),
                 "bortle" : 0,
                 "moon" : 0,
