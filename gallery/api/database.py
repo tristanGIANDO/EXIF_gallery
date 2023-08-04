@@ -57,21 +57,23 @@ class Database(object):
         {envs.PATH} VARCHAR(250),\
         {envs.SUBJECT} VARCHAR(45),\
         {envs.DESC} VARCHAR(100),\
-        {envs.CAMERA} VARCHAR(45),\
+        {envs.MAKE} VARCHAR(45),\
+        {envs.MODEL} VARCHAR(45),\
         {envs.MOUNT} VARCHAR(45),\
-        {envs.FOCAL} INT(4),\
-        {envs.APERTURE} VARCHAR(3),\
+        {envs.FOCAL} INT(6),\
+        {envs.F_NUMBER} VARCHAR(3),\
         {envs.ISO} INT(5),\
         {envs.LIGHTS} INT(5),\
-        {envs.EXPOSURE_TIME} INT(4),\
-        {envs.TIME} VARCHAR(10),\
-        {envs.PLACE} VARCHAR(50),\
+        {envs.EXPOSURE_TIME} VARCHAR(10),\
+        {envs.TOTAL_TIME} VARCHAR(10),\
+        {envs.LOCATION} VARCHAR(70),\
         {envs.BORTLE} INT(1),\
-        {envs.MOON} INT(1),\
-        {envs.PROCESS} VARCHAR(20),\
+        {envs.MOON_PHASE} INT(1),\
+        {envs.SOFTWARE} VARCHAR(20),\
         {envs.AUTHOR} VARCHAR(25),\
         {envs.COMMENT} VARCHAR(255),\
         {envs.DATE} VARCHAR(25)\
+        {envs.PATH_BRUT} VARCHAR(250),\
         )"
 
       request = f"CREATE TABLE {file_table_name} {data}"
@@ -93,60 +95,61 @@ class Database(object):
     values += (api_utils.copy_file(data.get(envs.PATH), id),)
 
     # subject
-    values += (data.get(envs.SUBJECT, "None"),)
+    values += (data.get(envs.SUBJECT, ""),)
 
     # description
-    values += (data.get(envs.DESC, "None"),)
+    values += (data.get(envs.DESC, ""),)
 
-    # camera
-    values += (data.get(envs.CAMERA, "None"),)
+    # make
+    values += (data.get(envs.MAKE, ""),)
+
+    # model
+    values += (data.get(envs.MODEL, ""),)
 
     # mount
-    values += (data.get(envs.MOUNT, "None"),)
+    values += (data.get(envs.MOUNT, ""),)
 
     # focal
-    values += (int(data.get(envs.FOCAL, 0)),)
+    values += (int(data.get(envs.FOCAL)),)
 
     # aperture
-    aperture = data.get(envs.APERTURE)
-    aperture = aperture.replace(",", ".")
-    values += (float(aperture),)
+    values += (data.get(envs.F_NUMBER),)
 
     # iso
-    values += (int(data.get(envs.ISO, 0)),)
+    values += (data.get(envs.ISO, 0),)
 
     # lights
-    lights = int(data.get(envs.LIGHTS, 0))
+    lights = data.get(envs.LIGHTS, 0)
     values += (lights,)
 
     # exposure time
-    exposure = int(data.get(envs.EXPOSURE_TIME, 0))
+    exposure = data.get(envs.EXPOSURE_TIME, 0)
     values += (exposure,)
 
     # total time
     values += (api_utils.convert_minutes_to_datetime(lights * exposure / 60),)
 
-    # place
-    values += (data.get(envs.PLACE, "None"),)
+    # location
+    values += (data.get(envs.LOCATION, ""),)
     # bortle
-    values += (int(data.get(envs.BORTLE, 0)),)
+    values += (data.get(envs.BORTLE, 0),)
     # moon
     values += (api_utils.get_moon_phase(data.get(envs.DATE)),)
-    # process
-    values += (data.get(envs.PROCESS, "None"),)
+    # software
+    values += (data.get(envs.SOFTWARE, ""),)
     # author
-    values += (data.get(envs.AUTHOR, "None"),)
+    values += (data.get(envs.AUTHOR, ""),)
     # comment
-    values += (data.get(envs.COMMENT, "None"),)
+    values += (data.get(envs.COMMENT, ""),)
     # date
     values += (data.get(envs.DATE),)
 
     request = f"INSERT INTO {envs.FILE_TABLE_NAME} \
       ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
-      {envs.DESC},{envs.CAMERA},{envs.MOUNT},{envs.FOCAL}, \
-      {envs.APERTURE},{envs.ISO},{envs.LIGHTS},{envs.EXPOSURE_TIME}, \
-      {envs.TIME},{envs.PLACE},{envs.BORTLE},{envs.MOON}, \
-      {envs.PROCESS},{envs.AUTHOR},{envs.COMMENT},{envs.DATE} \
+      {envs.DESC},{envs.MAKE},{envs.MODEL},{envs.MOUNT},{envs.FOCAL}, \
+      {envs.F_NUMBER},{envs.ISO},{envs.LIGHTS},{envs.EXPOSURE_TIME}, \
+      {envs.TOTAL_TIME},{envs.LOCATION},{envs.BORTLE},{envs.MOON_PHASE}, \
+      {envs.SOFTWARE},{envs.AUTHOR},{envs.COMMENT},{envs.DATE} \
         ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
     self._cursor.execute(request, values)
@@ -173,20 +176,20 @@ class Database(object):
     except:
       pass
     # update total time
-    if column == "lights" or column == "exposure":
+    if column == envs.LIGHTS or column == envs.EXPOSURE_TIME:
       time_in_minutes = self.get_exposure_total_time(id)
       total_time = api_utils.convert_minutes_to_datetime(time_in_minutes)
       try:
-        sql = f"UPDATE {envs.FILE_TABLE_NAME} SET time = '{total_time}' WHERE ({envs.ID} = '{str(id)}')"
+        sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.TOTAL_TIME} = '{total_time}' WHERE ({envs.ID} = '{str(id)}')"
         self._cursor.execute(sql)
         self._server.commit()
       except:
         pass
     # update moon phase
-    elif column == "date":
+    elif column == envs.DATE:
       moon_phase = api_utils.get_moon_phase(new_value)
       try:
-        sql = f"UPDATE {envs.FILE_TABLE_NAME} SET moon = '{moon_phase}' WHERE ({envs.ID} = '{str(id)}')"
+        sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.MOON_PHASE} = '{moon_phase}' WHERE ({envs.ID} = '{str(id)}')"
         self._cursor.execute(sql)
         self._server.commit()
       except:
@@ -201,15 +204,7 @@ class Database(object):
     os.remove(path)
 
   def get_exposure_total_time(self, id:int):
-    request = f"SELECT lights,exposure FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
+    request = f"SELECT {envs.LIGHTS},{envs.EXPOSURE_TIME} FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
     self._cursor.execute(request)
     result = self._cursor.fetchall()
     return result[0][0] * result[0][1] / 60
-
-if __name__ == "__main__":
-  import envs
-  id = 3377699720531883
-  db = Database()
-
-  db.add()
-

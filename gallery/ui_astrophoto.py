@@ -22,7 +22,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
             self.setText(HEADERS.index(envs.G_CAMERA), data[4])
             self.setText(HEADERS.index(envs.A_MOUNT), data[5])
             self.setText(HEADERS.index(envs.G_FOCAL), str(data[6]))
-            self.setText(HEADERS.index(envs.G_APERTURE), "f/" + str(data[7]))
+            self.setText(HEADERS.index(envs.G_APERTURE), str(data[7]))
             self.setText(HEADERS.index(envs.G_ISO), str(data[8]))
             self.setText(HEADERS.index(envs.A_LIGHTS), str(data[9]))
             self.setText(HEADERS.index(envs.G_EXPOSURE_TIME), str(data[10]))

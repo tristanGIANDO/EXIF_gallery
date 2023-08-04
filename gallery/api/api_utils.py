@@ -1,6 +1,9 @@
 import os, shutil, math, decimal, datetime
-from skyfield.api import Topos, load
-from api import envs
+# from skyfield.api import Topos, load
+from gallery.api import envs
+
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 def copy_file(path:str,id:str) ->str:
        if os.path.isfile(path):
@@ -65,9 +68,32 @@ def get_bortle_level():
     else:
         return 10
 
+def get_exifs(path):
+    data = {}
+    # add custom data
+    data[envs.ID] = os.stat(path).st_ino
+    data[envs.SUBJECT] = os.path.splitext(os.path.basename(path))[0]
+    data[envs.PATH] = path
+    
+    # add exifs
+    with Image.open(path) as img:
+        exif_data = img._getexif()
+
+        if exif_data:
+            for tag, value in exif_data.items():
+                # tag_name = TAGS.get(tag, tag)
+                # decode bytes
+                if isinstance(value, bytes):
+                    try:
+                        value = value.decode('utf-8')
+                    except:
+                        continue
+                db_name = envs.EXIF_TO_DATABASE_MAPPING.get(tag,"")
+                if db_name:
+                    data[db_name] = str(value)
+
+    return data
+
 if __name__=="__main__":
-    # date = datetime.datetime(2030, 2, 1)
-    date = "2000/02/29"
-    # date = datetime.datetime.now()
-    print(get_moon_phase(date))
-    # print(get_bortle_level())
+    import json
+    print(json.dumps(get_exifs(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\eg.jpg"), indent=4))
