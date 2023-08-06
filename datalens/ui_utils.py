@@ -29,6 +29,7 @@ class ImageViewWidget(QtWidgets.QLabel):
     def __init__(self, image_path, *args, **kwargs):
         super(ImageViewWidget, self).__init__(*args, **kwargs)
         size = (150,100)
+        self.scale_factor = 1
         self.setFixedSize(size[0], size[1])
         self.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -47,3 +48,12 @@ class ImageViewWidget(QtWidgets.QLabel):
                                    QtCore.Qt.KeepAspectRatio, 
                                    QtCore.Qt.SmoothTransformation)
         self.setPixmap(pixmap)
+
+    def wheelEvent(self, event):
+        num_degrees = event.angleDelta().y() / 8
+        num_steps = num_degrees / 15.0
+        self.scale_image(1.0 + num_steps * 0.1)
+
+    def scale_image(self, factor):
+        self.scale_factor *= factor
+        self.resize(self.scale_factor * self.pixmap().size())
