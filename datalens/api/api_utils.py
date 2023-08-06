@@ -109,6 +109,9 @@ def resize_image(path:str, w:int, h:int):
     
     return result
 
+def create_website(self, paths):
+    text = ""
+
 if __name__=="__main__":
     # print(resize_image(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\a.jpg", 150, 100))
     print(get_exifs(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\IMG_5555.JPG"))

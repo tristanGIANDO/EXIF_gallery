@@ -7,6 +7,7 @@ ICONS = {
     "add_file" : f"{icons_root}/add_image.png",
     "remove_file" : f"{icons_root}/remove_image.png",
     "reload" : f"{icons_root}/reload.png",
+    "full" : f"{icons_root}/full_screen.png",
     0 : f"{icons_root}/0.png",
     1 : f"{icons_root}/1.png",
     2 : f"{icons_root}/2.png",

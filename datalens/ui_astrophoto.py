@@ -64,7 +64,7 @@ class AstroWorkspaceTree(WorkspaceTree):
         self.header().setSectionHidden(1, True) # Path
         self.setIconSize(QtCore.QSize(30,30))
 
-    def add_tree_item(self, file_row):
+    def add_item(self, file_row):
         item = AstroFileItem(self, file_row)
   
     def get_column_index(self, item, column):
@@ -111,3 +111,26 @@ class AstroWorkspaceTree(WorkspaceTree):
         server._files.update(db_column, item.text(0), item.text(column))
 
         # item._update()
+
+class AstroListWidget(QtWidgets.QListWidget):
+    def __init__(self) -> None:
+        super(AstroListWidget, self).__init__()
+
+        self.setResizeMode(QtWidgets.QListView.Adjust)
+        self.setViewMode(QtWidgets.QListWidget.IconMode)
+        self.setFlow(QtWidgets.QListView.LeftToRight)
+        self.setGridSize(QtCore.QSize(300,200))
+        self.setSpacing(20)
+        self.setWordWrap(True)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+    def add_item(self, data):
+        self.clear()
+        thumbnail = ImageViewWidget(data[1])
+        task_wdg_item = QtWidgets.QListWidgetItem()
+        task_wdg_item.setSizeHint(thumbnail.sizeHint())
+
+        self.addItem(task_wdg_item)
+        self.setItemWidget(task_wdg_item, thumbnail)
+
+        self.sortItems(QtCore.Qt.SortOrder.AscendingOrder)
