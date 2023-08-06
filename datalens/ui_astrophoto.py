@@ -33,7 +33,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
                 except:
                     pass
             if i % 2 == 0:
-                self.setBackground(i, QtGui.QColor(240,240,240))
+                self.setBackground(i, QtGui.QColor(250,250,250))
         
         
         self.setIcon(HEADERS.index(envs.A_MOON_PHASE), QtGui.QIcon(envs.ICONS[data[15]]))

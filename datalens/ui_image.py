@@ -1,7 +1,5 @@
 import sys
-from PyQt5 import QtWidgets
-from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtCore import Qt
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 import envs
 from datalens.api import envs as api_envs
@@ -38,11 +36,17 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.date_le.setDisplayFormat("yyyy, MM, dd")
         self.location_le = QtWidgets.QLineEdit()
         self.lights_le = QtWidgets.QSpinBox()
-        self.exposure_le = QtWidgets.QSpinBox()
-        self.focal_le = QtWidgets.QSpinBox()
+        self.lights_le.setMaximum(9999)
+        self.exposure_le = QtWidgets.QDoubleSpinBox()
+        self.exposure_le.setMaximum(9999.9999)
+        self.focal_le = QtWidgets.QDoubleSpinBox()
+        self.focal_le.setMaximum(9999.9)
         self.iso_le = QtWidgets.QSpinBox()
+        self.iso_le.setMaximum(99999)
         self.aperture_le = QtWidgets.QDoubleSpinBox()
-        self.camera_le = QtWidgets.QLineEdit()
+        self.aperture_le.setMaximum(99.9)
+        self.maker_le = QtWidgets.QLineEdit()
+        self.model_le = QtWidgets.QLineEdit()
         
         self.mount_le = QtWidgets.QLineEdit()
         self.process_le = QtWidgets.QLineEdit()
@@ -84,7 +88,8 @@ class ImageInfosUI(QtWidgets.QDialog):
         iso_lbl = QtWidgets.QLabel(envs.G_ISO)
         aperture_lbl = QtWidgets.QLabel(envs.G_F_NUMBER)
         # equipment
-        camera_lbl = QtWidgets.QLabel(envs.G_MODEL)
+        maker_lbl = QtWidgets.QLabel(envs.G_MAKE)
+        model_lbl = QtWidgets.QLabel(envs.G_MODEL)
         focal_lbl = QtWidgets.QLabel(envs.G_FOCAL)
         mount_lbl = QtWidgets.QLabel(envs.A_MOUNT)
         # 
@@ -92,11 +97,11 @@ class ImageInfosUI(QtWidgets.QDialog):
         process_lbl = QtWidgets.QLabel(envs.G_SOFTWARE)
         comment_lbl = QtWidgets.QLabel(envs.G_COMMENT)
         
-        font_bold = QFont("Arial", 8, QFont.Bold)
+        font_bold = QtGui.QFont("Arial", 8, QtGui.QFont.Bold)
         for column_lbl in [subject_lbl, desc_lbl, date_lbl, location_lbl, lights_lbl,
                            exposure_lbl, iso_lbl, aperture_lbl,
-                           focal_lbl, mount_lbl, author_lbl, camera_lbl,
-                           process_lbl, comment_lbl]:
+                           focal_lbl, mount_lbl, author_lbl, model_lbl,
+                           maker_lbl, process_lbl, comment_lbl]:
                 column_lbl.setFont(font_bold)
 
         # global grid
@@ -132,8 +137,8 @@ class ImageInfosUI(QtWidgets.QDialog):
         grid_layout = QtWidgets.QGridLayout(equipment_gb)
         
         pos = 0
-        for label, wdg in zip([camera_lbl, focal_lbl, mount_lbl],
-                              [self.camera_le, self.focal_le, self.mount_le]):
+        for label, wdg in zip([maker_lbl,model_lbl, focal_lbl, mount_lbl],
+                              [self.maker_le, self.model_le, self.focal_le, self.mount_le]):
             grid_layout.addWidget(label, pos, 0)
             grid_layout.addWidget(wdg, pos, 1)
             pos += 1
@@ -163,15 +168,28 @@ class ImageInfosUI(QtWidgets.QDialog):
     def _update(self):
         self.v_image_layout.removeWidget(self.image_lbl)
 
-        self.subject_le.setText(self._exif.get(api_envs.SUBJECT))
-        self.description_le.setText(self._exif.get(api_envs.DESC))
-        self.author_le.setText(self._exif.get(api_envs.AUTHOR))
-        self.camera_le.setText(self._exif.get(api_envs.MODEL))
-        self.comment_le.setText(self._exif.get(api_envs.COMMENT))
+        self.subject_le.setText(self._exif.get(api_envs.SUBJECT, ""))
+        self.description_le.setText(self._exif.get(api_envs.DESC, ""))
+        try:
+            date = [int(d) for d in self._exif.get(api_envs.DATE).split(" ")[0].split(":")]
+            q_date = QtCore.QDate(date[0], date[1], date[2])
+        except:
+            q_date = QtCore.QDate.currentDate()
+        self.date_le.setDate(q_date)
+        self.location_le.setText(self._exif.get(api_envs.LOCATION, ""))
+        self.exposure_le.setValue(float(self._exif.get(api_envs.EXPOSURE_TIME, 0)))
+        self.focal_le.setValue(float(self._exif.get(api_envs.FOCAL, 0)))
+        self.iso_le.setValue(int(self._exif.get(api_envs.ISO, 0)))
+        self.aperture_le.setValue(float(self._exif.get(api_envs.F_NUMBER, 0)))
+        self.author_le.setText(self._exif.get(api_envs.AUTHOR, ""))
+        self.maker_le.setText(self._exif.get(api_envs.MAKE,""))
+        self.model_le.setText(self._exif.get(api_envs.MODEL,""))
+        self.comment_le.setText(self._exif.get(api_envs.COMMENT,""))
+        self.process_le.setText(self._exif.get(api_envs.SOFTWARE))
 
         self.image_lbl = QtWidgets.QLabel()
-        pixmap = QPixmap(self._exif.get(api_envs.PATH))
-        pixmap = pixmap.scaled(700, 500, Qt.KeepAspectRatio)
+        pixmap = QtGui.QPixmap(self._exif.get(api_envs.PATH))
+        pixmap = pixmap.scaled(700, 500, QtCore.Qt.KeepAspectRatio)
         self.image_lbl.setPixmap(pixmap)
         self.v_image_layout.addWidget(self.image_lbl)
 
@@ -186,24 +204,25 @@ class ImageInfosUI(QtWidgets.QDialog):
             return file_dialog.selectedFiles()[0] # temp
 
     def read(self):
-        return {"id" : self._exif.get(api_envs.ID),
-                "subject" : self.subject_le.text(),
-                "path" : self._exif.get(api_envs.PATH),
-                "description" : self.description_le.text(),
-                "camera" : self.camera_le.text(),
-                "mount" : self.mount_le.text(),
-                "focal" : self.focal_le.value(),
-                "aperture" : self.aperture_le.value(),
-                "iso" : self.iso_le.value(),
-                "lights" : self.lights_le.value(),
-                "exposure" : self.exposure_le.value(),
-                "place" : self.location_le.text(),
-                "bortle" : 0,
-                "moon" : 0,
-                "process" : self.process_le.text(),
-                "author" : self.author_le.text(),
-                "comment" : self.comment_le.text(),
-                "date" : self.date_le.text()}
+        return {api_envs.ID : self._exif.get(api_envs.ID),
+                api_envs.SUBJECT : self.subject_le.text(),
+                api_envs.PATH : self._exif.get(api_envs.PATH),
+                api_envs.DESC : self.description_le.text(),
+                api_envs.MAKE : self.maker_le.text(),
+                api_envs.MODEL : self.model_le.text(),
+                api_envs.MOUNT : self.mount_le.text(),
+                api_envs.FOCAL : self.focal_le.value(),
+                api_envs.F_NUMBER : self.aperture_le.value(),
+                api_envs.ISO : self.iso_le.value(),
+                api_envs.LIGHTS : self.lights_le.value(),
+                api_envs.EXPOSURE_TIME : self.exposure_le.value(),
+                api_envs.LOCATION : self.location_le.text(),
+                api_envs.BORTLE : 0,
+                api_envs.MOON_PHASE : 0,
+                api_envs.SOFTWARE : self.process_le.text(),
+                api_envs.AUTHOR : self.author_le.text(),
+                api_envs.COMMENT : self.comment_le.text(),
+                api_envs.DATE : self.date_le.text()}
     
     def on_add_image_clicked(self):
         path = self.open_file_dialog()
