@@ -89,7 +89,7 @@ class MainUI( QtWidgets.QMainWindow):
         if not item:
             return
         self._db._files.delete_from(item.text(0),
-                             item.text(1))
+                                    item.text(1))
 
     def on_item_changed(self, item, column):
         self.tree.update_item(self._db, item, column)

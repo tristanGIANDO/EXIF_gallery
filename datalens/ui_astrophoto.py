@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
+from pathlib import Path
 from ui_utils import WorkspaceTree, ImageViewWidget
 import envs
 from api import envs as api_envs
@@ -20,7 +21,9 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         if not data:
             return
         
+        path = Path(data[1])
         self.setText(0, data[0]) #id
+        self.setText(1, str(path)) #path
         for i in range(2,NB_SECTIONS):
             if i == HEADERS.index(envs.A_MOON_PHASE):
                 self.setText(i, envs.MOON_PHASES.get(data[i-1]))
@@ -35,7 +38,9 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         
         self.setIcon(HEADERS.index(envs.A_MOON_PHASE), QtGui.QIcon(envs.ICONS[data[15]]))
     
-        thumbnail = ImageViewWidget(data[1])
+        # get small image path
+        small_path = path.parent / (path.stem + api_envs.IMAGE_SMALL_SUFFIX + path.suffix)
+        thumbnail = ImageViewWidget(str(small_path))
         # focal_box = QtWidgets.QSpinBox()
 
         parent.addTopLevelItem(self)
@@ -53,7 +58,7 @@ class AstroWorkspaceTree(WorkspaceTree):
             self.header().setSectionResizeMode(HEADERS.index(header),
                                     QtWidgets.QHeaderView.ResizeToContents)
             
-        # self.header().setSectionHidden(1, True) # Path
+        self.header().setSectionHidden(1, True) # Path
         self.setIconSize(QtCore.QSize(30,30))
 
     def add_tree_item(self, file_row):

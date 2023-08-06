@@ -9,8 +9,8 @@ class WorkspaceTree( QtWidgets.QTreeWidget):
         self.setSortingEnabled(True)
         self.header().sectionsMovable()
  
-        # self.header().setSectionHidden(0, True) # ID
-        # self.header().setSectionHidden(1, True) # Path
+        self.header().setSectionHidden(0, True) # ID
+        self.header().setSectionHidden(1, True) # Path
 
     def remove_tree_item(self):
         selected_items = self.selectedItems()

@@ -1,4 +1,5 @@
 import traceback, os
+from pathlib import Path
 from api import envs, api_utils
 
 class FileTable(object):
@@ -171,7 +172,10 @@ class FileTable(object):
         request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
         self._cursor.execute(request)
         self._server.commit()
+
+        path = Path(path)
         os.remove(path)
+        os.remove(path.parent / (path.stem + envs.IMAGE_SMALL_SUFFIX + path.suffix))
     
     def _update_total_time(self, id:str):
         # get epxosure total time
@@ -201,6 +205,6 @@ class FileTable(object):
         if not os.path.isfile(path):
             return
         image_large_path = api_utils.copy_file(path, id)
-        image_small_path = api_utils.resize_image(image_large_path, 150, 100)
+        image_small_path = api_utils.resize_image(image_large_path, 300, 200)
 
         return image_large_path
