@@ -17,35 +17,38 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
     def __init__(self, parent, data, *args, **kwargs):
 
         super(AstroFileItem, self).__init__(*args, **kwargs)
-
         if not data:
             return
-        
-        path = Path(data[1])
-        self.setText(0, data[0]) #id
+        self._parent = parent
+        self._data = data
+
+        self._update()
+
+    def _update(self):
+        path = Path(self._data[1])
+        self.setText(0, self._data[0]) #id
         self.setText(1, str(path)) #path
         for i in range(2,NB_SECTIONS):
             if i == HEADERS.index(envs.A_MOON_PHASE):
-                self.setText(i, envs.MOON_PHASES.get(data[i-1]))
+                self.setText(i, envs.MOON_PHASES.get(self._data[i-1]))
             else:
                 try:
-                    self.setText(i+1, str(data[i]))
+                    self.setText(i+1, str(self._data[i]))
                 except:
                     pass
             if i % 2 == 0:
-                self.setBackground(i, QtGui.QColor(250,250,250))
+                self.setBackground(i, QtGui.QColor(240,240,250))
         
         
-        self.setIcon(HEADERS.index(envs.A_MOON_PHASE), QtGui.QIcon(envs.ICONS[data[15]]))
+        self.setIcon(HEADERS.index(envs.A_MOON_PHASE), QtGui.QIcon(envs.ICONS[self._data[15]]))
     
         # get small image path
         small_path = path.parent / (path.stem + api_envs.IMAGE_SMALL_SUFFIX + path.suffix)
         thumbnail = ImageViewWidget(str(small_path))
-        # focal_box = QtWidgets.QSpinBox()
 
-        parent.addTopLevelItem(self)
+        self._parent.addTopLevelItem(self)
         self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
-        parent.setItemWidget(self, HEADERS.index(envs.G_IMAGE), thumbnail)
+        self._parent.setItemWidget(self, HEADERS.index(envs.G_IMAGE), thumbnail)
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self):
@@ -106,3 +109,5 @@ class AstroWorkspaceTree(WorkspaceTree):
             db_column = api_envs.DATE
         
         server._files.update(db_column, item.text(0), item.text(column))
+
+        # item._update()
