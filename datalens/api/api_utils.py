@@ -112,6 +112,27 @@ def resize_image(path:str, w:int, h:int):
 def create_website(self, paths):
     text = ""
 
+def ouvrir_et_editer_fichier_html(nom_fichier):
+    try:
+        # Ouvrir le fichier en mode lecture
+        with open(nom_fichier, 'r') as fichier:
+            lignes = fichier.readlines()
+
+        # Filtrer les lignes à conserver (supprimer celles qui commencent par </div> et <div>)
+        lignes_modifiees = [ligne for ligne in lignes if not ligne.strip().startswith('</div') and not ligne.strip().startswith('<div') and not ligne.strip().startswith('<img')]
+
+        # Ouvrir le fichier en mode écriture pour écrire les lignes modifiées
+        with open(nom_fichier, 'w') as fichier_modifie:
+            fichier_modifie.writelines(lignes_modifiees)
+
+        print(f"Les lignes contenant </div> et <div> ont été supprimées du fichier {nom_fichier}.")
+    except FileNotFoundError:
+        print(f"Le fichier {nom_fichier} n'a pas été trouvé.")
+    except Exception as e:
+        print(f"Une erreur est survenue : {e}")
+
 if __name__=="__main__":
     # print(resize_image(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\a.jpg", 150, 100))
-    print(get_exifs(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\IMG_5555.JPG"))
+    # print(get_exifs(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\IMG_5555.JPG"))
+
+    ouvrir_et_editer_fichier_html(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\index.html")
