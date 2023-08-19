@@ -1,6 +1,7 @@
 import mysql.connector
 from api import envs
 from api.file_table import FileTable
+from api.user_table import UserTable
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:
@@ -21,6 +22,7 @@ class Database(object):
 
     # init database
     self._files = FileTable(self._server)
+    self._user = UserTable(self._server)
   
   def connect(self, user:str, password:str):
     return mysql.connector.connect(

@@ -2,9 +2,11 @@ from pathlib import Path
 
 DB_NAME = "db01"
 FILE_TABLE_NAME = "files"
+USER_TABLE_NAME = "user"
 
 ROOT = Path.home() / ".database"
 
+# file table
 ID = "id"
 PATH = "path"
 SUBJECT = "subject"
@@ -45,3 +47,7 @@ EXIF_TO_DATABASE_MAPPING = {
     }
 
 IMAGE_SMALL_SUFFIX = "-small"
+
+# user table
+FIRST_NAME = "first_name"
+LAST_NAME = "last_name"

@@ -14,7 +14,7 @@ class MainUI( QtWidgets.QMainWindow):
 
         self.setWindowTitle("%s v-%s"%(__infos__.__title__,
                                        __infos__.__version__))
-        self.resize(1900, 800)
+        self.resize(1800, 800)
 
         self.create_widgets()
         self.create_actions()

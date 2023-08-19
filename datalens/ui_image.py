@@ -242,8 +242,7 @@ class ImageViewerUI(QtWidgets.QDialog):
             return
         
         self.setWindowTitle("Image Viewer")
-        self.setGeometry(100, 100, 900, 700)
-
+        self.resize(1460, 900)
         self.central_widget = QtWidgets.QWidget(self)
 
         self.layout = QtWidgets.QHBoxLayout()
@@ -272,7 +271,7 @@ class ImageViewerUI(QtWidgets.QDialog):
     def show_image(self):
         if 0 <= self.current_index < len(self.image_paths):
             pixmap = QtGui.QPixmap(self.image_paths[self.current_index])
-            pixmap = pixmap.scaled(900, 700, aspectRatioMode=QtCore.Qt.KeepAspectRatio)
+            pixmap = pixmap.scaled(1600, 900, aspectRatioMode=QtCore.Qt.KeepAspectRatio)
             self.image_label.setPixmap(pixmap)
 
             self.prev_button.setEnabled(self.current_index > 0)
