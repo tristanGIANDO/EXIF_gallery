@@ -127,7 +127,7 @@ def resize_image(path:str, w:int, h:int):
     
     return result
 
-def create_website(paths:list[str], delivery_path:str):
+def create_website(paths:list[str], delivery_path:str, user_name:str=None, user_description:str=None):
     """
     file_path (str): the source file
     delivery_path (str): the destination folder where to write HTML file.
@@ -138,7 +138,13 @@ def create_website(paths:list[str], delivery_path:str):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOUR NAME</title>
+    """
+    if user_name:
+        html_content += f"<title>{user_name}</title>"
+    else:
+        html_content += f"<title>DATALENS ALBUM</title>"
+    
+    html_content += """
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -162,6 +168,9 @@ def create_website(paths:list[str], delivery_path:str):
             text-decoration: none;
             margin: 0 10px;
         }
+        h2 {
+            color: #197092
+        }
         section {
             padding: 20px;
             max-width: 900px;
@@ -177,8 +186,8 @@ def create_website(paths:list[str], delivery_path:str):
             flex-wrap: wrap;
         }
         .gallery-item {
-            width: 33.33%; /* 3 colonnes pour une grille */
-            padding: 5px;
+            width: 50%;
+            padding: 10px;
             box-sizing: border-box;
         }
 
@@ -191,7 +200,15 @@ def create_website(paths:list[str], delivery_path:str):
 </head>
 <body>
     <header>
-        <h1>your name</h1>
+"""
+    if user_name:
+        html_content += f"<h1>{user_name}</h1>"
+        if user_description:
+            html_content += f"<h2>{user_description}</h2>"
+    else:
+        html_content += f"<h1>DATALENS ALBUM</h1>"
+
+    html_content += """
     </header>
     <nav>
         <a href="#">Home</a>
@@ -206,7 +223,7 @@ def create_website(paths:list[str], delivery_path:str):
 
     html_content += """
 <footer>
-        <p>All rights reserved &copy; your name</p>
+        <p>Powered by Tristan Giandoriggios's Datalens</p>
     </footer>
 </body>
 </html>

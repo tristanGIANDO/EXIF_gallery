@@ -70,5 +70,5 @@ class UserInfosUI(QtWidgets.QDialog):
         return {
                 api_envs.FIRST_NAME : self.first_name_le.text(),
                 api_envs.LAST_NAME : self.last_name_le.text(),
-                api_envs.DESC : self.description_le.text(),
+                api_envs.DESC : self.description_le.toPlainText(),
                 }

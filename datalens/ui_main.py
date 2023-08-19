@@ -24,7 +24,7 @@ class MainUI( QtWidgets.QMainWindow):
 
         self._db = Database()
         
-        self.tree.setVisible(False)
+        self.list_wdg.setVisible(False)
         self._update()
 
     def create_widgets(self):
@@ -48,8 +48,8 @@ class MainUI( QtWidgets.QMainWindow):
             self)
         
         self.view_mode_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["list"]), 
-            "Grid View", 
+            QtGui.QIcon(envs.ICONS["card"]), 
+            "Change View Mode", 
             self)
         
         self.viewer_action = QtWidgets.QAction(
@@ -69,23 +69,27 @@ class MainUI( QtWidgets.QMainWindow):
 
     def create_layouts(self):
         # toolbar
-        self.toolbar = QtWidgets.QToolBar(self)
-        self.toolbar.setIconSize(QtCore.QSize(30,30))
-        self.addToolBar(self.toolbar)
-
-        self.toolbar.addAction(self.add_files_action)
-        self.toolbar.addAction(self.remove_files_action)
-        self.toolbar.addAction(self.user_action)
-        self.toolbar.addAction(self.web_action)
+        self.image_toolbar = QtWidgets.QToolBar(self)
+        self.image_toolbar.setIconSize(QtCore.QSize(30,30))
+        self.addToolBar(self.image_toolbar)
+        self.image_toolbar.addAction(self.reload_files_action)
+        self.image_toolbar.addAction(self.add_files_action)
+        self.image_toolbar.addAction(self.remove_files_action)
+        self.image_toolbar.addAction(self.viewer_action)
 
         # toolbar
-        self.b_toolbar = QtWidgets.QToolBar(self)
-        self.b_toolbar.setIconSize(QtCore.QSize(30,30))
-        self.addToolBar(self.b_toolbar)
-
-        self.b_toolbar.addAction(self.reload_files_action)
-        self.b_toolbar.addAction(self.view_mode_action)
-        self.b_toolbar.addAction(self.viewer_action)
+        self.view_toolbar = QtWidgets.QToolBar(self)
+        self.view_toolbar.setIconSize(QtCore.QSize(30,30))
+        self.addToolBar(QtCore.Qt.BottomToolBarArea, self.view_toolbar)
+        self.view_toolbar.addAction(self.view_mode_action)
+        self.view_toolbar.addAction("Created by Tristan Giandoriggio")
+        
+        # toolbar
+        self.user_toolbar = QtWidgets.QToolBar(self)
+        self.user_toolbar.setIconSize(QtCore.QSize(30,30))
+        self.addToolBar(self.user_toolbar)
+        self.user_toolbar.addAction(self.user_action)
+        self.user_toolbar.addAction(self.web_action)
 
         # main self.central_layout
         self.central_layout = QtWidgets.QVBoxLayout()
@@ -125,7 +129,6 @@ class MainUI( QtWidgets.QMainWindow):
             self._update()
     
     def open_user_info(self):
-        
         user = self._db._you.get_user()
         ui = UserInfosUI(user=user[0])
         if ui.exec_():
@@ -177,8 +180,14 @@ class MainUI( QtWidgets.QMainWindow):
         paths = []
         for file_data in self._db._files.select_rows():
             paths.append(file_data[1])
-        html_file = api_utils.create_website(paths, os.path.dirname(__file__))
-        webbrowser.open(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\index.html")
+
+        user = self._db._you.get_user()
+        if user:
+            user_name = f"{user[0][1]} {user[0][2]}"
+            user_description = user[0][3]
+        html_file = api_utils.create_website(paths, os.path.dirname(__file__),
+                    user_name=user_name, user_description=user_description)
+        webbrowser.open(html_file)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
