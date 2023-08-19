@@ -4,7 +4,7 @@ import __infos__, envs
 
 from api.database import Database
 from ui_astrophoto import AstroWorkspaceTree, AstroListWidget
-from ui_image import ImageInfosUI
+from ui_image import ImageInfosUI, ImageViewerUI
    
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
@@ -44,8 +44,13 @@ class MainUI( QtWidgets.QMainWindow):
             "Reload Files", 
             self)
         
-        self.view_action = QtWidgets.QAction(
+        self.view_mode_action = QtWidgets.QAction(
             QtGui.QIcon(envs.ICONS["full"]), 
+            "Grid View", 
+            self)
+        
+        self.viewer_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["add_file"]), 
             "Grid View", 
             self)
         
@@ -70,7 +75,8 @@ class MainUI( QtWidgets.QMainWindow):
         self.b_toolbar.setIconSize(QtCore.QSize(30,30))
         self.addToolBar(self.b_toolbar)
 
-        self.b_toolbar.addAction(self.view_action)
+        self.b_toolbar.addAction(self.view_mode_action)
+        self.b_toolbar.addAction(self.viewer_action)
 
         # main self.central_layout
         self.central_layout = QtWidgets.QVBoxLayout()
@@ -86,7 +92,8 @@ class MainUI( QtWidgets.QMainWindow):
         self.add_files_action.triggered.connect(self.on_add_files_clicked)
         self.remove_files_action.triggered.connect(self.on_remove_files_clicked)
         self.reload_files_action.triggered.connect(self._update)
-        self.view_action.triggered.connect(self.on_view_triggered)
+        self.view_mode_action.triggered.connect(self.on_view_triggered)
+        self.viewer_action.triggered.connect(self.on_viewer_triggered)
         self.web_action.triggered.connect(self.on_web_triggered)
 
     def _update(self):
@@ -130,6 +137,13 @@ class MainUI( QtWidgets.QMainWindow):
         else:
             self.list_wdg.setVisible(True)
             self.tree.setVisible(False)
+
+    def on_viewer_triggered(self):
+        paths = []
+        for file_data in self._db._files.select_rows():
+            paths.append(file_data[1])
+        ui = ImageViewerUI(paths)
+        ui.exec_()
 
     def on_web_triggered(self):
         webbrowser.open(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\index.html")

@@ -182,7 +182,7 @@ class FileTable(object):
         request = f"SELECT {envs.LIGHTS},{envs.EXPOSURE_TIME} FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{id}'"
         self._cursor.execute(request)
         result = self._cursor.fetchall()
-        total_time = api_utils.convert_minutes_to_datetime(result[0][0] * result[0][1] / 60)
+        total_time = api_utils.convert_minutes_to_datetime(int(result[0][0]) * int(result[0][1]) / 60)
 
         try:
             sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.TOTAL_TIME} = '{total_time}' WHERE ({envs.ID} = '{id}')"

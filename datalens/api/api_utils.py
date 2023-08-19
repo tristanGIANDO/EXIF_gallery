@@ -90,7 +90,8 @@ def get_bortle_level():
 
 def get_exifs(path):
     if not os.path.isfile(path):
-        raise FileNotFoundError(f"{path} is not a file.")
+        # raise FileNotFoundError(f"{path} is not a file.")
+        return
     
     data = {}
     # add custom data

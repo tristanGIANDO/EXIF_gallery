@@ -8,6 +8,8 @@ ICONS = {
     "remove_file" : f"{icons_root}/remove_image.png",
     "reload" : f"{icons_root}/reload.png",
     "full" : f"{icons_root}/full_screen.png",
+    "previous" : f"{icons_root}/arrow_left",
+    "next" : f"{icons_root}/arrow_right",
     0 : f"{icons_root}/0.png",
     1 : f"{icons_root}/1.png",
     2 : f"{icons_root}/2.png",

@@ -200,10 +200,14 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.accept()
         
     def open_file_dialog(self):
-        file_dialog = QtWidgets.QFileDialog(self)
-        file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-        if file_dialog.exec_():
-            return file_dialog.selectedFiles()[0] # temp
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.ReadOnly
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Image", "", "Images (*.png *.jpg *.jpeg *.gif *.bmp);;All Files (*)", options=options)
+
+        if file_name:
+            return file_name
+        else:
+            return ""
 
     def read(self):
         return {api_envs.ID : self._exif.get(api_envs.ID),
@@ -230,6 +234,59 @@ class ImageInfosUI(QtWidgets.QDialog):
         path = self.open_file_dialog()
         self._exif = api_utils.get_exifs(path)
         self._update()
+
+class ImageViewerUI(QtWidgets.QDialog):
+    def __init__(self, paths):
+        super().__init__()
+        if not paths:
+            return
+        
+        self.setWindowTitle("Image Viewer")
+        self.setGeometry(100, 100, 900, 700)
+
+        self.central_widget = QtWidgets.QWidget(self)
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.central_widget.setLayout(self.layout)
+
+        self.prev_button = QtWidgets.QPushButton(QtGui.QIcon(envs.ICONS["previous"]), "")
+        self.prev_button.setFixedSize(40,40)
+        self.prev_button.setIconSize(QtCore.QSize(35,35))
+        self.prev_button.clicked.connect(self.show_previous_image)
+        self.layout.addWidget(self.prev_button)
+
+        self.image_label = QtWidgets.QLabel(self)
+        self.layout.addWidget(self.image_label)
+
+        self.next_button = QtWidgets.QPushButton(QtGui.QIcon(envs.ICONS["next"]), "")
+        self.next_button.setFixedSize(40,40)
+        self.next_button.setIconSize(QtCore.QSize(35,35))
+        self.next_button.clicked.connect(self.show_next_image)
+        self.layout.addWidget(self.next_button)
+
+        self.image_paths = paths
+        self.current_index = 0
+
+        self.show_image()
+
+    def show_image(self):
+        if 0 <= self.current_index < len(self.image_paths):
+            pixmap = QtGui.QPixmap(self.image_paths[self.current_index])
+            pixmap = pixmap.scaled(900, 700, aspectRatioMode=QtCore.Qt.KeepAspectRatio)
+            self.image_label.setPixmap(pixmap)
+
+            self.prev_button.setEnabled(self.current_index > 0)
+            self.next_button.setEnabled(self.current_index < len(self.image_paths) - 1)
+
+    def show_previous_image(self):
+        if self.current_index > 0:
+            self.current_index -= 1
+            self.show_image()
+
+    def show_next_image(self):
+        if self.current_index < len(self.image_paths) - 1:
+            self.current_index += 1
+            self.show_image()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
