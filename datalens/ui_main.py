@@ -3,8 +3,10 @@ from PyQt5 import QtWidgets,QtCore, QtGui
 import __infos__, envs
 
 from api.database import Database
+from api import api_utils
 from ui_astrophoto import AstroWorkspaceTree, AstroListWidget
 from ui_image import ImageInfosUI, ImageViewerUI
+import os
    
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
@@ -146,6 +148,10 @@ class MainUI( QtWidgets.QMainWindow):
         ui.exec_()
 
     def on_web_triggered(self):
+        paths = []
+        for file_data in self._db._files.select_rows():
+            paths.append(file_data[1])
+        html_file = api_utils.create_website(paths, os.path.dirname(__file__))
         webbrowser.open(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\index.html")
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import os, shutil, math, decimal, datetime
 # from skyfield.api import Topos, load
 from datalens.api import envs
-import ast
+import os
 from pathlib import Path
 from PIL import Image
 # from PIL.ExifTags import TAGS
@@ -127,33 +127,11 @@ def resize_image(path:str, w:int, h:int):
     
     return result
 
-def create_website(self, paths):
-    text = ""
-
-def ouvrir_et_editer_fichier_html(nom_fichier):
-    try:
-        # Ouvrir le fichier en mode lecture
-        with open(nom_fichier, 'r') as fichier:
-            lignes = fichier.readlines()
-
-        # Filtrer les lignes à conserver (supprimer celles qui commencent par </div> et <div>)
-        # lignes_modifiees = [ligne for ligne in lignes if not ligne.strip().startswith('</div') and not ligne.strip().startswith('<div') and not ligne.strip().startswith('<img')]
-        lignes += ["""
-blabla
-    blibli
-        """]
-        # Ouvrir le fichier en mode écriture pour écrire les lignes modifiées
-        with open(nom_fichier, 'w') as fichier_modifie:
-            fichier_modifie.writelines(lignes)
-
-        print(f"Les lignes contenant </div> et <div> ont été supprimées du fichier {nom_fichier}.")
-    except FileNotFoundError:
-        print(f"Le fichier {nom_fichier} n'a pas été trouvé.")
-    except Exception as e:
-        print(f"Une erreur est survenue : {e}")
-
-def doc_to_web(file_path, delivery_path):
-    # Contenu HTML à écrire dans le fichier
+def create_website(paths:list[str], delivery_path:str):
+    """
+    file_path (str): the source file
+    delivery_path (str): the destination folder where to write HTML file.
+    """
     html_content = """
 <!DOCTYPE html>
 <html lang="fr">
@@ -162,7 +140,6 @@ def doc_to_web(file_path, delivery_path):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YOUR NAME</title>
     <style>
-        /* Ajoutez votre CSS ici pour le style */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -187,7 +164,7 @@ def doc_to_web(file_path, delivery_path):
         }
         section {
             padding: 20px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
         footer {
@@ -214,69 +191,41 @@ def doc_to_web(file_path, delivery_path):
 </head>
 <body>
     <header>
-        <h1>your tool</h1>
+        <h1>your name</h1>
     </header>
     <nav>
         <a href="#">Home</a>
-        <a href="#">About me</a>
         <a href="#">Contact</a>
     </nav>
+    <div class="gallery-container">
 """
-    with open(file_path, 'r') as file:
-        source_code = file.read()
-
-    tree = ast.parse(source_code)
-
-    for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef):
-            html_content += (f"<h2>DEF {node.name}<h2>")
-            html_content += (f"<p>{node.name.__doc__}<p>")
+    for path in paths:
+        html_content += '<div class="gallery-item">'
+        html_content += f'<img src="{path}" alt="{path}">'
+        html_content += "</div>"
 
     html_content += """
 <footer>
-        <p>All rights reserved &copy; 2023 your tool</p>
+        <p>All rights reserved &copy; your name</p>
     </footer>
 </body>
 </html>
 """
 
     # Chemin du fichier HTML à créer
-    fichier_html = os.path.join(delivery_path, "mon_fichier.html")
+    fichier_html = os.path.join(delivery_path, "index.html")
 
     # Écrire le contenu HTML dans le fichier
     with open(fichier_html, "w") as f:
         f.write(html_content)
 
-    print(f"Le fichier '{fichier_html}' a été créé avec succès.")
-
-# 
-
-# def get_function_names(file_path):
-#     with open(file_path, 'r') as file:
-#         source_code = file.read()
-
-#     tree = ast.parse(source_code)
-#     function_names = []
-
-#     for node in ast.walk(tree):
-#         if isinstance(node, ast.FunctionDef):
-#             function_names.append(node.name)
-#             print(f"<p>{node.name.__doc__}<p>")
-
-#     return function_names
-
-# file_path = __file__  # Remplace avec le chemin vers ton fichier Python
-# function_names = get_function_names(file_path)
-# print("Noms des fonctions dans le fichier : ", function_names)
+    return fichier_html
 
 if __name__=="__main__":
-    # print(resize_image(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\a.jpg", 150, 100))
-    # print(get_exifs(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\IMG_5555.JPG"))
-
-    doc_to_web(__file__, r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens")
-
-#     with open(__file__, 'r') as fichier:
-#         lignes = fichier.readlines()
-#         defs = [ligne for ligne in lignes if ligne.strip().startswith('def')]
-
-#         print(defs)
+    paths = [r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\icons\0.png",
+             r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\icons\1.png",
+             r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\icons\2.png",
+             r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\icons\3.png"
+             ]
+    
+    create_website(paths, r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens")
