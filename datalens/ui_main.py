@@ -47,17 +47,17 @@ class MainUI( QtWidgets.QMainWindow):
             self)
         
         self.view_mode_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["full"]), 
+            QtGui.QIcon(envs.ICONS["list"]), 
             "Grid View", 
             self)
         
         self.viewer_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["add_file"]), 
-            "Grid View", 
+            QtGui.QIcon(envs.ICONS["viewer"]), 
+            "Image viewer", 
             self)
         
         self.web_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["full"]), 
+            QtGui.QIcon(envs.ICONS["website"]), 
             "Website", 
             self)
 
@@ -136,9 +136,11 @@ class MainUI( QtWidgets.QMainWindow):
         if self.tree.isHidden():
             self.list_wdg.setVisible(False)
             self.tree.setVisible(True)
+            self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["card"]))
         else:
             self.list_wdg.setVisible(True)
             self.tree.setVisible(False)
+            self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["list"]))
 
     def on_viewer_triggered(self):
         paths = []

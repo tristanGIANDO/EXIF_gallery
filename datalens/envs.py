@@ -10,6 +10,10 @@ ICONS = {
     "full" : f"{icons_root}/full_screen.png",
     "previous" : f"{icons_root}/arrow_left",
     "next" : f"{icons_root}/arrow_right",
+    "list" : f"{icons_root}/list",
+    "card" : f"{icons_root}/card",
+    "viewer" : f"{icons_root}/viewer",
+    "website" : f"{icons_root}/website",
     0 : f"{icons_root}/0.png",
     1 : f"{icons_root}/1.png",
     2 : f"{icons_root}/2.png",
@@ -17,8 +21,7 @@ ICONS = {
     4 : f"{icons_root}/4.png",
     5 : f"{icons_root}/5.png",
     6 : f"{icons_root}/6.png",
-    7 : f"{icons_root}/7.png",
-    
+    7 : f"{icons_root}/7.png"
 }
 
 # global infos
