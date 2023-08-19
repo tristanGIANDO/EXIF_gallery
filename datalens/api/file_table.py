@@ -5,7 +5,7 @@ from api import envs, api_utils
 class FileTable(object):
     def __init__(self, server) -> None:
         self._server = server
-        self._cursor = server.cursor()
+        self._cursor = server.cursor(buffered=True)
         self._name = "files"
 
         self.create()

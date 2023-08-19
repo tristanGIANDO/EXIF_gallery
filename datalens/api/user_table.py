@@ -1,11 +1,9 @@
-import traceback, os
-from pathlib import Path
-from api import envs, api_utils
+from api import envs
 
 class UserTable(object):
     def __init__(self, server) -> None:
         self._server = server
-        self._cursor = server.cursor()
+        self._cursor = server.cursor(buffered=True)
         self._name = envs.USER_TABLE_NAME
 
         self.create()
@@ -16,14 +14,15 @@ class UserTable(object):
             if x[0] == self._name:
                 return True
             
-    def _row_exists(self, row_id:str) ->bool:
-        for file in self.select_rows():
-            if file[0] == row_id:
-                return True
+    def get_user(self) ->list:
+        user = self.select_rows()
+        if user:
+            return user
             
     def create(self):
         if not self._exists():
             data = f"( \
+                {envs.ID} VARCHAR(1),\
                 {envs.FIRST_NAME} VARCHAR(30),\
                 {envs.LAST_NAME} VARCHAR(250),\
                 {envs.DESC} VARCHAR(100)\
@@ -37,8 +36,7 @@ class UserTable(object):
         self._cursor.execute(request)
 
     def insert_into(self, data:dict):
-        values = ()
-
+        values = ("0",)
         # first name
         values += (data.get(envs.FIRST_NAME, ""),)
 
@@ -49,7 +47,7 @@ class UserTable(object):
         values += (data.get(envs.DESC, ""),)
 
         request = f"INSERT INTO {envs.USER_TABLE_NAME} \
-        ({envs.FIRST_NAME},{envs.LAST_NAME},{envs.DESC}) VALUES (%s,%s,%s)"
+        ({envs.ID},{envs.FIRST_NAME},{envs.LAST_NAME},{envs.DESC}) VALUES (%s,%s,%s,%s)"
 
         self._cursor.execute(request, values)
         self._server.commit()
@@ -66,10 +64,10 @@ class UserTable(object):
         return self._cursor.fetchall()
     
     # fileTable
-    def update(self, column:str, id:str, new_value:str):
+    def update(self, column:str, new_value:str):
         # global update
         try:
-            sql = f"UPDATE {envs.USER_TABLE_NAME} SET {column} = '{new_value}' WHERE ({envs.ID} = '{str(id)}')"
+            sql = f"UPDATE {envs.USER_TABLE_NAME} SET {column} = '{new_value}' WHERE ({envs.ID} = '0')"
             self._cursor.execute(sql)
             self._server.commit()
         except:

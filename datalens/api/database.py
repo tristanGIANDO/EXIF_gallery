@@ -13,17 +13,17 @@ class Database(object):
       host = "localhost",
       user = user,
       password = password)
-    self._cursor = self._server.cursor()
+    self._cursor = self._server.cursor(buffered=True)
     
     self.create()
 
     self._server = self.connect(user, password)
-    self._cursor = self._server.cursor()
+    self._cursor = self._server.cursor(buffered=True)
 
     # init database
+    self._you = UserTable(self._server)
     self._files = FileTable(self._server)
-    self._user = UserTable(self._server)
-  
+    
   def connect(self, user:str, password:str):
     return mysql.connector.connect(
       host = "localhost",

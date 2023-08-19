@@ -14,6 +14,7 @@ ICONS = {
     "card" : f"{icons_root}/card",
     "viewer" : f"{icons_root}/viewer",
     "website" : f"{icons_root}/website",
+    "user" : f"{icons_root}/user",
     0 : f"{icons_root}/0.png",
     1 : f"{icons_root}/1.png",
     2 : f"{icons_root}/2.png",

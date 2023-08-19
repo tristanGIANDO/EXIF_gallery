@@ -6,6 +6,7 @@ from api.database import Database
 from api import api_utils
 from ui_astrophoto import AstroWorkspaceTree, AstroListWidget
 from ui_image import ImageInfosUI, ImageViewerUI
+from ui_user import UserInfosUI
 import os
    
 class MainUI( QtWidgets.QMainWindow):
@@ -60,6 +61,11 @@ class MainUI( QtWidgets.QMainWindow):
             QtGui.QIcon(envs.ICONS["website"]), 
             "Website", 
             self)
+        
+        self.user_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["user"]), 
+            "About you", 
+            self)
 
     def create_layouts(self):
         # toolbar
@@ -69,7 +75,7 @@ class MainUI( QtWidgets.QMainWindow):
 
         self.toolbar.addAction(self.add_files_action)
         self.toolbar.addAction(self.remove_files_action)
-        self.toolbar.addAction(self.reload_files_action)
+        self.toolbar.addAction(self.user_action)
         self.toolbar.addAction(self.web_action)
 
         # toolbar
@@ -77,6 +83,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.b_toolbar.setIconSize(QtCore.QSize(30,30))
         self.addToolBar(self.b_toolbar)
 
+        self.b_toolbar.addAction(self.reload_files_action)
         self.b_toolbar.addAction(self.view_mode_action)
         self.b_toolbar.addAction(self.viewer_action)
 
@@ -97,6 +104,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.view_mode_action.triggered.connect(self.on_view_triggered)
         self.viewer_action.triggered.connect(self.on_viewer_triggered)
         self.web_action.triggered.connect(self.on_web_triggered)
+        self.user_action.triggered.connect(self.on_user_triggered)
 
     def _update(self):
         self.tree.blockSignals(True)
@@ -115,9 +123,25 @@ class MainUI( QtWidgets.QMainWindow):
             data = ui.read()
             self._db._files.insert_into(data)
             self._update()
+    
+    def open_user_info(self):
+        
+        user = self._db._you.get_user()
+        ui = UserInfosUI(user=user[0])
+        if ui.exec_():
+            data = ui.read()
+            if user:
+                self._db._you.update("first_name", data.get("first_name"))
+                self._db._you.update("last_name", data.get("last_name"))
+                self._db._you.update("description", data.get("description"))
+            else:
+                self._db._you.insert_into(data)
 
     def on_add_files_clicked(self):
         self.open_image_info()
+
+    def on_user_triggered(self):
+        self.open_user_info()
 
     def on_remove_files_clicked(self):
         item = self.tree.remove_tree_item()
