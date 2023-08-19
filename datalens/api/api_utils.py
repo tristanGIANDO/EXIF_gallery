@@ -1,12 +1,21 @@
 import os, shutil, math, decimal, datetime
 # from skyfield.api import Topos, load
 from datalens.api import envs
-
+import ast
 from pathlib import Path
 from PIL import Image
 # from PIL.ExifTags import TAGS
 
 def copy_file(path:str,id:str) ->str:
+    """copy file to dir
+
+    Args:
+        path (str): _description_
+        id (str): _description_
+
+    Returns:
+        str: _description_
+    """
     if os.path.isfile(path):
         if not os.path.isdir(envs.ROOT):
             os.mkdir(envs.ROOT)
@@ -18,9 +27,17 @@ def copy_file(path:str,id:str) ->str:
         return ""
        
 def convert_minutes_to_datetime(time):
-      hours, seconds = divmod(time * 60, 3600)
-      minutes, seconds = divmod(seconds, 60)
-      return f"{hours:02.0f}:{minutes:02.0f}:{seconds:02.0f}"
+    """convert
+
+    Args:
+        time (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    hours, seconds = divmod(time * 60, 3600)
+    minutes, seconds = divmod(seconds, 60)
+    return f"{hours:02.0f}:{minutes:02.0f}:{seconds:02.0f}"
        
 def get_moon_phase(date):
    parts = date.split(",")
@@ -119,11 +136,14 @@ def ouvrir_et_editer_fichier_html(nom_fichier):
             lignes = fichier.readlines()
 
         # Filtrer les lignes à conserver (supprimer celles qui commencent par </div> et <div>)
-        lignes_modifiees = [ligne for ligne in lignes if not ligne.strip().startswith('</div') and not ligne.strip().startswith('<div') and not ligne.strip().startswith('<img')]
-
+        # lignes_modifiees = [ligne for ligne in lignes if not ligne.strip().startswith('</div') and not ligne.strip().startswith('<div') and not ligne.strip().startswith('<img')]
+        lignes += ["""
+blabla
+    blibli
+        """]
         # Ouvrir le fichier en mode écriture pour écrire les lignes modifiées
         with open(nom_fichier, 'w') as fichier_modifie:
-            fichier_modifie.writelines(lignes_modifiees)
+            fichier_modifie.writelines(lignes)
 
         print(f"Les lignes contenant </div> et <div> ont été supprimées du fichier {nom_fichier}.")
     except FileNotFoundError:
@@ -131,8 +151,131 @@ def ouvrir_et_editer_fichier_html(nom_fichier):
     except Exception as e:
         print(f"Une erreur est survenue : {e}")
 
+def doc_to_web(file_path, delivery_path):
+    # Contenu HTML à écrire dans le fichier
+    html_content = """
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOUR NAME</title>
+    <style>
+        /* Ajoutez votre CSS ici pour le style */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+        }
+        nav {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        section {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        footer {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+        }
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .gallery-item {
+            width: 33.33%; /* 3 colonnes pour une grille */
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>your tool</h1>
+    </header>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About me</a>
+        <a href="#">Contact</a>
+    </nav>
+"""
+    with open(file_path, 'r') as file:
+        source_code = file.read()
+
+    tree = ast.parse(source_code)
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef):
+            html_content += (f"<h2>DEF {node.name}<h2>")
+            html_content += (f"<p>{node.name.__doc__}<p>")
+
+    html_content += """
+<footer>
+        <p>All rights reserved &copy; 2023 your tool</p>
+    </footer>
+</body>
+</html>
+"""
+
+    # Chemin du fichier HTML à créer
+    fichier_html = os.path.join(delivery_path, "mon_fichier.html")
+
+    # Écrire le contenu HTML dans le fichier
+    with open(fichier_html, "w") as f:
+        f.write(html_content)
+
+    print(f"Le fichier '{fichier_html}' a été créé avec succès.")
+
+# 
+
+# def get_function_names(file_path):
+#     with open(file_path, 'r') as file:
+#         source_code = file.read()
+
+#     tree = ast.parse(source_code)
+#     function_names = []
+
+#     for node in ast.walk(tree):
+#         if isinstance(node, ast.FunctionDef):
+#             function_names.append(node.name)
+#             print(f"<p>{node.name.__doc__}<p>")
+
+#     return function_names
+
+# file_path = __file__  # Remplace avec le chemin vers ton fichier Python
+# function_names = get_function_names(file_path)
+# print("Noms des fonctions dans le fichier : ", function_names)
+
 if __name__=="__main__":
     # print(resize_image(r"\\192.168.1.51\Roaming_Profile\trigi\Desktop\work environment\a.jpg", 150, 100))
     # print(get_exifs(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\IMG_5555.JPG"))
 
-    ouvrir_et_editer_fichier_html(r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\index.html")
+    doc_to_web(__file__, r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens")
+
+#     with open(__file__, 'r') as fichier:
+#         lignes = fichier.readlines()
+#         defs = [ligne for ligne in lignes if ligne.strip().startswith('def')]
+
+#         print(defs)
