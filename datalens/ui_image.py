@@ -7,7 +7,7 @@ from datalens.api import api_utils
 
 class ImageInfosUI(QtWidgets.QDialog):
     def __init__(self, path=None):
-        super().__init__(path)
+        super().__init__()
         if path:
             self._path = path
             self._exif = api_utils.get_exifs(path)
@@ -65,8 +65,9 @@ class ImageInfosUI(QtWidgets.QDialog):
 
         # Images
         adds_layout = QtWidgets.QHBoxLayout()
-        adds_layout.addWidget(self.add_image_btn)
-        adds_layout.addWidget(self.add_brut_btn)
+        if not self._path:
+            adds_layout.addWidget(self.add_image_btn)
+            adds_layout.addWidget(self.add_brut_btn)
 
         self.v_image_layout = QtWidgets.QVBoxLayout()
         self.v_image_layout.addLayout(adds_layout)
@@ -160,8 +161,9 @@ class ImageInfosUI(QtWidgets.QDialog):
 
         # Buttons
         h_layout = QtWidgets.QHBoxLayout()
-        h_layout.addWidget(self.ok_btn)
-        h_layout.addWidget(self.cancel_btn)
+        if not self._path:
+            h_layout.addWidget(self.ok_btn)
+            h_layout.addWidget(self.cancel_btn)
         h_layout.addStretch(1)
         v_layout.addLayout(h_layout)
  

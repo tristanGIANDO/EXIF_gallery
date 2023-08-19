@@ -126,7 +126,7 @@ class AstroListWidget(QtWidgets.QListWidget):
 
     def add_item(self, data):
         # self.clear()
-        thumbnail = ImageViewWidget(path=data[1])
+        thumbnail = ImageViewWidget(data[1])
         task_wdg_item = QtWidgets.QListWidgetItem()
         task_wdg_item.setSizeHint(thumbnail.sizeHint())
 
