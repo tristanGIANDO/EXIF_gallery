@@ -44,7 +44,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
     
         # get small image path
         small_path = path.parent / (path.stem + api_envs.IMAGE_SMALL_SUFFIX + path.suffix)
-        thumbnail = ImageViewWidget(str(small_path))
+        thumbnail = ImageViewWidget(path=str(small_path))
 
         self._parent.addTopLevelItem(self)
         self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
@@ -126,7 +126,7 @@ class AstroListWidget(QtWidgets.QListWidget):
 
     def add_item(self, data):
         # self.clear()
-        thumbnail = ImageViewWidget(data[1])
+        thumbnail = ImageViewWidget(path=data[1])
         task_wdg_item = QtWidgets.QListWidgetItem()
         task_wdg_item.setSizeHint(thumbnail.sizeHint())
 
