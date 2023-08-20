@@ -2,24 +2,22 @@ import os
 from datalens import envs
 
 def create_website(paths:list[str], delivery_path:str,
-                   user:list[str]=None, overlays:str=None):
+                   user:list[str]=None, overlays:str=None,
+                   albums:list[str]=["Home"], website_name:str="datalens_portfolio"):
     """
     file_path (str): the source file
     delivery_path (str): the destination folder where to write HTML file.
     """
+    title = "My portfolio"
+    subtitle = "Powered by Datalens"
+    thumbnail = envs.main_icon
 
     if len(user) >= 3:
         title = f"{user[1]} {user[2]}" # first name + last name
-    else:
-        title = "My portfolio"
     if len(user) >= 4:
         subtitle = user[3]
-    else:
-        subtitle = "Powered by Datalens"
     if len(user) >= 5:
         thumbnail = user[4]
-    else:
-        thumbnail = envs.main_icon
 
     html_content = f'''
 <!DOCTYPE html>
@@ -130,19 +128,20 @@ def create_website(paths:list[str], delivery_path:str,
 <body>
     <header>
         <div class="circle">\n
-'''
+    '''
     html_content += f'''
             <img src="{thumbnail}" alt="Thumbnail">
         </div>
         <h1>{title}</h1>
         <h2>{subtitle}</h2>\n
     </header>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Contact</a>
+    <nav>\n
+    '''
+
+    html_content += '''
     </nav>
     <div class="image-grid">\n
-'''
+    '''
     for path, overlay in zip(paths,overlays):
         html_content += f'''
         <div class="image-item">
@@ -164,7 +163,7 @@ def create_website(paths:list[str], delivery_path:str,
 </html>
 '''
 
-    html_file = os.path.join(delivery_path, "index.html")
+    html_file = os.path.join(delivery_path, f"{website_name}.html")
 
     with open(html_file, "w") as f:
         f.write(html_content)

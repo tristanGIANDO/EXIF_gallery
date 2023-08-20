@@ -2,7 +2,7 @@ import sys, webbrowser, os
 from PyQt5 import QtWidgets,QtCore, QtGui
 from datalens import __infos__, envs
 from datalens.api.database import Database
-from datalens.api import api_utils
+from datalens.api import envs as api_envs
 from datalens.ui_astrophoto import AstroWorkspaceTree, AstroListWidget
 from datalens.ui_image import ImageInfosUI, ImageViewerUI
 from datalens.ui_user import UserInfosUI
@@ -138,9 +138,12 @@ class MainUI( QtWidgets.QMainWindow):
         
     def _update_albums(self, album_name = None):
         self.albums_cb.clear()
-        for album_data in self._db._albums.select_rows():
-            name = album_data[1]
+        name = ""
+        for album_data in self._db._albums.select_rows() or ():
+            if len(album_data) >= 2:
+                name = album_data[1]
             self.albums_cb.addItem(name)
+    
         if album_name:
             self._current_album = album_name
         else:
@@ -155,8 +158,10 @@ class MainUI( QtWidgets.QMainWindow):
             except:
                 pass
 
-    def get_album_files(self):
-        return [file for file in self._db._files.select_rows() if file[3] == self._current_album]
+    def get_album_files(self, album = None):
+        if not album:
+            album = self._current_album
+        return [f for f in self._db._files.select_rows() if f[3] == album]
 
     def open_image_info(self):
         ui = ImageInfosUI()
@@ -217,15 +222,20 @@ class MainUI( QtWidgets.QMainWindow):
         ui.exec_()
 
     def on_web_triggered(self):
+        user = self._db._you.get_user()
+        albums = []
+        for album_data in self._db._albums.select_rows():
+            albums.append(album_data[1])
+        
         paths = []
         overlays = []
-        for file_data in self.get_album_files():
+        for file_data in self._db._files.select_rows():
             paths.append(file_data[1])
             overlays.append(file_data[2])
 
-        user = self._db._you.get_user()
-        html_file = website.create_website(paths, os.path.dirname(__file__),
-                    user=user, overlays=overlays)
+        html_file = website.create_website(paths, api_envs.ROOT,
+                    user=user, overlays=overlays, albums=albums)
+            
         webbrowser.open(html_file)
 
     def on_create_album_triggered(self):
