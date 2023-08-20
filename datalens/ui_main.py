@@ -28,7 +28,8 @@ class MainUI( QtWidgets.QMainWindow):
         
         self.list_wdg.setVisible(False)
         self._update_albums()
-        self._update()
+        self._update_files()
+        self._update_user()
 
     def create_widgets(self):
         self.tree = AstroWorkspaceTree()
@@ -87,6 +88,8 @@ class MainUI( QtWidgets.QMainWindow):
         self.image_toolbar.addAction(self.create_album_action)
         self.image_toolbar.addWidget(self.albums_cb)
         self.image_toolbar.addAction(self.delete_album_action)
+        self.image_toolbar.addSeparator()
+        self.image_toolbar.addAction(self.web_action)
 
         # toolbar
         self.view_toolbar = QtWidgets.QToolBar(self)
@@ -97,10 +100,9 @@ class MainUI( QtWidgets.QMainWindow):
         
         # toolbar
         self.user_toolbar = QtWidgets.QToolBar(self)
-        self.user_toolbar.setIconSize(QtCore.QSize(30,30))
+        self.user_toolbar.setIconSize(QtCore.QSize(60,60))
         self.addToolBar(self.user_toolbar)
         self.user_toolbar.addAction(self.user_action)
-        self.user_toolbar.addAction(self.web_action)
 
         # main self.central_layout
         self.central_layout = QtWidgets.QVBoxLayout()
@@ -115,7 +117,7 @@ class MainUI( QtWidgets.QMainWindow):
 
         self.add_files_action.triggered.connect(self.on_add_files_clicked)
         self.remove_files_action.triggered.connect(self.on_remove_files_clicked)
-        self.reload_files_action.triggered.connect(self._update)
+        self.reload_files_action.triggered.connect(self._update_files)
         self.view_mode_action.triggered.connect(self.on_view_triggered)
         self.viewer_action.triggered.connect(self.on_viewer_triggered)
         self.web_action.triggered.connect(self.on_web_triggered)
@@ -124,7 +126,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.delete_album_action.triggered.connect(self.on_delete_album_triggered)
         self.albums_cb.currentTextChanged.connect(self.on_album_changed)
 
-    def _update(self):
+    def _update_files(self):
         self.tree.blockSignals(True)
         self.tree.clear()
         for file_data in self._db._files.select_rows() or ():
@@ -147,18 +149,25 @@ class MainUI( QtWidgets.QMainWindow):
             self._current_album = name
         self.albums_cb.setCurrentText(self._current_album)
         
+    def _update_user(self):
+        user = self._db._you.get_user()
+        if user:
+            print(user)
+            try:
+                self.user_action.setIcon(QtGui.QIcon(user[4]))
+            except:
+                pass
+
     def open_image_info(self):
         ui = ImageInfosUI()
         if ui.exec_():
             data = ui.read()
             data["album"] = self._current_album
             self._db._files.insert_into(data)
-            self._update()
+            self._update_files()
     
     def open_user_info(self):
         user = self._db._you.get_user()
-        if user:
-            user = user[0]
         ui = UserInfosUI(user=user)
         if ui.exec_():
             data = ui.read()
@@ -166,8 +175,10 @@ class MainUI( QtWidgets.QMainWindow):
                 self._db._you.update("first_name", data.get("first_name"))
                 self._db._you.update("last_name", data.get("last_name"))
                 self._db._you.update("description", data.get("description"))
+                self._db._you.update("path", data.get("path"))
             else:
                 self._db._you.insert_into(data)
+            self._update_user()
 
     def on_add_files_clicked(self):
         self.open_image_info()
@@ -212,8 +223,8 @@ class MainUI( QtWidgets.QMainWindow):
 
         user = self._db._you.get_user()
         if user:
-            user_name = f"{user[0][1]} {user[0][2]}"
-            user_description = user[0][3]
+            user_name = f"{user[1]} {user[2]}"
+            user_description = user[3]
         else:
             user_name = "My portfolio"
             user_description = "A DataLens portfolio"
@@ -230,7 +241,7 @@ class MainUI( QtWidgets.QMainWindow):
 
     def on_album_changed(self):
         self._current_album = self.albums_cb.currentText()
-        self._update()
+        self._update_files()
     
     def on_delete_album_triggered(self):
         album_name = self.albums_cb.currentText()

@@ -17,7 +17,7 @@ class UserTable(object):
     def get_user(self) ->list:
         user = self.select_rows()
         if user:
-            return user
+            return user[0]
             
     def create(self):
         if not self._exists():
