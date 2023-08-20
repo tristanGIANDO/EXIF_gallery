@@ -128,15 +128,14 @@ class MainUI( QtWidgets.QMainWindow):
     def _update_files(self):
         self.tree.blockSignals(True)
         self.tree.clear()
-        for file_data in self._db._files.select_rows() or ():
-            if file_data[3] == self._current_album:
-                self.tree.add_item(file_data)
+        self.list_wdg.clear()
+
+        for file in self.get_album_files():
+            self.tree.add_item(file)
+            self.list_wdg.add_item(file)
+
         self.tree.blockSignals(False)
         
-        self.list_wdg.clear()
-        for file_data in self._db._files.select_rows():
-            self.list_wdg.add_item(file_data)
-
     def _update_albums(self, album_name = None):
         self.albums_cb.clear()
         for album_data in self._db._albums.select_rows():
@@ -155,6 +154,9 @@ class MainUI( QtWidgets.QMainWindow):
                 self.user_action.setIcon(QtGui.QIcon(user[4]))
             except:
                 pass
+
+    def get_album_files(self):
+        return [file for file in self._db._files.select_rows() if file[3] == self._current_album]
 
     def open_image_info(self):
         ui = ImageInfosUI()
@@ -209,7 +211,7 @@ class MainUI( QtWidgets.QMainWindow):
 
     def on_viewer_triggered(self):
         paths = []
-        for file_data in self._db._files.select_rows():
+        for file_data in self.get_album_files():
             paths.append(file_data[1])
         ui = ImageViewerUI(paths)
         ui.exec_()
@@ -217,7 +219,7 @@ class MainUI( QtWidgets.QMainWindow):
     def on_web_triggered(self):
         paths = []
         overlays = []
-        for file_data in self._db._files.select_rows():
+        for file_data in self.get_album_files():
             paths.append(file_data[1])
             overlays.append(file_data[2])
 
