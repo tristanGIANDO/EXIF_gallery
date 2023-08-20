@@ -1,14 +1,13 @@
-import sys, webbrowser
+import sys, webbrowser, os
 from PyQt5 import QtWidgets,QtCore, QtGui
 from datalens import __infos__, envs
-
 from datalens.api.database import Database
 from datalens.api import api_utils
 from datalens.ui_astrophoto import AstroWorkspaceTree, AstroListWidget
 from datalens.ui_image import ImageInfosUI, ImageViewerUI
 from datalens.ui_user import UserInfosUI
 from datalens.ui_utils import CreateAlbumUI
-import os
+from datalens.web import website
    
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
@@ -152,7 +151,6 @@ class MainUI( QtWidgets.QMainWindow):
     def _update_user(self):
         user = self._db._you.get_user()
         if user:
-            print(user)
             try:
                 self.user_action.setIcon(QtGui.QIcon(user[4]))
             except:
@@ -218,18 +216,14 @@ class MainUI( QtWidgets.QMainWindow):
 
     def on_web_triggered(self):
         paths = []
+        overlays = []
         for file_data in self._db._files.select_rows():
             paths.append(file_data[1])
+            overlays.append(file_data[2])
 
         user = self._db._you.get_user()
-        if user:
-            user_name = f"{user[1]} {user[2]}"
-            user_description = user[3]
-        else:
-            user_name = "My portfolio"
-            user_description = "A DataLens portfolio"
-        html_file = api_utils.create_website(paths, os.path.dirname(__file__),
-                    user_name=user_name, user_description=user_description)
+        html_file = website.create_website(paths, os.path.dirname(__file__),
+                    user=user, overlays=overlays)
         webbrowser.open(html_file)
 
     def on_create_album_triggered(self):

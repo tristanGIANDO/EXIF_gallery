@@ -2,6 +2,7 @@ from pathlib import Path
 
 path = Path(__file__)
 icons_root = path.parent / "icons"
+main_icon = path.parent.parent / "resources" / "icon.jpg"
 
 ICONS = {
     "add_file" : f"{icons_root}/add_image.png",

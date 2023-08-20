@@ -1,14 +1,37 @@
+import os
+from datalens import envs
 
+def create_website(paths:list[str], delivery_path:str,
+                   user:list[str]=None, overlays:str=None):
+    """
+    file_path (str): the source file
+    delivery_path (str): the destination folder where to write HTML file.
+    """
+
+    if len(user) >= 3:
+        title = f"{user[1]} {user[2]}" # first name + last name
+    else:
+        title = "My portfolio"
+    if len(user) >= 4:
+        subtitle = user[3]
+    else:
+        subtitle = "Powered by Datalens"
+    if len(user) >= 5:
+        thumbnail = user[4]
+    else:
+        thumbnail = envs.main_icon
+
+    html_content = f'''
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href=C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\resources\icon.jpg type="image/x-icon">
+    <link rel="icon" href={envs.main_icon} type="image/x-icon">\n
+    <title>{title} portfolio</title>\n
+    '''
 
-    <title>Tristan Giandoriggio portfolio</title>
-
-    
+    html_content += '''
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -106,55 +129,44 @@
 </head>
 <body>
     <header>
-        <div class="circle">
-
-
-            <img src="C:/Users/giand/OneDrive/Images/_ME/profile.jpg" alt="Thumbnail">
+        <div class="circle">\n
+'''
+    html_content += f'''
+            <img src="{thumbnail}" alt="Thumbnail">
         </div>
-        <h1>Tristan Giandoriggio</h1>
-        <h2>Photographer</h2>
-
+        <h1>{title}</h1>
+        <h2>{subtitle}</h2>\n
     </header>
     <nav>
         <a href="#">Home</a>
         <a href="#">Contact</a>
     </nav>
-    <div class="image-grid">
-
-
+    <div class="image-grid">\n
+'''
+    for path, overlay in zip(paths,overlays):
+        html_content += f'''
         <div class="image-item">
-            <img src="C:\Users\giand\.database\29273397577920277.JPG" alt="C:\Users\giand\.database\29273397577920277.JPG">
+            <img src="{path}" alt="{path}">
             <div class="overlay">
                 <div class="overlay-text">
-                    IMG_5555
+                    {overlay}
                 </div>
             </div>
-        </div>
+        </div>\n
+        '''
 
-        
-        <div class="image-item">
-            <img src="C:\Users\giand\.database\3377699720531883.jpg" alt="C:\Users\giand\.database\3377699720531883.jpg">
-            <div class="overlay">
-                <div class="overlay-text">
-                    example2
-                </div>
-            </div>
-        </div>
-
-        
-        <div class="image-item">
-            <img src="C:\Users\giand\.database\9007199254771728.jpg" alt="C:\Users\giand\.database\9007199254771728.jpg">
-            <div class="overlay">
-                <div class="overlay-text">
-                    IMG_0971
-                </div>
-            </div>
-        </div>
-
-        
+    html_content += '''
     </div>
 <footer>
         <p>Powered by DataLens</p>
     </footer>
 </body>
 </html>
+'''
+
+    html_file = os.path.join(delivery_path, "index.html")
+
+    with open(html_file, "w") as f:
+        f.write(html_content)
+
+    return html_file
