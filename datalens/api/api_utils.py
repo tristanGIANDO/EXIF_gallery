@@ -222,6 +222,7 @@ def create_website(paths:list[str], delivery_path:str, user_name:str=None, user_
         html_content += "</div>"
 
     html_content += """
+    </div>
 <footer>
         <p>Powered by Tristan Giandoriggios's Datalens</p>
     </footer>
