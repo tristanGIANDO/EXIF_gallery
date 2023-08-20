@@ -76,7 +76,7 @@ class AstroWorkspaceTree(WorkspaceTree):
         if column == HEADERS.index(envs.G_SUBJECT):
             db_column = api_envs.SUBJECT
         elif column == HEADERS.index(envs.G_DESC):
-            db_column = api_envs.DESC
+            db_column = api_envs.ALBUM
         elif column == HEADERS.index(envs.G_MAKE):
             db_column = api_envs.MAKE
         elif column == HEADERS.index(envs.G_MODEL):

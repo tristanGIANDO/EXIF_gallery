@@ -31,7 +31,7 @@ class ImageInfosUI(QtWidgets.QDialog):
 
         # in the grids
         self.subject_le = QtWidgets.QLineEdit()
-        self.description_le = QtWidgets.QLineEdit()
+        self.album_le = QtWidgets.QLineEdit()
         self.date_le = QtWidgets.QDateEdit()
         self.date_le.setDisplayFormat("yyyy, MM, dd")
         self.location_le = QtWidgets.QLineEdit()
@@ -111,7 +111,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         
         pos = 0
         for label, wdg in zip([subject_lbl, desc_lbl],
-                              [self.subject_le, self.description_le]):
+                              [self.subject_le, self.album_le]):
             grid_layout.addWidget(label, pos, 0)
             grid_layout.addWidget(wdg, pos, 1)
             pos += 1
@@ -171,7 +171,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.v_image_layout.removeWidget(self.image_lbl)
 
         self.subject_le.setText(self._exif.get(api_envs.SUBJECT, ""))
-        self.description_le.setText(self._exif.get(api_envs.DESC, ""))
+        self.album_le.setText(self._exif.get(api_envs.ALBUM, ""))
         try:
             date = [int(d) for d in self._exif.get(api_envs.DATE).split(" ")[0].split(":")]
             q_date = QtCore.QDate(date[0], date[1], date[2])
@@ -213,7 +213,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         return {api_envs.ID : self._exif.get(api_envs.ID),
                 api_envs.SUBJECT : self.subject_le.text(),
                 api_envs.PATH : self._exif.get(api_envs.PATH),
-                api_envs.DESC : self.description_le.text(),
+                api_envs.ALBUM : self.album_le.text(),
                 api_envs.MAKE : self.maker_le.text(),
                 api_envs.MODEL : self.model_le.text(),
                 api_envs.MOUNT : self.mount_le.text(),

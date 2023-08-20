@@ -29,6 +29,7 @@ ICONS = {
 G_ID = "ID"
 G_PATH = "Path"
 G_IMAGE = "Image"
+G_ALBUM = "Album"
 G_SUBJECT = "Subject"
 G_DESC = "Description"
 G_MAKE = "Maker"

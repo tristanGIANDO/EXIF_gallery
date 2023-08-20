@@ -2,6 +2,7 @@ import mysql.connector
 from api import envs
 from api.file_table import FileTable
 from api.user_table import UserTable
+from api.album_table import AlbumTable
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:
@@ -22,6 +23,7 @@ class Database(object):
 
     # init database
     self._you = UserTable(self._server)
+    self._albums = AlbumTable(self._server)
     self._files = FileTable(self._server)
     
   def connect(self, user:str, password:str):

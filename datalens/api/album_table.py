@@ -1,10 +1,10 @@
 from api import envs
 
-class UserTable(object):
+class AlbumTable(object):
     def __init__(self, server) -> None:
         self._server = server
         self._cursor = server.cursor(buffered=True)
-        self._name = envs.USER_TABLE_NAME
+        self._name = envs.ALBUM_TABLE_NAME
 
         self.create()
 
@@ -14,19 +14,17 @@ class UserTable(object):
             if x[0] == self._name:
                 return True
             
-    def get_user(self) ->list:
-        user = self.select_rows()
-        if user:
-            return user
+    def _row_exists(self, row_id:str) ->bool:
+        for album in self.select_rows():
+            if album[0] == row_id:
+                return True
             
     def create(self):
         if not self._exists():
             data = f"( \
-                {envs.ID} VARCHAR(1),\
-                {envs.FIRST_NAME} VARCHAR(30),\
-                {envs.LAST_NAME} VARCHAR(250),\
-                {envs.DESC} VARCHAR(100),\
-                {envs.PATH} VARCHAR(255)\
+                {envs.ID} INT AUTO_INCREMENT PRIMARY KEY,\
+                {envs.ALBUM_NAME} VARCHAR(45),\
+                {envs.ALBUM_TYPE} VARCHAR(45)\
                 )"
 
             request = f"CREATE TABLE {self._name} {data}"
@@ -37,9 +35,8 @@ class UserTable(object):
         self._cursor.execute(request)
 
     def insert_into(self, data:dict):
-        values = ("0",)
         # first name
-        values += (data.get(envs.FIRST_NAME, ""),)
+        values = (data.get(envs.FIRST_NAME, ""),)
 
         # last name
         values += (data.get(envs.LAST_NAME, ""),)
@@ -47,11 +44,8 @@ class UserTable(object):
         # description
         values += (data.get(envs.DESC, ""),)
 
-        # thumbnail
-        values += (data.get(envs.PATH, ""),)
-
         request = f"INSERT INTO {self._name} \
-        ({envs.ID},{envs.FIRST_NAME},{envs.LAST_NAME},{envs.DESC},{envs.PATH}) VALUES (%s,%s,%s,%s,%s)"
+        ({envs.ALBUM_NAME},{envs.ALBUM_TYPE}) VALUES (%s,%s)"
 
         self._cursor.execute(request, values)
         self._server.commit()
@@ -59,15 +53,15 @@ class UserTable(object):
     def select_rows(self):
         self._cursor.execute(f"SELECT * FROM {self._name}")
         return self._cursor.fetchall()
-    
+
     def select_from_column(self, column:str, value:str):
         request = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
         self._cursor.execute(request)
         return self._cursor.fetchall()
-    
-    def update(self, column:str, new_value:str):
+
+    def update(self, column:str, id:str, new_value:str):
         try:
-            sql = f"UPDATE {self._name} SET {column} = '{new_value}' WHERE ({envs.ID} = '0')"
+            sql = f"UPDATE {self._name} SET {column} = '{new_value}' WHERE ({envs.ID} = '{str(id)}')"
             self._cursor.execute(sql)
             self._server.commit()
         except:

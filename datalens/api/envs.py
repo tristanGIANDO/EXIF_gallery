@@ -3,9 +3,11 @@ from pathlib import Path
 DB_NAME = "db01"
 FILE_TABLE_NAME = "files"
 USER_TABLE_NAME = "user"
+ALBUM_TABLE_NAME = "album"
 
 ROOT = Path.home() / ".database"
 
+ALBUM = "album"
 # file table
 ID = "id"
 PATH = "path"
@@ -51,3 +53,7 @@ IMAGE_SMALL_SUFFIX = "-small"
 # user table
 FIRST_NAME = "first_name"
 LAST_NAME = "last_name"
+
+# album table
+ALBUM_NAME = "name"
+ALBUM_TYPE = "type"

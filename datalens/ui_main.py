@@ -66,6 +66,8 @@ class MainUI( QtWidgets.QMainWindow):
             QtGui.QIcon(envs.ICONS["user"]), 
             "About you", 
             self)
+        
+        self.create_album_action = QtWidgets.QAction("Create Album", self)
 
     def create_layouts(self):
         # toolbar
@@ -73,6 +75,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.image_toolbar.setIconSize(QtCore.QSize(30,30))
         self.addToolBar(self.image_toolbar)
         self.image_toolbar.addAction(self.reload_files_action)
+        self.image_toolbar.addAction(self.create_album_action)
         self.image_toolbar.addAction(self.add_files_action)
         self.image_toolbar.addAction(self.remove_files_action)
         self.image_toolbar.addAction(self.viewer_action)
@@ -130,7 +133,9 @@ class MainUI( QtWidgets.QMainWindow):
     
     def open_user_info(self):
         user = self._db._you.get_user()
-        ui = UserInfosUI(user=user[0])
+        if user:
+            user = user[0]
+        ui = UserInfosUI(user=user)
         if ui.exec_():
             data = ui.read()
             if user:
@@ -185,6 +190,9 @@ class MainUI( QtWidgets.QMainWindow):
         if user:
             user_name = f"{user[0][1]} {user[0][2]}"
             user_description = user[0][3]
+        else:
+            user_name = "My portfolio"
+            user_description = "A DataLens portfolio"
         html_file = api_utils.create_website(paths, os.path.dirname(__file__),
                     user_name=user_name, user_description=user_description)
         webbrowser.open(html_file)

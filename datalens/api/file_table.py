@@ -6,7 +6,7 @@ class FileTable(object):
     def __init__(self, server) -> None:
         self._server = server
         self._cursor = server.cursor(buffered=True)
-        self._name = "files"
+        self._name = envs.FILE_TABLE_NAME
 
         self.create()
 
@@ -27,7 +27,7 @@ class FileTable(object):
                 {envs.ID} VARCHAR(30),\
                 {envs.PATH} VARCHAR(250),\
                 {envs.SUBJECT} VARCHAR(45),\
-                {envs.DESC} VARCHAR(100),\
+                {envs.ALBUM} VARCHAR(100),\
                 {envs.MAKE} VARCHAR(45),\
                 {envs.MODEL} VARCHAR(45),\
                 {envs.MOUNT} VARCHAR(45),\
@@ -70,8 +70,8 @@ class FileTable(object):
         # subject
         values += (data.get(envs.SUBJECT, ""),)
 
-        # description
-        values += (data.get(envs.DESC, ""),)
+        # album
+        values += (data.get(envs.ALBUM, ""),)
 
         # make
         values += (data.get(envs.MAKE, ""),)
@@ -122,9 +122,9 @@ class FileTable(object):
             brut = ""
         values += (brut,)
 
-        request = f"INSERT INTO {envs.FILE_TABLE_NAME} \
+        request = f"INSERT INTO {self._name} \
         ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
-        {envs.DESC},{envs.MAKE},{envs.MODEL}, \
+        {envs.ALBUM},{envs.MAKE},{envs.MODEL}, \
         {envs.MOUNT},{envs.FOCAL},{envs.F_NUMBER}, \
         {envs.ISO},{envs.LIGHTS},{envs.EXPOSURE_TIME}, \
         {envs.TOTAL_TIME},{envs.LOCATION},{envs.BORTLE}, \
@@ -143,12 +143,12 @@ class FileTable(object):
 
     # fileTable
     def select_rows(self):
-        self._cursor.execute(f"SELECT * FROM {envs.FILE_TABLE_NAME}")
+        self._cursor.execute(f"SELECT * FROM {self._name}")
         return self._cursor.fetchall()
     
     # fileTable
     def select_from_column(self, column:str, value:str):
-        request = f"SELECT * FROM {envs.FILE_TABLE_NAME} WHERE {column} ='{value}'"
+        request = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
         self._cursor.execute(request)
         return self._cursor.fetchall()
     
@@ -156,7 +156,7 @@ class FileTable(object):
     def update(self, column:str, id:str, new_value:str):
         # global update
         try:
-            sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {column} = '{new_value}' WHERE ({envs.ID} = '{str(id)}')"
+            sql = f"UPDATE {self._name} SET {column} = '{new_value}' WHERE ({envs.ID} = '{str(id)}')"
             self._cursor.execute(sql)
             self._server.commit()
         except:
@@ -169,7 +169,7 @@ class FileTable(object):
     
     # fileTable
     def delete_from(self, id:int, path:str):
-        request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{str(id)}'"
+        request = f"DELETE FROM {self._name} WHERE {envs.ID} = '{str(id)}'"
         self._cursor.execute(request)
         self._server.commit()
 
@@ -179,13 +179,13 @@ class FileTable(object):
     
     def _update_total_time(self, id:str):
         # get epxosure total time
-        request = f"SELECT {envs.LIGHTS},{envs.EXPOSURE_TIME} FROM {envs.FILE_TABLE_NAME} WHERE {envs.ID} = '{id}'"
+        request = f"SELECT {envs.LIGHTS},{envs.EXPOSURE_TIME} FROM {self._name} WHERE {envs.ID} = '{id}'"
         self._cursor.execute(request)
         result = self._cursor.fetchall()
         total_time = api_utils.convert_minutes_to_datetime(int(result[0][0]) * int(result[0][1]) / 60)
 
         try:
-            sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.TOTAL_TIME} = '{total_time}' WHERE ({envs.ID} = '{id}')"
+            sql = f"UPDATE {self._name} SET {envs.TOTAL_TIME} = '{total_time}' WHERE ({envs.ID} = '{id}')"
             self._cursor.execute(sql)
             self._server.commit()
         except:
@@ -195,7 +195,7 @@ class FileTable(object):
         moon_phase = api_utils.get_moon_phase(date)
 
         try:
-            sql = f"UPDATE {envs.FILE_TABLE_NAME} SET {envs.MOON_PHASE} = '{moon_phase}' WHERE ({envs.ID} = '{id}')"
+            sql = f"UPDATE {self._name} SET {envs.MOON_PHASE} = '{moon_phase}' WHERE ({envs.ID} = '{id}')"
             self._cursor.execute(sql)
             self._server.commit()
         except:
