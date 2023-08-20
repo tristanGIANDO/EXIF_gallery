@@ -31,77 +31,79 @@ class MainUI( QtWidgets.QMainWindow):
         self._update_user()
 
     def create_widgets(self):
+        self.title = QtWidgets.QLabel("DataLens")
+        self.title.setFont(QtGui.QFont("Impact", 16))
+
         self.tree = AstroWorkspaceTree()
         self.list_wdg = AstroListWidget()
         self.albums_cb = QtWidgets.QComboBox()
+        self.albums_cb.setFixedSize(200,40)
+        self.albums_cb.setFont(QtGui.QFont("Arial", 12, QtGui.QFont.Bold))
 
     def create_actions(self):
         self.add_files_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["add_file"]), 
-            "Add Files", 
-            self)
+            QtGui.QIcon(envs.ICONS["add_file"]), "Add File", self)
         
         self.remove_files_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["remove_file"]),
-            "Remove Files", 
-            self)
+            QtGui.QIcon(envs.ICONS["remove_file"]), "Remove File", self)
         
         self.reload_files_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["reload"]),
-            "Reload Files", 
-            self)
+            QtGui.QIcon(envs.ICONS["reload"]), "Reload", self)
         
         self.view_mode_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["card"]), 
-            "Change View Mode", 
-            self)
+            QtGui.QIcon(envs.ICONS["card"]), "Change View Mode", self)
         
         self.viewer_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["viewer"]), 
-            "Image viewer", 
-            self)
+            QtGui.QIcon(envs.ICONS["viewer"]), "Image Viewer", self)
         
         self.web_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["website"]), 
-            "Website", 
-            self)
+            QtGui.QIcon(envs.ICONS["website"]), "Website", self)
         
         self.user_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["user"]), 
-            "About you", 
-            self)
+            QtGui.QIcon(envs.ICONS["user"]), "About you", self)
         
-        self.create_album_action = QtWidgets.QAction("Create Album", self)
-        self.delete_album_action = QtWidgets.QAction("Delete Album", self)
+        self.create_album_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["add_album"]), "Create Album", self)
+        
+        self.delete_album_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["remove_album"]), "Delete Album", self)
 
     def create_layouts(self):
-        # toolbar
-        self.image_toolbar = QtWidgets.QToolBar(self)
-        self.image_toolbar.setIconSize(QtCore.QSize(30,30))
-        self.addToolBar(self.image_toolbar)
-        self.image_toolbar.addAction(self.reload_files_action)
-        self.image_toolbar.addAction(self.add_files_action)
-        self.image_toolbar.addAction(self.remove_files_action)
-        self.image_toolbar.addAction(self.viewer_action)
-        self.image_toolbar.addSeparator()
-        self.image_toolbar.addAction(self.create_album_action)
-        self.image_toolbar.addWidget(self.albums_cb)
-        self.image_toolbar.addAction(self.delete_album_action)
-        self.image_toolbar.addSeparator()
-        self.image_toolbar.addAction(self.web_action)
 
-        # toolbar
-        self.view_toolbar = QtWidgets.QToolBar(self)
-        self.view_toolbar.setIconSize(QtCore.QSize(30,30))
-        self.addToolBar(QtCore.Qt.BottomToolBarArea, self.view_toolbar)
-        self.view_toolbar.addAction(self.view_mode_action)
-        self.view_toolbar.addAction("Created by Tristan Giandoriggio")
-        
-        # toolbar
+        # user toolbar
         self.user_toolbar = QtWidgets.QToolBar(self)
         self.user_toolbar.setIconSize(QtCore.QSize(60,60))
         self.addToolBar(self.user_toolbar)
         self.user_toolbar.addAction(self.user_action)
+
+        # album toolbar
+        self.album_toolbar = QtWidgets.QToolBar(self)
+        self.album_toolbar.setIconSize(QtCore.QSize(35,35))
+        self.album_toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.addToolBar(self.album_toolbar)
+        self.album_toolbar.addAction(self.create_album_action)
+        self.album_toolbar.addAction(self.delete_album_action)
+        self.album_toolbar.addWidget(self.albums_cb)
+
+        # image toolbar
+        self.image_toolbar = QtWidgets.QToolBar(self)
+        self.image_toolbar.setIconSize(QtCore.QSize(35,35))
+        self.image_toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.addToolBar(self.image_toolbar)
+        self.image_toolbar.addAction(self.reload_files_action)
+        self.image_toolbar.addAction(self.add_files_action)
+        self.image_toolbar.addAction(self.remove_files_action)
+        self.image_toolbar.addSeparator()
+        self.image_toolbar.addAction(self.viewer_action)
+        self.image_toolbar.addAction(self.web_action)
+
+        # view toolbar
+        self.view_toolbar = QtWidgets.QToolBar(self)
+        self.view_toolbar.setIconSize(QtCore.QSize(35,35))
+        self.addToolBar(QtCore.Qt.BottomToolBarArea, self.view_toolbar)
+        self.view_toolbar.addAction(self.view_mode_action)
+        self.view_toolbar.addWidget(self.title)
+        self.view_toolbar.addAction("Created by Tristan Giandoriggio")
 
         # main self.central_layout
         self.central_layout = QtWidgets.QVBoxLayout()
@@ -113,7 +115,6 @@ class MainUI( QtWidgets.QMainWindow):
 
     def create_connections(self):
         self.tree.itemChanged.connect(self.on_item_changed)
-
         self.add_files_action.triggered.connect(self.on_add_files_clicked)
         self.remove_files_action.triggered.connect(self.on_remove_files_clicked)
         self.reload_files_action.triggered.connect(self._update_files)

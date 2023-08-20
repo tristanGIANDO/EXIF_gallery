@@ -7,6 +7,8 @@ main_icon = path.parent.parent / "resources" / "icon.jpg"
 ICONS = {
     "add_file" : f"{icons_root}/add_image.png",
     "remove_file" : f"{icons_root}/remove_image.png",
+    "add_album" : f"{icons_root}/add_album.png",
+    "remove_album" : f"{icons_root}/remove_album.png",
     "reload" : f"{icons_root}/reload.png",
     "full" : f"{icons_root}/full_screen.png",
     "previous" : f"{icons_root}/arrow_left",
