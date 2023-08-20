@@ -1,4 +1,4 @@
-from api import envs
+from datalens.api import envs
 
 class UserTable(object):
     def __init__(self, server) -> None:

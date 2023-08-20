@@ -1,6 +1,6 @@
 import traceback, os
 from pathlib import Path
-from api import envs, api_utils
+from datalens.api import envs, api_utils
 
 class FileTable(object):
     def __init__(self, server) -> None:

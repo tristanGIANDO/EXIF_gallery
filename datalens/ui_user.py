@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtGui
 
-import envs
+from datalens import envs
 from datalens.api import envs as api_envs
 
 class UserInfosUI(QtWidgets.QDialog):

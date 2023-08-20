@@ -7,12 +7,11 @@ files = [
     {"id":5, "album" : "paysage"},
 ]
 
-albums = {}
+current_album = "astro"
+album_files = []
 for file in files:
     album = file.get("album")
-    if not album in albums:
-        albums[album] = [file.get("id")]
-    else:
-        albums[album].append(file.get("id"))
+    if album == current_album:
+        album_files.append(file)
 
-print(albums)
+print(album_files)

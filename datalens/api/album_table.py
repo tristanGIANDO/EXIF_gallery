@@ -1,4 +1,4 @@
-from api import envs
+from datalens.api import envs
 
 class AlbumTable(object):
     def __init__(self, server) -> None:
@@ -36,13 +36,10 @@ class AlbumTable(object):
 
     def insert_into(self, data:dict):
         # first name
-        values = (data.get(envs.FIRST_NAME, ""),)
+        values = (data.get(envs.ALBUM_NAME, ""),)
 
         # last name
-        values += (data.get(envs.LAST_NAME, ""),)
-
-        # description
-        values += (data.get(envs.DESC, ""),)
+        values += (data.get(envs.ALBUM_TYPE, ""),)
 
         request = f"INSERT INTO {self._name} \
         ({envs.ALBUM_NAME},{envs.ALBUM_TYPE}) VALUES (%s,%s)"
@@ -66,3 +63,8 @@ class AlbumTable(object):
             self._server.commit()
         except:
             pass
+
+    def delete_album(self, album_name):
+        request = f"DELETE FROM {self._name} WHERE {envs.ALBUM_NAME} = '{album_name}'"
+        self._cursor.execute(request)
+        self._server.commit()

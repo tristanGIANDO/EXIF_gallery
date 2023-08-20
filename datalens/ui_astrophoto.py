@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
 from pathlib import Path
 from ui_utils import WorkspaceTree, ImageViewWidget
-import envs
-from api import envs as api_envs
+from datalens import envs
+from datalens.api import envs as api_envs
 
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
            envs.G_SUBJECT, envs.G_DESC, envs.G_MAKE, envs.G_MODEL,

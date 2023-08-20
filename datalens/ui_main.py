@@ -1,12 +1,13 @@
 import sys, webbrowser
 from PyQt5 import QtWidgets,QtCore, QtGui
-import __infos__, envs
+from datalens import __infos__, envs
 
-from api.database import Database
-from api import api_utils
-from ui_astrophoto import AstroWorkspaceTree, AstroListWidget
-from ui_image import ImageInfosUI, ImageViewerUI
-from ui_user import UserInfosUI
+from datalens.api.database import Database
+from datalens.api import api_utils
+from datalens.ui_astrophoto import AstroWorkspaceTree, AstroListWidget
+from datalens.ui_image import ImageInfosUI, ImageViewerUI
+from datalens.ui_user import UserInfosUI
+from datalens.ui_utils import CreateAlbumUI
 import os
    
 class MainUI( QtWidgets.QMainWindow):
@@ -23,13 +24,16 @@ class MainUI( QtWidgets.QMainWindow):
         self.create_connections()
 
         self._db = Database()
+        self._current_album = ""
         
         self.list_wdg.setVisible(False)
+        self._update_albums()
         self._update()
 
     def create_widgets(self):
         self.tree = AstroWorkspaceTree()
         self.list_wdg = AstroListWidget()
+        self.albums_cb = QtWidgets.QComboBox()
 
     def create_actions(self):
         self.add_files_action = QtWidgets.QAction(
@@ -68,6 +72,7 @@ class MainUI( QtWidgets.QMainWindow):
             self)
         
         self.create_album_action = QtWidgets.QAction("Create Album", self)
+        self.delete_album_action = QtWidgets.QAction("Delete Album", self)
 
     def create_layouts(self):
         # toolbar
@@ -75,10 +80,13 @@ class MainUI( QtWidgets.QMainWindow):
         self.image_toolbar.setIconSize(QtCore.QSize(30,30))
         self.addToolBar(self.image_toolbar)
         self.image_toolbar.addAction(self.reload_files_action)
-        self.image_toolbar.addAction(self.create_album_action)
         self.image_toolbar.addAction(self.add_files_action)
         self.image_toolbar.addAction(self.remove_files_action)
         self.image_toolbar.addAction(self.viewer_action)
+        self.image_toolbar.addSeparator()
+        self.image_toolbar.addAction(self.create_album_action)
+        self.image_toolbar.addWidget(self.albums_cb)
+        self.image_toolbar.addAction(self.delete_album_action)
 
         # toolbar
         self.view_toolbar = QtWidgets.QToolBar(self)
@@ -112,22 +120,38 @@ class MainUI( QtWidgets.QMainWindow):
         self.viewer_action.triggered.connect(self.on_viewer_triggered)
         self.web_action.triggered.connect(self.on_web_triggered)
         self.user_action.triggered.connect(self.on_user_triggered)
+        self.create_album_action.triggered.connect(self.on_create_album_triggered)
+        self.delete_album_action.triggered.connect(self.on_delete_album_triggered)
+        self.albums_cb.currentTextChanged.connect(self.on_album_changed)
 
     def _update(self):
         self.tree.blockSignals(True)
         self.tree.clear()
-        for file_data in self._db._files.select_rows():
-            self.tree.add_item(file_data)
+        for file_data in self._db._files.select_rows() or ():
+            if file_data[3] == self._current_album:
+                self.tree.add_item(file_data)
         self.tree.blockSignals(False)
         
         self.list_wdg.clear()
         for file_data in self._db._files.select_rows():
             self.list_wdg.add_item(file_data)
+
+    def _update_albums(self, album_name = None):
+        self.albums_cb.clear()
+        for album_data in self._db._albums.select_rows():
+            name = album_data[1]
+            self.albums_cb.addItem(name)
+        if album_name:
+            self._current_album = album_name
+        else:
+            self._current_album = name
+        self.albums_cb.setCurrentText(self._current_album)
         
     def open_image_info(self):
         ui = ImageInfosUI()
         if ui.exec_():
             data = ui.read()
+            data["album"] = self._current_album
             self._db._files.insert_into(data)
             self._update()
     
@@ -196,6 +220,23 @@ class MainUI( QtWidgets.QMainWindow):
         html_file = api_utils.create_website(paths, os.path.dirname(__file__),
                     user_name=user_name, user_description=user_description)
         webbrowser.open(html_file)
+
+    def on_create_album_triggered(self):
+        ui = CreateAlbumUI()
+        if ui.exec_():
+            data = ui.read()
+            self._db._albums.insert_into(data)
+            self._update_albums(data.get("name"))
+
+    def on_album_changed(self):
+        self._current_album = self.albums_cb.currentText()
+        self._update()
+    
+    def on_delete_album_triggered(self):
+        album_name = self.albums_cb.currentText()
+        self._db._albums.delete_album(album_name)
+        self._update_albums()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

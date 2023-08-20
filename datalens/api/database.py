@@ -1,8 +1,8 @@
 import mysql.connector
-from api import envs
-from api.file_table import FileTable
-from api.user_table import UserTable
-from api.album_table import AlbumTable
+from datalens.api import envs
+from datalens.api.file_table import FileTable
+from datalens.api.user_table import UserTable
+from datalens.api.album_table import AlbumTable
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:
