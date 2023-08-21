@@ -15,12 +15,14 @@ class MainUI( QtWidgets.QMainWindow):
 
         self.setWindowTitle("%s v-%s"%(__infos__.__title__,
                                        __infos__.__version__))
+        self.setWindowIcon(QtGui.QIcon(str(envs.main_icon)))
         self.resize(1800, 800)
 
         self.create_widgets()
         self.create_actions()
         self.create_layouts()
         self.create_connections()
+
 
         self._db = Database()
         self._current_album = ""
@@ -258,6 +260,8 @@ class MainUI( QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyleSheet(open(r"datalens\lightstyle.qss").read())
+
     ui = MainUI()
     ui.show()
     sys.exit(app.exec_())
