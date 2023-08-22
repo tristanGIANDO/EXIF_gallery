@@ -6,7 +6,7 @@ from datalens.api import envs as api_envs
 from datalens.ui_astrophoto import AstroWorkspaceTree, AstroListWidget
 from datalens.ui_image import ImageInfosUI, ImageViewerUI
 from datalens.ui_user import UserInfosUI
-from datalens.ui_utils import CreateAlbumUI
+from datalens.ui_utils import CreateAlbumUI, ActionButton
 from datalens.web import website
    
 class MainUI( QtWidgets.QMainWindow):
@@ -27,10 +27,12 @@ class MainUI( QtWidgets.QMainWindow):
         self._db = Database()
         self._current_album = ""
         
-        self.list_wdg.setVisible(False)
+        
         self._update_albums()
         self._update_files()
         self._update_user()
+
+        self.set_view()
 
     def create_widgets(self):
         self.title = QtWidgets.QLabel("DataLens")
@@ -69,6 +71,9 @@ class MainUI( QtWidgets.QMainWindow):
         
         self.delete_album_action = QtWidgets.QAction(
             QtGui.QIcon(envs.ICONS["remove_album"]), "Delete Album", self)
+        
+        self.create_album_btn = ActionButton(self.create_album_action)
+        # self.add_files_btn = ActionButton(self.add_files_action)
 
     def create_layouts(self):
 
@@ -107,10 +112,15 @@ class MainUI( QtWidgets.QMainWindow):
         self.view_toolbar.addWidget(self.title)
         self.view_toolbar.addAction("Created by Tristan Giandoriggio")
 
+        self.start_layout = QtWidgets.QHBoxLayout()
+        self.start_layout.setContentsMargins(100,100,100,100)
+        self.start_layout.addWidget(self.create_album_btn)
+        # self.start_layout.addWidget(self.add_files_btn)
         # main self.central_layout
         self.central_layout = QtWidgets.QVBoxLayout()
         self.central_layout.addWidget(self.tree)
         self.central_layout.addWidget(self.list_wdg)
+        self.central_layout.addLayout(self.start_layout)
         central_widget = QtWidgets.QWidget(self)
         central_widget.setLayout(self.central_layout)
         self.setCentralWidget(central_widget)
@@ -208,14 +218,36 @@ class MainUI( QtWidgets.QMainWindow):
         self.set_view()
     
     def set_view(self):
-        if self.tree.isHidden():
+        if not self._current_album:
+            self.delete_album_action.setEnabled(False)
+            self.albums_cb.setEnabled(False)
+            self.viewer_action.setEnabled(False)
+            self.add_files_action.setEnabled(False)
+            self.remove_files_action.setEnabled(False)
+            self.view_mode_action.setEnabled(False)
+
+            self.create_album_btn.setVisible(True)
+            # self.add_files_btn.setVisible(True)
             self.list_wdg.setVisible(False)
-            self.tree.setVisible(True)
-            self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["card"]))
-        else:
-            self.list_wdg.setVisible(True)
             self.tree.setVisible(False)
-            self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["list"]))
+        else:
+            self.delete_album_action.setEnabled(True)
+            self.albums_cb.setEnabled(True)
+            self.viewer_action.setEnabled(True)
+            self.add_files_action.setEnabled(True)
+            self.remove_files_action.setEnabled(True)
+            self.view_mode_action.setEnabled(True)
+
+            self.create_album_btn.setVisible(False)
+            # self.add_files_btn.setVisible(False)
+            if self.tree.isHidden():
+                self.list_wdg.setVisible(False)
+                self.tree.setVisible(True)
+                self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["card"]))
+            else:
+                self.list_wdg.setVisible(True)
+                self.tree.setVisible(False)
+                self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["list"]))
 
     def on_viewer_triggered(self):
         paths = []
@@ -247,6 +279,7 @@ class MainUI( QtWidgets.QMainWindow):
             data = ui.read()
             self._db._albums.insert_into(data)
             self._update_albums(data.get("name"))
+            self.set_view()
 
     def on_album_changed(self):
         self._current_album = self.albums_cb.currentText()
@@ -256,6 +289,7 @@ class MainUI( QtWidgets.QMainWindow):
         album_name = self.albums_cb.currentText()
         self._db._albums.delete_album(album_name)
         self._update_albums()
+        self.set_view()
 
 
 if __name__ == "__main__":

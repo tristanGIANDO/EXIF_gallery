@@ -111,3 +111,13 @@ class CreateAlbumUI(QtWidgets.QDialog):
             envs.ALBUM_NAME : self.album_name_le.text(),
             envs.ALBUM_TYPE : self.album_type_cb.currentText()
         }
+    
+class ActionButton(QtWidgets.QPushButton):
+    def __init__(self, action, parent=None):
+        super().__init__(parent)
+        self.setText(action.text())
+        self.setIcon(action.icon())
+        self.setIconSize(QtCore.QSize(50,50))
+        self.setMaximumHeight(80)
+        self.setMaximumWidth(300)
+        self.clicked.connect(action.trigger)
