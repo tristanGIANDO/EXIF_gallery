@@ -62,6 +62,7 @@ class AstroWorkspaceTree(WorkspaceTree):
                                     QtWidgets.QHeaderView.ResizeToContents)
             
         self.header().setSectionHidden(1, True) # Path
+        self.header().setSectionHidden(4, True) # Album
         self.setIconSize(QtCore.QSize(30,30))
 
     def add_item(self, file_row):

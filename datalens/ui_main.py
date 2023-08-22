@@ -260,7 +260,7 @@ class MainUI( QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(open(r"datalens\lightstyle.qss").read())
+    app.setStyleSheet(open(r"datalens\styles\lightstyle.qss").read())
 
     ui = MainUI()
     ui.show()
