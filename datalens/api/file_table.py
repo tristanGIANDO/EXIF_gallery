@@ -62,7 +62,8 @@ class FileTable(object):
         values = (id,)
 
         # path
-        path = self.conform_file(data.get(envs.PATH), id)
+        album = data.get(envs.ALBUM)
+        path = self.conform_file(data.get(envs.PATH), album, id)
         if not path:
             return
         values += (path,)
@@ -71,7 +72,7 @@ class FileTable(object):
         values += (data.get(envs.SUBJECT, ""),)
 
         # album
-        values += (data.get(envs.ALBUM, ""),)
+        values += (album,)
 
         # make
         values += (data.get(envs.MAKE, ""),)
@@ -117,7 +118,7 @@ class FileTable(object):
         # date
         values += (data.get(envs.DATE),)
         # brut
-        brut = self.conform_file(data.get(envs.PATH_BRUT, ""), id)
+        brut = self.conform_file(data.get(envs.PATH_BRUT, ""), album, id)
         if not brut:
             brut = ""
         values += (brut,)
@@ -201,10 +202,10 @@ class FileTable(object):
         except:
             print(traceback.print_exc())
 
-    def conform_file(sekf, path, id):
+    def conform_file(sekf, path, album, id):
         if not os.path.isfile(path):
             return
-        image_large_path = api_utils.copy_file(path, id)
+        image_large_path = api_utils.copy_file(path, album, id)
         image_small_path = api_utils.resize_image(image_large_path, 300, 200)
 
         return image_large_path

@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 # from PIL.ExifTags import TAGS
 
-def copy_file(path:str,id:str) ->str:
+def copy_file(path:str, album:str, id:str) ->str:
     """copy file to dir
 
     Args:
@@ -17,14 +17,14 @@ def copy_file(path:str,id:str) ->str:
         str: _description_
     """
     if os.path.isfile(path):
-        if not os.path.isdir(envs.ROOT):
-            os.mkdir(envs.ROOT)
-        new_path = os.path.join(envs.ROOT, f"{id}{os.path.splitext(path)[-1]}")
+        new_dir_path = os.path.join(envs.ROOT, album)
+        if not os.path.isdir(new_dir_path):
+            os.makedirs(new_dir_path)
+        
+        new_path = os.path.join(new_dir_path, f"{id}{os.path.splitext(path)[-1]}")
         shutil.copy(path, new_path)
 
         return new_path
-    else:
-        return ""
        
 def convert_minutes_to_datetime(time):
     """convert

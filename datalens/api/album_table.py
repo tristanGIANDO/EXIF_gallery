@@ -1,4 +1,5 @@
 from datalens.api import envs
+import os,shutil
 
 class AlbumTable(object):
     def __init__(self, server) -> None:
@@ -68,3 +69,11 @@ class AlbumTable(object):
         request = f"DELETE FROM {self._name} WHERE {envs.ALBUM_NAME} = '{album_name}'"
         self._cursor.execute(request)
         self._server.commit()
+
+        request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'"
+        self._cursor.execute(request)
+        self._server.commit()
+
+        path = os.path.join(envs.ROOT, album_name)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
