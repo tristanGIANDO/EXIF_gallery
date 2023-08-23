@@ -118,7 +118,7 @@ class FileTable(object):
         # date
         values += (data.get(envs.DATE),)
         # brut
-        brut = self.conform_file(data.get(envs.PATH_BRUT, ""), album, id)
+        brut = self.conform_file(data.get(envs.PATH_BRUT, ""), album, str(id) + "-brut")
         if not brut:
             brut = ""
         values += (brut,)

@@ -47,8 +47,7 @@ class ImageViewWidget(QtWidgets.QPushButton):
         self.clicked.connect(self.on_button_clicked)
 
     def on_button_clicked(self):
-        ui = ImageInfosUI(self.path)
-        ui.exec_()
+        pass
 
     def load_image(self, image_path):
         pixmap = QtGui.QPixmap(image_path)

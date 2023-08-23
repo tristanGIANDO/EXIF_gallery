@@ -49,6 +49,7 @@ EXIF_TO_DATABASE_MAPPING = {
     }
 
 IMAGE_SMALL_SUFFIX = "-small"
+BRUT_SMALL_SUFFIX = "-brut-small"
 
 # user table
 FIRST_NAME = "first_name"

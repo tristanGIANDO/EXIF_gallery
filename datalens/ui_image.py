@@ -6,13 +6,12 @@ from datalens.api import envs as api_envs
 from datalens.api import api_utils
 
 class ImageInfosUI(QtWidgets.QDialog):
-    def __init__(self, path=None):
+    def __init__(self):
         super().__init__()
-        if path:
-            self._path = path
-            self._exif = api_utils.get_exifs(path)
-        else:
-            self._path = ""
+    
+        self._exif = {}
+        self._image_path = ""
+        self._brut_path = ""
 
         self.setWindowTitle("Image Details")
         self.resize(1000, 600)
@@ -25,9 +24,11 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.add_image_btn = QtWidgets.QPushButton("Add Image(JPG,PNG)")
         self.add_image_btn.clicked.connect(self.on_add_image_clicked)
         self.add_brut_btn = QtWidgets.QPushButton("Add Brut(JPG,PNG)")
+        self.add_brut_btn.clicked.connect(self.on_add_brut_clicked)
 
         # Image
-        self.image_lbl = QtWidgets.QWidget()
+        self.image_lbl = QtWidgets.QLabel()
+        self.brut_lbl = QtWidgets.QLabel()
 
         # in the grids
         self.subject_le = QtWidgets.QLineEdit()
@@ -65,12 +66,13 @@ class ImageInfosUI(QtWidgets.QDialog):
 
         # Images
         adds_layout = QtWidgets.QHBoxLayout()
-        if not self._path:
-            adds_layout.addWidget(self.add_image_btn)
-            adds_layout.addWidget(self.add_brut_btn)
+        adds_layout.addWidget(self.add_image_btn)
+        adds_layout.addWidget(self.add_brut_btn)
 
         self.v_image_layout = QtWidgets.QVBoxLayout()
         self.v_image_layout.addLayout(adds_layout)
+        self.v_image_layout.addWidget(self.image_lbl)
+        self.v_image_layout.addWidget(self.brut_lbl)
 
         main_layout.addLayout(self.v_image_layout)
 
@@ -161,14 +163,23 @@ class ImageInfosUI(QtWidgets.QDialog):
 
         # Buttons
         h_layout = QtWidgets.QHBoxLayout()
-        if not self._path:
-            h_layout.addWidget(self.ok_btn)
-            h_layout.addWidget(self.cancel_btn)
+        h_layout.addWidget(self.ok_btn)
+        h_layout.addWidget(self.cancel_btn)
         h_layout.addStretch(1)
         v_layout.addLayout(h_layout)
  
     def _update(self):
-        self.v_image_layout.removeWidget(self.image_lbl)
+        # buttons
+        if self._image_path:
+            self.add_image_btn.setEnabled(False)
+        else:
+            self.add_image_btn.setEnabled(True)
+        if self._brut_path:
+            self.add_brut_btn.setEnabled(False)
+        else:
+            self.add_brut_btn.setEnabled(True)
+
+        # self.v_image_layout.removeWidget(self.image_lbl)
 
         self.subject_le.setText(self._exif.get(api_envs.SUBJECT, ""))
         self.album_le.setText(self._exif.get(api_envs.ALBUM, ""))
@@ -189,11 +200,17 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.comment_le.setText(self._exif.get(api_envs.COMMENT,""))
         self.process_le.setText(self._exif.get(api_envs.SOFTWARE))
 
-        self.image_lbl = QtWidgets.QLabel()
-        pixmap = QtGui.QPixmap(self._exif.get(api_envs.PATH))
-        pixmap = pixmap.scaled(700, 500, QtCore.Qt.KeepAspectRatio)
+        # self.image_lbl = QtWidgets.QLabel()
+        pixmap = QtGui.QPixmap(self._image_path)
+        pixmap = pixmap.scaled(500, 300, QtCore.Qt.KeepAspectRatio)
         self.image_lbl.setPixmap(pixmap)
-        self.v_image_layout.addWidget(self.image_lbl)
+        # self.v_image_layout.addWidget(self.image_lbl)
+
+        # self.brut_lbl = QtWidgets.QLabel()
+        brut_pixmap = QtGui.QPixmap(self._brut_path)
+        brut_pixmap = brut_pixmap.scaled(500, 300, QtCore.Qt.KeepAspectRatio)
+        self.brut_lbl.setPixmap(brut_pixmap)
+        # self.v_image_layout.addWidget(self.brut_lbl)
 
     def _accept(self):
         self.deleteLater()
@@ -212,7 +229,7 @@ class ImageInfosUI(QtWidgets.QDialog):
     def read(self):
         return {api_envs.ID : self._exif.get(api_envs.ID),
                 api_envs.SUBJECT : self.subject_le.text(),
-                api_envs.PATH : self._exif.get(api_envs.PATH),
+                api_envs.PATH : self._image_path,
                 api_envs.ALBUM : self.album_le.text(),
                 api_envs.MAKE : self.maker_le.text(),
                 api_envs.MODEL : self.model_le.text(),
@@ -228,12 +245,23 @@ class ImageInfosUI(QtWidgets.QDialog):
                 api_envs.SOFTWARE : self.process_le.text(),
                 api_envs.AUTHOR : self.author_le.text(),
                 api_envs.COMMENT : self.comment_le.text(),
-                api_envs.DATE : self.date_le.text()}
+                api_envs.DATE : self.date_le.text(),
+                api_envs.PATH_BRUT : self._brut_path}
     
     def on_add_image_clicked(self):
         path = self.open_file_dialog()
-        self._exif = api_utils.get_exifs(path)
-        self._update()
+        if path:
+            self._image_path = path
+            if not self._exif:
+                self._exif = api_utils.get_exifs(path)
+            self._update()
+    
+    def on_add_brut_clicked(self):
+        path = self.open_file_dialog()
+        if path:
+            self._brut_path = path
+            self._exif = api_utils.get_exifs(path)
+            self._update()
 
 class ImageViewerUI(QtWidgets.QDialog):
     def __init__(self, paths):
