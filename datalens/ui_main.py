@@ -26,6 +26,7 @@ class MainUI( QtWidgets.QMainWindow):
 
         self._db = Database()
         self._current_album = ""
+        self._current_files = []
         
         
         self._update_albums()
@@ -73,7 +74,7 @@ class MainUI( QtWidgets.QMainWindow):
             QtGui.QIcon(envs.ICONS["remove_album"]), "Delete Album", self)
         
         self.create_album_btn = ActionButton(self.create_album_action)
-        # self.add_files_btn = ActionButton(self.add_files_action)
+        self.add_files_btn = ActionButton(self.add_files_action)
 
     def create_layouts(self):
 
@@ -115,7 +116,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.start_layout = QtWidgets.QHBoxLayout()
         self.start_layout.setContentsMargins(100,100,100,100)
         self.start_layout.addWidget(self.create_album_btn)
-        # self.start_layout.addWidget(self.add_files_btn)
+        self.start_layout.addWidget(self.add_files_btn)
         # main self.central_layout
         self.central_layout = QtWidgets.QVBoxLayout()
         self.central_layout.addWidget(self.tree)
@@ -143,7 +144,8 @@ class MainUI( QtWidgets.QMainWindow):
         self.tree.clear()
         self.list_wdg.clear()
 
-        for file in self.get_album_files():
+        self._current_files = self.get_album_files()
+        for file in self._current_files:
             self.tree.add_item(file)
             self.list_wdg.add_item(file)
 
@@ -183,6 +185,7 @@ class MainUI( QtWidgets.QMainWindow):
             data["album"] = self._current_album
             self._db._files.insert_into(data)
             self._update_files()
+            self.set_view()
     
     def open_user_info(self):
         user = self._db._you.get_user()
@@ -219,39 +222,58 @@ class MainUI( QtWidgets.QMainWindow):
     
     def set_view(self):
         if not self._current_album:
-            self.delete_album_action.setEnabled(False)
-            self.albums_cb.setEnabled(False)
-            self.viewer_action.setEnabled(False)
-            self.add_files_action.setEnabled(False)
-            self.remove_files_action.setEnabled(False)
-            self.view_mode_action.setEnabled(False)
-
+            # start buttons
             self.create_album_btn.setVisible(True)
-            # self.add_files_btn.setVisible(True)
+            self.add_files_btn.setVisible(False)
+            # actions
+            for action in [self.delete_album_action,
+                           self.albums_cb,
+                            self.viewer_action,
+                            self.add_files_action,
+                            self.remove_files_action,
+                            self.view_mode_action]:
+                action.setEnabled(False)
+            # central view
             self.list_wdg.setVisible(False)
             self.tree.setVisible(False)
         else:
-            self.delete_album_action.setEnabled(True)
-            self.albums_cb.setEnabled(True)
-            self.viewer_action.setEnabled(True)
-            self.add_files_action.setEnabled(True)
-            self.remove_files_action.setEnabled(True)
-            self.view_mode_action.setEnabled(True)
-
-            self.create_album_btn.setVisible(False)
-            # self.add_files_btn.setVisible(False)
-            if self.tree.isHidden():
+            if not self._current_files:
+                # start buttons
+                self.create_album_btn.setVisible(False)
+                self.add_files_btn.setVisible(True)
+                # actions
+                for action in [self.viewer_action,
+                               self.remove_files_action,
+                               self.view_mode_action]:
+                    action.setEnabled(False)
+                # central view
                 self.list_wdg.setVisible(False)
-                self.tree.setVisible(True)
-                self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["card"]))
-            else:
-                self.list_wdg.setVisible(True)
                 self.tree.setVisible(False)
-                self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["list"]))
+            else:
+                # start buttons
+                self.create_album_btn.setVisible(False)
+                self.add_files_btn.setVisible(False)
+                # actions
+                for action in [self.delete_album_action, 
+                               self.albums_cb,
+                            self.viewer_action,
+                            self.add_files_action,
+                            self.remove_files_action,
+                            self.view_mode_action]:
+                    action.setEnabled(True)
+                # central view
+                if self.tree.isHidden():
+                    self.list_wdg.setVisible(False)
+                    self.tree.setVisible(True)
+                    self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["card"]))
+                else:
+                    self.list_wdg.setVisible(True)
+                    self.tree.setVisible(False)
+                    self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["list"]))
 
     def on_viewer_triggered(self):
         paths = []
-        for file_data in self.get_album_files():
+        for file_data in self._current_files:
             paths.append(file_data[1])
         ui = ImageViewerUI(paths)
         ui.exec_()
