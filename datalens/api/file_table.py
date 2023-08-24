@@ -1,16 +1,25 @@
 import traceback, os
 from pathlib import Path
 from datalens.api import envs, api_utils
-from datalens.api.table import Table
 
-class FileTable(Table):
+class FileTable(object):
     def __init__(self, server) -> None:
-        super().__init__(server)
         self._server = server
         self._cursor = server.cursor(buffered=True)
         self._name = envs.FILE_TABLE_NAME
 
         self.create()
+
+    def _exists(self) ->bool:
+        self._cursor.execute("SHOW TABLES")
+        for x in self._cursor:
+            if x[0] == self._name:
+                return True
+            
+    def _row_exists(self, row_id:str) ->bool:
+        for file in self.select_rows():
+            if file[0] == row_id:
+                return True
             
     def create(self):
         if not self._exists():
@@ -20,19 +29,19 @@ class FileTable(Table):
                 {envs.SUBJECT} VARCHAR(45),\
                 {envs.ALBUM} VARCHAR(100),\
                 {envs.MAKE} VARCHAR(45),\
-                {envs.MODEL} VARCHAR(150),\
-                {envs.MOUNT} VARCHAR(150),\
+                {envs.MODEL} VARCHAR(45),\
+                {envs.MOUNT} VARCHAR(45),\
                 {envs.FOCAL} INT(6),\
                 {envs.F_NUMBER} VARCHAR(3),\
                 {envs.ISO} INT(5),\
                 {envs.LIGHTS} INT(5),\
                 {envs.EXPOSURE_TIME} VARCHAR(10),\
                 {envs.TOTAL_TIME} VARCHAR(10),\
-                {envs.LOCATION} VARCHAR(150),\
+                {envs.LOCATION} VARCHAR(70),\
                 {envs.BORTLE} INT(1),\
                 {envs.MOON_PHASE} INT(1),\
-                {envs.SOFTWARE} VARCHAR(150),\
-                {envs.AUTHOR} VARCHAR(50),\
+                {envs.SOFTWARE} VARCHAR(20),\
+                {envs.AUTHOR} VARCHAR(25),\
                 {envs.COMMENT} VARCHAR(255),\
                 {envs.DATE} VARCHAR(25),\
                 {envs.PATH_BRUT} VARCHAR(250)\
@@ -40,6 +49,10 @@ class FileTable(Table):
 
             request = f"CREATE TABLE {self._name} {data}"
             self._cursor.execute(request)
+
+    def delete(self):
+        request = f"DROP TABLE {self._name}"
+        self._cursor.execute(request)
 
     def insert_into(self, data:dict):
         id = data.get(envs.ID)
@@ -128,7 +141,19 @@ class FileTable(Table):
 
         self._cursor.execute(request, values)
         self._server.commit()
+
+    # fileTable
+    def select_rows(self):
+        self._cursor.execute(f"SELECT * FROM {self._name}")
+        return self._cursor.fetchall()
     
+    # fileTable
+    def select_from_column(self, column:str, value:str):
+        request = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
+        self._cursor.execute(request)
+        return self._cursor.fetchall()
+    
+    # fileTable
     def update(self, column:str, id:str, new_value:str):
         # global update
         try:
@@ -143,6 +168,7 @@ class FileTable(Table):
         elif column == envs.DATE:
             self._update_moon_phase(new_value, str(id))
     
+    # fileTable
     def delete_from(self, id:int, path:str):
         request = f"DELETE FROM {self._name} WHERE {envs.ID} = '{str(id)}'"
         self._cursor.execute(request)

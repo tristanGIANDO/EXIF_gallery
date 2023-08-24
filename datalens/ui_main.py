@@ -77,6 +77,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.add_files_btn = ActionButton(self.add_files_action)
 
     def create_layouts(self):
+
         # user toolbar
         self.user_toolbar = QtWidgets.QToolBar(self)
         self.user_toolbar.setIconSize(QtCore.QSize(60,60))

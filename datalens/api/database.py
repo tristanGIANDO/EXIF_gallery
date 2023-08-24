@@ -27,14 +27,6 @@ class Database(object):
     self._files = FileTable(self._server)
     
   def connect(self, user:str, password:str):
-    """Connects to the database
-
-    :param user: user login
-    :type user: str
-    :param password: user password
-    :type password: str
-    :return: server instance
-    """
     return mysql.connector.connect(
       host = "localhost",
       user = user,
@@ -43,17 +35,11 @@ class Database(object):
     )
 
   def _exists(self) ->bool:
-    """Returns True if the database already exists.
-
-    :rtype: bool
-    """
     self._cursor.execute("SHOW DATABASES")
     for x in self._cursor:
       if x[0] == self._name:
         return True
       
   def create(self):
-    """Creates the database if it does not exist.
-    """
     if not self._exists():
       self._cursor.execute(f"CREATE DATABASE {self._name}")
