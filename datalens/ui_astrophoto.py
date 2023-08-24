@@ -3,6 +3,7 @@ from pathlib import Path
 from ui_utils import WorkspaceTree, ImageViewWidget
 from datalens import envs
 from datalens.api import envs as api_envs
+import os
 
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
            envs.G_SUBJECT, envs.G_DESC, envs.G_MAKE, envs.G_MODEL,
@@ -48,12 +49,14 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
 
         # get small brut path
         small_brut_path = img_path.parent / (img_path.stem + api_envs.BRUT_SMALL_SUFFIX + img_path.suffix)
-        brut_thumbnail = ImageViewWidget(path=str(small_brut_path))
+        if os.path.isfile(small_brut_path):
+            brut_thumbnail = ImageViewWidget(path=str(small_brut_path))
 
         self._parent.addTopLevelItem(self)
         self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_IMAGE), image_thumbnail)
-        self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT), brut_thumbnail)
+        if os.path.isfile(small_brut_path):
+            self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT), brut_thumbnail)
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self):
