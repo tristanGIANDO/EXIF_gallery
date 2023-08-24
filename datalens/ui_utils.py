@@ -25,37 +25,6 @@ class WorkspaceTree( QtWidgets.QTreeWidget):
             else:
                 parent.removeChild(item)
         return item
-    
-class ImageViewWidget(QtWidgets.QPushButton):
-    def __init__(self, path, size=(300,200)):
-        super().__init__()
-
-        self.path = path
-
-        self.setFixedSize(size[0],size[1])
-
-        layout = QtWidgets.QVBoxLayout()
-
-        self.image_label = QtWidgets.QLabel(self)
-        self.image_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(self.image_label)
-
-        self.load_image(path)
-
-        self.setLayout(layout)
-
-        self.clicked.connect(self.on_button_clicked)
-
-    def on_button_clicked(self):
-        pass
-
-    def load_image(self, image_path):
-        pixmap = QtGui.QPixmap(image_path)
-        if not pixmap.isNull():
-            aspect_ratio = pixmap.width() / pixmap.height()
-            self.image_label.setPixmap(pixmap.scaledToHeight(self.height(), mode=QtCore.Qt.SmoothTransformation))
-        else:
-            self.image_label.setText("Failed to load image")
 
 class CreateAlbumUI(QtWidgets.QDialog):
     def __init__(self):

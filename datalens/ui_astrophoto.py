@@ -1,8 +1,9 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
 from pathlib import Path
-from ui_utils import WorkspaceTree, ImageViewWidget
+from datalens.ui_utils import WorkspaceTree
 from datalens import envs
 from datalens.api import envs as api_envs
+from datalens.ui_image import ThumbnailButton
 import os
 
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
@@ -45,12 +46,12 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
     
         # get small image path
         small_image_path = img_path.parent / (img_path.stem + api_envs.IMAGE_SMALL_SUFFIX + img_path.suffix)
-        image_thumbnail = ImageViewWidget(path=str(small_image_path))
+        image_thumbnail = ThumbnailButton(path=str(small_image_path))
 
         # get small brut path
         small_brut_path = img_path.parent / (img_path.stem + api_envs.BRUT_SMALL_SUFFIX + img_path.suffix)
         if os.path.isfile(small_brut_path):
-            brut_thumbnail = ImageViewWidget(path=str(small_brut_path))
+            brut_thumbnail = ThumbnailButton(path=str(small_brut_path))
 
         self._parent.addTopLevelItem(self)
         self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
@@ -135,7 +136,7 @@ class AstroListWidget(QtWidgets.QListWidget):
 
     def add_item(self, data):
         # self.clear()
-        thumbnail = ImageViewWidget(data[1])
+        thumbnail = ThumbnailButton(data[1])
         task_wdg_item = QtWidgets.QListWidgetItem()
         task_wdg_item.setSizeHint(thumbnail.sizeHint())
 

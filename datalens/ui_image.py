@@ -315,6 +315,43 @@ class ImageViewerUI(QtWidgets.QDialog):
             self.current_index += 1
             self.show_image()
 
+class ThumbnailButton(QtWidgets.QPushButton):
+    def __init__(self, path, size=(300,200)):
+        super().__init__()
+
+        self.path = path
+
+        self.setFixedSize(size[0],size[1])
+
+        self.image_label = QtWidgets.QLabel(self)
+        self.image_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.load_image(path)
+
+        version_button = QtWidgets.QPushButton(QtGui.QIcon(envs.ICONS["add_version"]), "")
+        version_button.setMaximumSize(40,40)
+        version_button.setIconSize(QtCore.QSize(35,35))
+
+        stacked_layout = QtWidgets.QStackedLayout()
+        stacked_layout.setStackingMode(QtWidgets.QStackedLayout.StackingMode.StackAll)
+        stacked_layout.addWidget(self.image_label)
+        stacked_layout.addWidget(version_button)
+        
+        self.setLayout(stacked_layout)
+
+        self.clicked.connect(self.on_button_clicked)
+
+    def on_button_clicked(self):
+        ui = ImageViewerUI([self.path])
+        ui.exec_()
+
+    def load_image(self, image_path):
+        pixmap = QtGui.QPixmap(image_path)
+        if not pixmap.isNull():
+            aspect_ratio = pixmap.width() / pixmap.height()
+            self.image_label.setPixmap(pixmap.scaledToHeight(self.height(), mode=QtCore.Qt.SmoothTransformation))
+        else:
+            self.image_label.setText("Failed to load image")
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = ImageInfosUI()
