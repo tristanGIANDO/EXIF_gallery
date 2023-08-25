@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
 from pathlib import Path
-from datalens.ui_utils import WorkspaceTree
+from datalens.ui_utils import WorkspaceTree, SpinWdg
 from datalens import envs
 from datalens.api import envs as api_envs
 from datalens.ui_image import ThumbnailButton
@@ -41,8 +41,23 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
             if i % 2 == 0:
                 self.setBackground(i, QtGui.QColor(240,240,240))
         
+        # spinboxes
+        focal_box = SpinWdg(int(self._data[HEADERS.index(envs.G_FOCAL)-1]))
+        iso_box= SpinWdg(int(self._data[HEADERS.index(envs.G_ISO)-1]))
+        f_box = SpinWdg(float(self._data[HEADERS.index(envs.G_F_NUMBER)-1]), mode="double")
+        light_box = SpinWdg(int(self._data[HEADERS.index(envs.A_LIGHTS)-1]))
+        bortle_box = SpinWdg(int(self._data[HEADERS.index(envs.A_BORTLE)-1]))
+        # icons
+        self.setIcon(HEADERS.index(envs.A_MOON_PHASE),
+                     QtGui.QIcon(envs.ICONS[self._data[15]]))
         
-        self.setIcon(HEADERS.index(envs.A_MOON_PHASE), QtGui.QIcon(envs.ICONS[self._data[15]]))
+        r = int(self._data[HEADERS.index(envs.G_ISO)-1]/100*3.5)
+        if r > 255:
+            r = 255
+        iso_color = QtGui.QColor(r, 100, 30)
+        iso_icon = QtGui.QPixmap(20,20)
+        iso_icon.fill(iso_color)
+        self.setIcon(HEADERS.index(envs.G_ISO), QtGui.QIcon(iso_icon))
     
         # get small image path
         small_image_path = img_path.parent / (img_path.stem + api_envs.IMAGE_SMALL_SUFFIX + img_path.suffix)
@@ -56,6 +71,11 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self._parent.addTopLevelItem(self)
         self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_IMAGE), image_thumbnail)
+        self._parent.setItemWidget(self, HEADERS.index(envs.G_FOCAL), focal_box)
+        self._parent.setItemWidget(self, HEADERS.index(envs.G_F_NUMBER), f_box)
+        self._parent.setItemWidget(self, HEADERS.index(envs.G_ISO), iso_box)
+        self._parent.setItemWidget(self, HEADERS.index(envs.A_LIGHTS), light_box)
+        self._parent.setItemWidget(self, HEADERS.index(envs.A_BORTLE), bortle_box)
         if os.path.isfile(small_brut_path):
             self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT), brut_thumbnail)
 
@@ -66,10 +86,11 @@ class AstroWorkspaceTree(WorkspaceTree):
         self.setColumnCount(NB_SECTIONS)
         self.setHeaderLabels(HEADERS)
 
-        for header in HEADERS:
-            self.header().setSectionResizeMode(HEADERS.index(header),
-                                    QtWidgets.QHeaderView.ResizeToContents)
-            
+        # for header in HEADERS:
+        #     self.header().setSectionResizeMode(HEADERS.index(header),
+        #                             QtWidgets.QHeaderView.ResizeToContents)
+
+        self.header().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)    
         self.header().setSectionHidden(1, True) # Path
         self.header().setSectionHidden(4, True) # Album
         self.setIconSize(QtCore.QSize(30,30))

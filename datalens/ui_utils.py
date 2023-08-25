@@ -1,4 +1,6 @@
+import typing
 from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtWidgets import QWidget
 from datalens.ui_image import ImageInfosUI
 from datalens.api import envs
 
@@ -88,3 +90,16 @@ class ActionButton(QtWidgets.QPushButton):
         self.setIconSize(QtCore.QSize(60,60))
         self.setFixedSize(QtCore.QSize(300,70))
         self.clicked.connect(action.trigger)
+
+class SpinWdg(QtWidgets.QWidget):
+    def __init__(self, value, mode = "simple", parent=None) -> None:
+        super().__init__(parent)
+        self.setLayout(QtWidgets.QVBoxLayout())
+        if mode == "simple":
+            iso_box = QtWidgets.QSpinBox()
+        else:
+            iso_box = QtWidgets.QDoubleSpinBox()
+        iso_box.setFixedWidth(50)
+        iso_box.setMaximum(99999)
+        iso_box.setValue(value)
+        self.layout().addWidget(iso_box)
