@@ -19,17 +19,15 @@ class MainUI( QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(str(envs.main_icon)))
         self.resize(1800, 800)
 
+        self._db = Database()
+        self._current_album = ""
+        self._current_files = []
+        
         self.create_widgets()
         self.create_actions()
         self.create_layouts()
         self.create_connections()
 
-
-        self._db = Database()
-        self._current_album = ""
-        self._current_files = []
-        
-        
         self._update_albums()
         self._update_files()
         self._update_user()
@@ -40,7 +38,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.title = QtWidgets.QLabel("DataLens")
         self.title.setFont(QtGui.QFont("Impact", 16))
 
-        self.tree = AstroWorkspaceTree()
+        self.tree = AstroWorkspaceTree(self._db)
         self.list_wdg = AstroListWidget()
         self.albums_cb = QtWidgets.QComboBox()
         self.albums_cb.setFixedSize(200,40)
@@ -219,7 +217,7 @@ class MainUI( QtWidgets.QMainWindow):
                                     item.text(1))
 
     def on_item_changed(self, item, column):
-        self.tree.update_item(self._db, item, column)
+        self.tree.update_item(item, column)
 
     def on_view_triggered(self):
         self.set_view()
@@ -266,15 +264,15 @@ class MainUI( QtWidgets.QMainWindow):
                             self.view_mode_action]:
                     action.setEnabled(True)
                 # central view
-                if self.tree.isHidden():
-                    self.list_wdg.setVisible(False)
-                    self.tree.setVisible(True)
-                    self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["card"]))
-                else:
+                if self.list_wdg.isHidden():
                     self.list_wdg.setVisible(True)
                     self.tree.setVisible(False)
                     self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["list"]))
-
+                else:
+                    self.list_wdg.setVisible(False)
+                    self.tree.setVisible(True)
+                    self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["card"]))
+                    
     def on_viewer_triggered(self):
         paths = []
         for file_data in self._current_files:

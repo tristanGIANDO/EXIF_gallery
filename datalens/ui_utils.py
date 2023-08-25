@@ -129,3 +129,24 @@ class SpinWdg(QtWidgets.QWidget):
         if not value:
             return
         self.item.setText(self.column, value)
+
+class ComboBoxWdg(QtWidgets.QWidget):
+    def __init__(self, item, column, values) -> None:
+        super().__init__()
+        self.item = item
+        self.column = column
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.box = QtWidgets.QComboBox()
+
+        for v in values:
+            self.box.addItem(v)
+        self.box.setCurrentText(self.item.text(self.column))
+        self.layout().addWidget(self.box)
+
+        self.box.currentTextChanged.connect(self.setItemText)
+    
+    def setItemText(self):
+        value = str(self.box.currentText())
+        if not value:
+            return
+        self.item.setText(self.column, value)
