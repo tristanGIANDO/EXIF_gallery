@@ -107,7 +107,6 @@ class SpinWdg(QtWidgets.QWidget):
             self.box = QtWidgets.QDoubleSpinBox()
         # self.box.setFixedWidth(60)
         if mode == "date":
-            print(value)
             date = [int(d) for d in value.split(",")]
             q_date = QtCore.QDate(date[0], date[1], date[2])
             self.box.setDate(q_date)  
@@ -137,6 +136,7 @@ class ComboBoxWdg(QtWidgets.QWidget):
         self.column = column
         self.setLayout(QtWidgets.QVBoxLayout())
         self.box = QtWidgets.QComboBox()
+        self.box.setEditable(True)
 
         for v in values:
             self.box.addItem(v)

@@ -205,6 +205,7 @@ class AstroWorkspaceTree(WorkspaceTree):
             db_column = api_envs.DATE
         
         self._server._files.update(db_column, item.text(0), item.text(column))
+        self._contents = self.get_contents()
 
     def get_contents(self):
         def check(p_list, col, item):
