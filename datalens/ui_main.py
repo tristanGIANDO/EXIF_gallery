@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets,QtCore, QtGui
 from datalens import __infos__, envs
 from datalens.api.database import Database
 from datalens.api import envs as api_envs
+from datalens.api.graphix import GraphixUI
 from datalens.ui_astrophoto import AstroWorkspaceTree, AstroListWidget
 from datalens.ui_image import ImageInfosUI, ImageViewerUI
 from datalens.ui_user import UserInfosUI
@@ -73,6 +74,9 @@ class MainUI( QtWidgets.QMainWindow):
         self.delete_album_action = QtWidgets.QAction(
             QtGui.QIcon(envs.ICONS["remove_album"]), "Delete Album", self)
         
+        self.graph_action = QtWidgets.QAction(
+            QtGui.QIcon(envs.ICONS["graph"]), "Show graph", self)
+        
         self.create_album_btn = ActionButton(self.create_album_action)
         self.add_files_btn = ActionButton(self.add_files_action)
 
@@ -103,6 +107,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.image_toolbar.addSeparator()
         self.image_toolbar.addAction(self.viewer_action)
         self.image_toolbar.addAction(self.web_action)
+        self.image_toolbar.addAction(self.graph_action)
 
         # view toolbar
         self.view_toolbar = QtWidgets.QToolBar(self)
@@ -135,6 +140,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.user_action.triggered.connect(self.on_user_triggered)
         self.create_album_action.triggered.connect(self.on_create_album_triggered)
         self.delete_album_action.triggered.connect(self.on_delete_album_triggered)
+        self.graph_action.triggered.connect(self.on_graph_triggered)
         self.albums_cb.currentTextChanged.connect(self.on_album_changed)
 
     def _update_files(self):
@@ -274,6 +280,19 @@ class MainUI( QtWidgets.QMainWindow):
         for file_data in self._current_files:
             paths.append(file_data[1])
         ui = ImageViewerUI(paths)
+        ui.exec_()
+
+    def on_graph_triggered(self):
+        files = self._db._files.select_rows()
+        dates = []
+        for file in files:
+            id = file[0]
+            str_date = self._db._files.get_date(id)
+            splits = str_date.split(",")
+            date = f"{splits[0]},{splits[1]},{splits[2]}"
+            dates.append(date)
+
+        ui = GraphixUI(dates)
         ui.exec_()
 
     def on_web_triggered(self):

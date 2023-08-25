@@ -1,17 +1,14 @@
 import sys
-import random
 from PyQt5 import QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.dates as mdates
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from datalens.api.database import Database
-
-class PhotoGraphApp(QtWidgets.QDialog):
+class GraphixUI(QtWidgets.QDialog):
     def __init__(self, dates):
         super().__init__()
-        self.setWindowTitle("Analyse de Photos")
+        self.setWindowTitle("Number of photos taken")
         self.setGeometry(100, 100, 800, 600)
 
         # convert and conform datetime format
@@ -53,19 +50,3 @@ class PhotoGraphApp(QtWidgets.QDialog):
 
         self.figure.autofmt_xdate()
         self.canvas.draw()
-
-if __name__ == "__main__":
-    db = Database()
-    files = db._files.select_rows()
-    dates = []
-    for file in files:
-        id = file[0]
-        str_date = db._files.get_date(id)
-        splits = str_date.split(",")
-        date = f"{splits[0]},{splits[1]},{splits[2]}"
-        dates.append(date)
-
-    app = QtWidgets.QApplication(sys.argv)
-    window = PhotoGraphApp(dates)
-    window.exec_()
-    sys.exit(app.exec_())
