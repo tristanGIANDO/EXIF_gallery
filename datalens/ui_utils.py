@@ -96,20 +96,36 @@ class SpinWdg(QtWidgets.QWidget):
         super().__init__(parent)
         self.item = item
         self.column = column
+        self.mode = mode
         self.setLayout(QtWidgets.QVBoxLayout())
         if mode == "simple":
             self.box = QtWidgets.QSpinBox()
+        elif mode == "date":
+            self.box = QtWidgets.QDateEdit()
+            self.box.setDisplayFormat("yyyy, MM, dd")
         else:
             self.box = QtWidgets.QDoubleSpinBox()
         # self.box.setFixedWidth(60)
-        self.box.setMaximum(99999)
-        self.box.setValue(value)
+        if mode == "date":
+            print(value)
+            date = [int(d) for d in value.split(",")]
+            q_date = QtCore.QDate(date[0], date[1], date[2])
+            self.box.setDate(q_date)  
+        else:
+            self.box.setMaximum(99999)
+            self.box.setValue(value)
         self.layout().addWidget(self.box)
 
-        self.box.valueChanged.connect(self.setItemText)
+        if mode == "date":
+            self.box.dateChanged.connect(self.setItemText)
+        else:
+            self.box.valueChanged.connect(self.setItemText)
     
     def setItemText(self):
-        value = str(self.box.value())
+        if self.mode == "date":
+            value = self.box.text()
+        else:
+            value = str(self.box.value())
         if not value:
-            value = "0"
+            return
         self.item.setText(self.column, value)

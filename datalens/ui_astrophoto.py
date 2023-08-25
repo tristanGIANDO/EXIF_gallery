@@ -34,6 +34,8 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
             self.setTextAlignment(i, QtCore.Qt.AlignCenter)
             if i == HEADERS.index(envs.A_MOON_PHASE):
                 self.setText(i, envs.MOON_PHASES.get(self._data[i-1]))
+            if i == HEADERS.index(envs.A_TOTAL_TIME) or i == HEADERS.index(envs.G_SUBJECT):
+                self.setFont(i, QtGui.QFont("Arial", 9, QtGui.QFont.Bold))
             else:
                 try:
                     self.setText(i+1, str(self._data[i]))
@@ -48,6 +50,8 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         f_box = SpinWdg(self, HEADERS.index(envs.G_F_NUMBER), float(self._data[HEADERS.index(envs.G_F_NUMBER)-1]), mode="double")
         light_box = SpinWdg(self, HEADERS.index(envs.A_LIGHTS), int(self._data[HEADERS.index(envs.A_LIGHTS)-1]))
         bortle_box = SpinWdg(self, HEADERS.index(envs.A_BORTLE), int(self._data[HEADERS.index(envs.A_BORTLE)-1]))
+        exposure_box = SpinWdg(self, HEADERS.index(envs.G_EXPOSURE_TIME), float(self._data[HEADERS.index(envs.G_EXPOSURE_TIME)-1]), mode="double")
+        date_box = SpinWdg(self, HEADERS.index(envs.G_DATE), self._data[HEADERS.index(envs.G_DATE)-1], mode="date")
         # icons
         self.setIcon(HEADERS.index(envs.A_MOON_PHASE),
                      QtGui.QIcon(envs.ICONS[self._data[15]]))
@@ -77,6 +81,8 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self._parent.setItemWidget(self, HEADERS.index(envs.G_ISO), iso_box)
         self._parent.setItemWidget(self, HEADERS.index(envs.A_LIGHTS), light_box)
         self._parent.setItemWidget(self, HEADERS.index(envs.A_BORTLE), bortle_box)
+        self._parent.setItemWidget(self, HEADERS.index(envs.G_EXPOSURE_TIME), exposure_box)
+        self._parent.setItemWidget(self, HEADERS.index(envs.G_DATE), date_box)
         if os.path.isfile(small_brut_path):
             self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT), brut_thumbnail)
 
@@ -93,7 +99,7 @@ class AstroWorkspaceTree(WorkspaceTree):
         #     self.header().setSectionResizeMode(HEADERS.index(header),
         #                             QtWidgets.QHeaderView.ResizeToContents)
 
-        self.header().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)    
+        self.header().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)   
         self.header().setSectionHidden(1, True) # Path
         self.header().setSectionHidden(4, True) # Album
         self.setIconSize(QtCore.QSize(30,30))
