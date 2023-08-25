@@ -22,9 +22,13 @@ class ImageInfosUI(QtWidgets.QDialog):
 
     def create_widgets(self):
         # Image buttons
-        self.add_image_btn = QtWidgets.QPushButton("Add Image(JPG,PNG)")
+        self.add_image_btn = QtWidgets.QPushButton("Load Image(JPG,PNG)")
+        self.add_image_btn.setIcon(self.ICONS["add_file"])
+        self.add_image_btn.setIconSize(QtCore.QSize(45,45))
         self.add_image_btn.clicked.connect(self.on_add_image_clicked)
-        self.add_brut_btn = QtWidgets.QPushButton("Add Brut(JPG,PNG)")
+        self.add_brut_btn = QtWidgets.QPushButton("Load Brut(JPG,PNG)")
+        self.add_brut_btn.setIcon(self.ICONS["add_file"])
+        self.add_brut_btn.setIconSize(QtCore.QSize(45,45))
         self.add_brut_btn.clicked.connect(self.on_add_brut_clicked)
 
         # Image
@@ -56,7 +60,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.comment_le = QtWidgets.QLineEdit()
 
         # Button
-        self.ok_btn = QtWidgets.QPushButton("Add image")
+        self.ok_btn = QtWidgets.QPushButton("OK")
         self.ok_btn.clicked.connect(self._accept)
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
         self.cancel_btn.clicked.connect(self.deleteLater)
