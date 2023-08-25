@@ -35,6 +35,7 @@ def convert_minutes_to_datetime(time):
     Returns:
         _type_: _description_
     """
+    time = int(time)
     hours, seconds = divmod(time * 60, 3600)
     minutes, seconds = divmod(seconds, 60)
     return f"{hours:02.0f}:{minutes:02.0f}:{seconds:02.0f}"

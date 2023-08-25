@@ -31,6 +31,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self.setText(0, self._data[0]) #id
         self.setText(1, str(img_path)) #img_path
         for i in range(2,NB_SECTIONS):
+            self.setTextAlignment(i, QtCore.Qt.AlignCenter)
             if i == HEADERS.index(envs.A_MOON_PHASE):
                 self.setText(i, envs.MOON_PHASES.get(self._data[i-1]))
             else:
@@ -42,11 +43,11 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
                 self.setBackground(i, QtGui.QColor(240,240,240))
         
         # spinboxes
-        focal_box = SpinWdg(int(self._data[HEADERS.index(envs.G_FOCAL)-1]))
-        iso_box= SpinWdg(int(self._data[HEADERS.index(envs.G_ISO)-1]))
-        f_box = SpinWdg(float(self._data[HEADERS.index(envs.G_F_NUMBER)-1]), mode="double")
-        light_box = SpinWdg(int(self._data[HEADERS.index(envs.A_LIGHTS)-1]))
-        bortle_box = SpinWdg(int(self._data[HEADERS.index(envs.A_BORTLE)-1]))
+        focal_box = SpinWdg(self, HEADERS.index(envs.G_FOCAL), int(self._data[HEADERS.index(envs.G_FOCAL)-1]))
+        iso_box= SpinWdg(self, HEADERS.index(envs.G_ISO), int(self._data[HEADERS.index(envs.G_ISO)-1]))
+        f_box = SpinWdg(self, HEADERS.index(envs.G_F_NUMBER), float(self._data[HEADERS.index(envs.G_F_NUMBER)-1]), mode="double")
+        light_box = SpinWdg(self, HEADERS.index(envs.A_LIGHTS), int(self._data[HEADERS.index(envs.A_LIGHTS)-1]))
+        bortle_box = SpinWdg(self, HEADERS.index(envs.A_BORTLE), int(self._data[HEADERS.index(envs.A_BORTLE)-1]))
         # icons
         self.setIcon(HEADERS.index(envs.A_MOON_PHASE),
                      QtGui.QIcon(envs.ICONS[self._data[15]]))
@@ -78,6 +79,8 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self._parent.setItemWidget(self, HEADERS.index(envs.A_BORTLE), bortle_box)
         if os.path.isfile(small_brut_path):
             self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT), brut_thumbnail)
+
+        
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self):

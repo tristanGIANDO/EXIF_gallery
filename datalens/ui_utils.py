@@ -92,14 +92,24 @@ class ActionButton(QtWidgets.QPushButton):
         self.clicked.connect(action.trigger)
 
 class SpinWdg(QtWidgets.QWidget):
-    def __init__(self, value, mode = "simple", parent=None) -> None:
+    def __init__(self, item, column, value, mode = "simple", parent=None) -> None:
         super().__init__(parent)
+        self.item = item
+        self.column = column
         self.setLayout(QtWidgets.QVBoxLayout())
         if mode == "simple":
-            iso_box = QtWidgets.QSpinBox()
+            self.box = QtWidgets.QSpinBox()
         else:
-            iso_box = QtWidgets.QDoubleSpinBox()
-        iso_box.setFixedWidth(50)
-        iso_box.setMaximum(99999)
-        iso_box.setValue(value)
-        self.layout().addWidget(iso_box)
+            self.box = QtWidgets.QDoubleSpinBox()
+        # self.box.setFixedWidth(60)
+        self.box.setMaximum(99999)
+        self.box.setValue(value)
+        self.layout().addWidget(self.box)
+
+        self.box.valueChanged.connect(self.setItemText)
+    
+    def setItemText(self):
+        value = str(self.box.value())
+        if not value:
+            value = "0"
+        self.item.setText(self.column, value)
