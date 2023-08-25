@@ -153,6 +153,16 @@ class FileTable(object):
         self._cursor.execute(request)
         return self._cursor.fetchall()
     
+    def get(self, column:str, id:str):
+        request = f"SELECT {column} FROM {self._name} WHERE {envs.ID} ='{id}'"
+        self._cursor.execute(request)
+        return self._cursor.fetchall()
+    
+    def get_date(self, id:str):
+        result = self.get(envs.DATE, id)
+        if result:
+            return result[0][0]
+    
     # fileTable
     def update(self, column:str, id:str, new_value:str):
         # global update
