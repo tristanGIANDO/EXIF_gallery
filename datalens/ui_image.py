@@ -12,6 +12,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         self._exif = {}
         self._image_path = ""
         self._brut_path = ""
+        self.ICONS = envs.icons.read()
 
         self.setWindowTitle("Image Details")
         self.resize(1000, 600)
@@ -268,6 +269,7 @@ class ImageViewerUI(QtWidgets.QDialog):
         super().__init__()
         if not paths:
             return
+        self.ICONS = envs.icons.read()
         
         self.setWindowTitle("Image Viewer")
         self.resize(1460, 900)
@@ -276,7 +278,7 @@ class ImageViewerUI(QtWidgets.QDialog):
         self.layout = QtWidgets.QHBoxLayout()
         self.central_widget.setLayout(self.layout)
 
-        self.prev_button = QtWidgets.QPushButton(QtGui.QIcon(envs.ICONS["previous"]), "")
+        self.prev_button = QtWidgets.QPushButton(self.ICONS["previous"], "")
         self.prev_button.setFixedSize(40,40)
         self.prev_button.setIconSize(QtCore.QSize(35,35))
         self.prev_button.clicked.connect(self.show_previous_image)
@@ -285,7 +287,7 @@ class ImageViewerUI(QtWidgets.QDialog):
         self.image_label = QtWidgets.QLabel(self)
         self.layout.addWidget(self.image_label)
 
-        self.next_button = QtWidgets.QPushButton(QtGui.QIcon(envs.ICONS["next"]), "")
+        self.next_button = QtWidgets.QPushButton(self.ICONS["next"], "")
         self.next_button.setFixedSize(40,40)
         self.next_button.setIconSize(QtCore.QSize(35,35))
         self.next_button.clicked.connect(self.show_next_image)
@@ -318,7 +320,7 @@ class ImageViewerUI(QtWidgets.QDialog):
 class ThumbnailButton(QtWidgets.QPushButton):
     def __init__(self, path, size=(300,200)):
         super().__init__()
-
+        self.ICONS = envs.icons.read()
         self.path = path
 
         self.setFixedSize(size[0],size[1])
@@ -327,7 +329,7 @@ class ThumbnailButton(QtWidgets.QPushButton):
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.load_image(path)
 
-        version_button = QtWidgets.QPushButton(QtGui.QIcon(envs.ICONS["add_version"]), "")
+        version_button = QtWidgets.QPushButton(self.ICONS["add_version"], "")
         version_button.setMaximumSize(40,40)
         version_button.setIconSize(QtCore.QSize(35,35))
 

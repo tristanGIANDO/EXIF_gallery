@@ -1,4 +1,4 @@
-import sys, webbrowser, os
+import sys, webbrowser
 from PyQt5 import QtWidgets,QtCore, QtGui
 from datalens import __infos__, envs
 from datalens.api.database import Database
@@ -16,12 +16,14 @@ class MainUI( QtWidgets.QMainWindow):
 
         self.setWindowTitle("%s v-%s"%(__infos__.__title__,
                                        __infos__.__version__))
-        self.setWindowIcon(QtGui.QIcon(str(envs.main_icon)))
+        # self.setWindowIcon(envs.self.ICONS["logo"])
         self.resize(1800, 800)
 
         self._db = Database()
         self._current_album = ""
         self._current_files = []
+
+        self.ICONS = envs.icons.read()
         
         self.create_widgets()
         self.create_actions()
@@ -45,35 +47,35 @@ class MainUI( QtWidgets.QMainWindow):
         self.albums_cb.setFont(QtGui.QFont("Arial", 12, QtGui.QFont.Bold))
 
     def create_actions(self):
-        self.add_files_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["add_file"]), "Add File", self)
+        self.add_files_action = QtWidgets.QAction(self.ICONS["add_file"], "Add File", self)
         
         self.remove_files_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["remove_file"]), "Remove File", self)
+             self.ICONS["remove_file"], "Remove File", self)
         
         self.reload_files_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["reload"]), "Reload", self)
+             self.ICONS["reload"], "Reload", self)
         
         self.view_mode_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["card"]), "Change View Mode", self)
-        
+             self.ICONS["card"], "Change View Mode", self)
+
         self.viewer_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["viewer"]), "Image Viewer", self)
+             self.ICONS["viewer"], "Image Viewer", self)
         
         self.web_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["website"]), "Website", self)
+             self.ICONS["website"], "Website", self)
         
         self.user_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["user"]), "About you", self)
+             self.ICONS["user"], "About you", self)
         
         self.create_album_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["add_album"]), "Create Album", self)
+             self.ICONS["add_album"], "Create Album", self)
         
         self.delete_album_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["remove_album"]), "Delete Album", self)
+             self.ICONS["remove_album"], "Delete Album", self)
         
         self.graph_action = QtWidgets.QAction(
-            QtGui.QIcon(envs.ICONS["graph"]), "Show graph", self)
+             self.ICONS["graph"], "Show graph", self)
+        
         
         self.create_album_btn = ActionButton(self.create_album_action)
         self.add_files_btn = ActionButton(self.add_files_action)
@@ -171,7 +173,7 @@ class MainUI( QtWidgets.QMainWindow):
         user = self._db._you.get_user()
         if user:
             try:
-                self.user_action.setIcon(QtGui.QIcon(user[4]))
+                self.user_action.setIcon( QtGui.QIcon(user[4]))
             except:
                 pass
 
@@ -267,11 +269,11 @@ class MainUI( QtWidgets.QMainWindow):
                 if self.list_wdg.isHidden():
                     self.list_wdg.setVisible(True)
                     self.tree.setVisible(False)
-                    self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["list"]))
+                    self.view_mode_action.setIcon(self.ICONS["list"])
                 else:
                     self.list_wdg.setVisible(False)
                     self.tree.setVisible(True)
-                    self.view_mode_action.setIcon(QtGui.QIcon(envs.ICONS["card"]))
+                    self.view_mode_action.setIcon(self.ICONS["card"])
                     
     def on_viewer_triggered(self):
         paths = []
@@ -327,7 +329,6 @@ class MainUI( QtWidgets.QMainWindow):
         self._db._albums.delete_album(album_name)
         self._update_albums()
         self.set_view()
-
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

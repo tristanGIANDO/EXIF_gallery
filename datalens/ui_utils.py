@@ -7,7 +7,6 @@ from datalens.api import envs
 class WorkspaceTree( QtWidgets.QTreeWidget):
     def __init__(self):
         super().__init__()
-
         self.setRootIsDecorated(False)
         self.setSortingEnabled(True)
         self.header().sectionsMovable()

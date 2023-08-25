@@ -1,34 +1,45 @@
 from pathlib import Path
+from PyQt5 import QtGui
 
-path = Path(__file__)
-icons_root = path.parent / "icons"
-main_icon = path.parent.parent / "resources" / "icon.jpg"
+class Icons(object):
+    def __init__(self, data) -> None:
+        path = Path(__file__)
+        self.icons_root = path.parent / "icons"
+        self._result = {}
+        self.data = data
+        
+    def read(self):
+        for k, v in self.data.items():
+            self._result[k] = QtGui.QIcon(str(self.icons_root / v))
+        return self._result
+        
 
-ICONS = {
-    "add_file" : f"{icons_root}/add_image.png",
-    "remove_file" : f"{icons_root}/remove_image.png",
-    "add_album" : f"{icons_root}/add_album.png",
-    "add_version" : f"{icons_root}/add_version.png",
-    "remove_album" : f"{icons_root}/remove_album.png",
-    "reload" : f"{icons_root}/reload.png",
-    "full" : f"{icons_root}/full_screen.png",
-    "previous" : f"{icons_root}/arrow_left",
-    "next" : f"{icons_root}/arrow_right",
-    "list" : f"{icons_root}/list",
-    "card" : f"{icons_root}/card",
-    "viewer" : f"{icons_root}/viewer",
-    "website" : f"{icons_root}/website",
-    "user" : f"{icons_root}/user",
-    "graph" : f"{icons_root}/graph",
-    0 : f"{icons_root}/0.png",
-    1 : f"{icons_root}/1.png",
-    2 : f"{icons_root}/2.png",
-    3 : f"{icons_root}/3.png",
-    4 : f"{icons_root}/4.png",
-    5 : f"{icons_root}/5.png",
-    6 : f"{icons_root}/6.png",
-    7 : f"{icons_root}/7.png"
-}
+icons = Icons({
+    "logo" : "logo.png",
+    "add_file" : "add_image.png",
+    "remove_file" : "remove_image.png",
+    "add_album" : "add_album.png",
+    "add_version" : "add_version.png",
+    "remove_album" : "remove_album.png",
+    "reload" : "reload.png",
+    "full" : "full_screen.png",
+    "previous" : "arrow_left.png",
+    "next" : "arrow_right.png",
+    "list" : "list.png",
+    "card" : "card.png",
+    "viewer" : "viewer.png",
+    "website" : "website.png",
+    "user" : "user.png",
+    "graph" : "graph.png",
+    0 : "0.png",
+    1 : "1.png",
+    2 : "2.png",
+    3 : "3.png",
+    4 : "4.png",
+    5 : "5.png",
+    6 : "6.png",
+    7 : "7.png"
+})
 
 # global infos
 G_ID = "ID"
