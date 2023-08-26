@@ -8,7 +8,7 @@ from datalens.ui_astrophoto import AstroWorkspaceTree, AstroListWidget
 from datalens.ui_image import ImageInfosUI, ImageViewerUI
 from datalens.ui_user import UserInfosUI
 from datalens.ui_utils import CreateAlbumUI, ActionButton
-from datalens.web import website
+from datalens.ui_features import create_website
 
 ICONS = envs.Icons()
 
@@ -314,7 +314,7 @@ class MainUI( QtWidgets.QMainWindow):
             paths.append(file_data[1])
             overlays.append(file_data[2])
 
-        html_file = website.create_website(paths, api_envs.ROOT,
+        html_file = create_website(paths, api_envs.ROOT,
                     user=user, overlays=overlays, albums=albums)
             
         webbrowser.open(html_file)

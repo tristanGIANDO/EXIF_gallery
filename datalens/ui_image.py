@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from datalens import envs
 from datalens.api import envs as api_envs
 from datalens.api import api_utils
+from datalens.ui_features import WorldMapUI
 
 ICONS = envs.Icons()
 
@@ -27,10 +28,14 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.add_image_btn.setIcon(ICONS.get("add_file"))
         self.add_image_btn.setIconSize(QtCore.QSize(45,45))
         self.add_image_btn.clicked.connect(self.on_add_image_clicked)
+
         self.add_brut_btn = QtWidgets.QPushButton("Load Brut(JPG,PNG)")
         self.add_brut_btn.setIcon(ICONS.get("add_file"))
         self.add_brut_btn.setIconSize(QtCore.QSize(45,45))
         self.add_brut_btn.clicked.connect(self.on_add_brut_clicked)
+
+        self.location_btn = QtWidgets.QPushButton("Set Location")
+        self.location_btn.clicked.connect(self.on_location_clicked)
 
         # Image
         self.image_lbl = QtWidgets.QLabel()
@@ -140,6 +145,7 @@ class ImageInfosUI(QtWidgets.QDialog):
             pos += 1
  
         v_layout.addWidget(acquisition_gb)
+        v_layout.addWidget(self.location_btn)
 
         # Equipment grid
         equipment_gb = QtWidgets.QGroupBox("Equipment Details")
@@ -268,6 +274,11 @@ class ImageInfosUI(QtWidgets.QDialog):
             self._brut_path = path
             self._exif = api_utils.get_exifs(path)
             self._update()
+
+    def on_location_clicked(self):
+        ui = WorldMapUI()
+        if ui.exec_():
+            self.location_le.setText(ui.read())
 
 class ImageViewerUI(QtWidgets.QDialog):
     def __init__(self, paths):

@@ -36,12 +36,12 @@ class FileTable(object):
                 {envs.ISO} INT(5),\
                 {envs.LIGHTS} INT(5),\
                 {envs.EXPOSURE_TIME} VARCHAR(10),\
-                {envs.TOTAL_TIME} VARCHAR(10),\
-                {envs.LOCATION} VARCHAR(70),\
+                {envs.TOTAL_TIME} VARCHAR(12),\
+                {envs.LOCATION} VARCHAR(250),\
                 {envs.BORTLE} INT(1),\
                 {envs.MOON_PHASE} INT(1),\
-                {envs.SOFTWARE} VARCHAR(20),\
-                {envs.AUTHOR} VARCHAR(25),\
+                {envs.SOFTWARE} VARCHAR(250),\
+                {envs.AUTHOR} VARCHAR(100),\
                 {envs.COMMENT} VARCHAR(255),\
                 {envs.DATE} VARCHAR(25),\
                 {envs.PATH_BRUT} VARCHAR(250)\
