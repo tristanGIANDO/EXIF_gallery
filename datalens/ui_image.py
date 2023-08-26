@@ -333,7 +333,7 @@ class ImageViewerUI(QtWidgets.QDialog):
             self.show_image()
 
 class ThumbnailButton(QtWidgets.QPushButton):
-    def __init__(self, path, size=(300,200)):
+    def __init__(self, path, size=None):
         super().__init__()
         self.path = path
         try:
@@ -341,6 +341,8 @@ class ThumbnailButton(QtWidgets.QPushButton):
         except:
             self.parent_path = path.replace(api_envs.BRUT_SMALL_SUFFIX, "")
 
+        if not size:
+            size = (300,200)
         self.setFixedSize(size[0],size[1])
 
         self.image_label = QtWidgets.QLabel(self)

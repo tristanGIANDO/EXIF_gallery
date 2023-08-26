@@ -60,7 +60,7 @@ class MainUI( QtWidgets.QMainWindow):
              ICONS.get("reload"), "Reload", self)
         
         self.view_mode_action = QtWidgets.QAction(
-             ICONS.get("card"), "Change View Mode", self)
+             ICONS.get("card"), "Large Icons / Content", self)
 
         self.viewer_action = QtWidgets.QAction(
              ICONS.get("viewer"), "Image Viewer", self)
@@ -78,13 +78,28 @@ class MainUI( QtWidgets.QMainWindow):
              ICONS.get("remove_album"), "Delete Album", self)
         
         self.graph_action = QtWidgets.QAction(
-             ICONS.get("graph"), "Show graph", self)
+             ICONS.get("graph"), "Show Graph", self)
+        
+        self.image_size_action = QtWidgets.QAction(
+             ICONS.get("list"), "Details", self)
         
         
         self.create_album_btn = ActionButton(self.create_album_action)
         self.add_files_btn = ActionButton(self.add_files_action)
 
     def create_layouts(self):
+        # menu bar
+        self.menu_bar = QtWidgets.QMenuBar()
+        self.setMenuBar(self.menu_bar)
+        self.view_menu = QtWidgets.QMenu("View")
+        self.menu_bar.addMenu(self.view_menu)
+        self.view_menu.addAction(self.view_mode_action)
+        self.view_menu.addAction(self.image_size_action)
+
+        self.help_menu = QtWidgets.QMenu("Help")
+        self.menu_bar.addMenu(self.help_menu)
+        self.help_menu.addAction("About")
+        self.help_menu.addAction("Documentation")
         # user toolbar
         self.user_toolbar = QtWidgets.QToolBar(self)
         self.user_toolbar.setIconSize(QtCore.QSize(60,60))
@@ -96,6 +111,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.album_toolbar.setIconSize(QtCore.QSize(35,35))
         self.album_toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.addToolBar(self.album_toolbar)
+        self.album_toolbar.addAction(self.reload_files_action)
         self.album_toolbar.addAction(self.create_album_action)
         self.album_toolbar.addAction(self.delete_album_action)
         self.album_toolbar.addWidget(self.albums_cb)
@@ -105,7 +121,6 @@ class MainUI( QtWidgets.QMainWindow):
         self.image_toolbar.setIconSize(QtCore.QSize(35,35))
         self.image_toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.addToolBar(self.image_toolbar)
-        self.image_toolbar.addAction(self.reload_files_action)
         self.image_toolbar.addAction(self.add_files_action)
         self.image_toolbar.addAction(self.remove_files_action)
         self.image_toolbar.addSeparator()
@@ -146,6 +161,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.delete_album_action.triggered.connect(self.on_delete_album_triggered)
         self.graph_action.triggered.connect(self.on_graph_triggered)
         self.albums_cb.currentTextChanged.connect(self.on_album_changed)
+        self.image_size_action.triggered.connect(self.on_image_size_triggered)
 
     def _update_files(self):
         self.tree.blockSignals(True)
@@ -242,7 +258,9 @@ class MainUI( QtWidgets.QMainWindow):
                             self.viewer_action,
                             self.add_files_action,
                             self.remove_files_action,
-                            self.view_mode_action]:
+                            self.view_mode_action,
+                            self.graph_action,
+                            self.web_action]:
                 action.setEnabled(False)
             # central view
             self.list_wdg.setVisible(False)
@@ -257,6 +275,10 @@ class MainUI( QtWidgets.QMainWindow):
                                self.remove_files_action,
                                self.view_mode_action]:
                     action.setEnabled(False)
+                for action in [self.delete_album_action, 
+                               self.albums_cb,
+                            self.add_files_action]:
+                    action.setEnabled(True)
                 # central view
                 self.list_wdg.setVisible(False)
                 self.tree.setVisible(False)
@@ -333,9 +355,24 @@ class MainUI( QtWidgets.QMainWindow):
     
     def on_delete_album_triggered(self):
         album_name = self.albums_cb.currentText()
+        message_box = QtWidgets.QMessageBox.warning(
+            self,
+            "Delete Album", 
+            f"You are about to delete '{album_name}'.\nThis is irreversible!",
+            QtWidgets.QMessageBox.Ok | 
+            QtWidgets.QMessageBox.Cancel)
+        if message_box == QtWidgets.QMessageBox.Cancel:
+            return
         self._db._albums.delete_album(album_name)
         self._update_albums()
         self.set_view()
+
+    def on_image_size_triggered(self):
+        for item in self.tree.get_items() or []:
+            try:
+                item._update((100,66))
+            except:
+                pass
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

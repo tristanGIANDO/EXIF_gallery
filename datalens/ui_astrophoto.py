@@ -32,7 +32,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         if font:
             self.setFont(idx, QtGui.QFont("Arial", 9, QtGui.QFont.Bold))
 
-    def _update(self):
+    def _update(self, size = None):
         #id
         self.setText(0, self._data[0]) 
         # path
@@ -86,12 +86,10 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         light_box= SpinWdg(self, idx,
                          int(self._data[idx-1]))
         # exposure
-        # self.setIcon(HEADERS.index(envs.G_EXPOSURE_TIME), ICONS.get("x"))
         exposure_box = SpinWdg(self, HEADERS.index(envs.G_EXPOSURE_TIME), 
                                float(self._data[HEADERS.index(envs.G_EXPOSURE_TIME)-1]), 
                                mode="double")
         # total time
-        # self.setIcon(HEADERS.index(envs.A_TOTAL_TIME), ICONS.get("="))
         self.set_column(HEADERS.index(envs.A_TOTAL_TIME), font=True)
         # location
         self.set_column(HEADERS.index(envs.G_LOCATION))
@@ -99,6 +97,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self.set_column(HEADERS.index(envs.A_BORTLE))
         bortle_box = SpinWdg(self, HEADERS.index(envs.A_BORTLE), 
                              int(self._data[HEADERS.index(envs.A_BORTLE)-1]))
+        self.setSizeHint(2,QtCore.QSize(20,20))
         # moon
         i = HEADERS.index(envs.A_MOON_PHASE)
         self.setText(i, envs.MOON_PHASES.get(self._data[i-1]))
@@ -124,17 +123,17 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
 
         # get small image path
         small_image_path = img_path.parent / (img_path.stem + api_envs.IMAGE_SMALL_SUFFIX + img_path.suffix)
-        image_thumbnail = ThumbnailButton(path=str(small_image_path))
+        self.image_thumbnail = ThumbnailButton(path=str(small_image_path), size=size)
 
         # get small brut path
         small_brut_path = img_path.parent / (img_path.stem + api_envs.BRUT_SMALL_SUFFIX + img_path.suffix)
         if os.path.isfile(small_brut_path):
-            brut_thumbnail = ThumbnailButton(path=str(small_brut_path))
+            self.brut_thumbnail = ThumbnailButton(path=str(small_brut_path), size=size)
 
         # ADD ITEM
         self._parent.addTopLevelItem(self)
         self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
-        self._parent.setItemWidget(self, HEADERS.index(envs.G_IMAGE), image_thumbnail)
+        self._parent.setItemWidget(self, HEADERS.index(envs.G_IMAGE), self.image_thumbnail)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_MAKE), maker_cb)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_MODEL), model_cb)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_FOCAL), focal_box)
@@ -147,7 +146,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self._parent.setItemWidget(self, HEADERS.index(envs.G_AUTHOR), author_cb)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_DATE), date_box)
         if os.path.isfile(small_brut_path):
-            self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT), brut_thumbnail)
+            self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT), self.brut_thumbnail)
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self, server):
@@ -155,6 +154,8 @@ class AstroWorkspaceTree(WorkspaceTree):
 
         self._server = server
         self._contents = self.get_contents()
+        self._items = []
+
         self.setColumnCount(NB_SECTIONS)
         self.setHeaderLabels(HEADERS)
 
@@ -165,6 +166,7 @@ class AstroWorkspaceTree(WorkspaceTree):
 
     def add_item(self, file_row):
         item = AstroFileItem(self, file_row, self._contents)
+        self._items.append(item)
   
     def get_column_index(self, item, column):
         if column == HEADERS.index(envs.G_SUBJECT):
@@ -234,6 +236,9 @@ class AstroWorkspaceTree(WorkspaceTree):
             "software" : softs
             }
 
+    def get_items(self):
+        return self._items
+        
 class AstroListWidget(QtWidgets.QListWidget):
     def __init__(self) -> None:
         super(AstroListWidget, self).__init__()

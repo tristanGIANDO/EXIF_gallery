@@ -19,6 +19,14 @@ class WorkspaceTree( QtWidgets.QTreeWidget):
         if not selected_items:
             return
         for item in selected_items:
+            message_box = QtWidgets.QMessageBox.warning(
+                self,
+                "Delete file", 
+                f"You are about to delete this file.\nThis is irreversible!",
+                QtWidgets.QMessageBox.Ok | 
+                QtWidgets.QMessageBox.Cancel)
+            if message_box == QtWidgets.QMessageBox.Cancel:
+                return
             parent = item.parent()
             if parent is None:
                 index = self.indexOfTopLevelItem(item)
@@ -121,7 +129,7 @@ class SpinWdg(QtWidgets.QWidget):
     
     def setItemText(self):
         if self.mode == "date":
-            value = self.box.text()
+            value = str(self.box.text())
         else:
             value = str(self.box.value())
         if not value:
