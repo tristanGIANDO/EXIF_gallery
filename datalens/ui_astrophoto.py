@@ -6,6 +6,8 @@ from datalens.api import envs as api_envs
 from datalens.ui_image import ThumbnailButton
 import os
 
+ICONS = envs.Icons()
+
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
            envs.G_SUBJECT, envs.G_DESC, envs.G_MAKE, envs.G_MODEL,
            envs.A_MOUNT, envs.G_FOCAL, envs.G_F_NUMBER, envs.G_ISO,
@@ -23,7 +25,6 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self._parent = parent
         self._data = data
         self._contents = contents
-        self.ICONS = envs.icons.read()
         self._update()
 
     def set_column(self,idx, inc=1, font=False):
@@ -100,7 +101,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         i = HEADERS.index(envs.A_MOON_PHASE)
         self.setText(i, envs.MOON_PHASES.get(self._data[i-1]))
         self.setIcon(HEADERS.index(envs.A_MOON_PHASE),
-                     self.ICONS[self._data[15]])
+                     ICONS.get(self._data[15]))
         # soft
         self.set_column(HEADERS.index(envs.G_SOFTWARE))
         contents = self._contents.get("software", [])
@@ -152,7 +153,6 @@ class AstroWorkspaceTree(WorkspaceTree):
 
         self._server = server
         self._contents = self.get_contents()
-        self.ICONS = envs.icons.read()
         self.setColumnCount(NB_SECTIONS)
         self.setHeaderLabels(HEADERS)
 

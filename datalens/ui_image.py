@@ -5,6 +5,8 @@ from datalens import envs
 from datalens.api import envs as api_envs
 from datalens.api import api_utils
 
+ICONS = envs.Icons()
+
 class ImageInfosUI(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
@@ -12,7 +14,6 @@ class ImageInfosUI(QtWidgets.QDialog):
         self._exif = {}
         self._image_path = ""
         self._brut_path = ""
-        self.ICONS = envs.icons.read()
 
         self.setWindowTitle("Image Details")
         self.resize(1000, 600)
@@ -23,11 +24,11 @@ class ImageInfosUI(QtWidgets.QDialog):
     def create_widgets(self):
         # Image buttons
         self.add_image_btn = QtWidgets.QPushButton("Load Image(JPG,PNG)")
-        self.add_image_btn.setIcon(self.ICONS["add_file"])
+        self.add_image_btn.setIcon(ICONS.get("add_file"))
         self.add_image_btn.setIconSize(QtCore.QSize(45,45))
         self.add_image_btn.clicked.connect(self.on_add_image_clicked)
         self.add_brut_btn = QtWidgets.QPushButton("Load Brut(JPG,PNG)")
-        self.add_brut_btn.setIcon(self.ICONS["add_file"])
+        self.add_brut_btn.setIcon(ICONS.get("add_file"))
         self.add_brut_btn.setIconSize(QtCore.QSize(45,45))
         self.add_brut_btn.clicked.connect(self.on_add_brut_clicked)
 
@@ -273,7 +274,6 @@ class ImageViewerUI(QtWidgets.QDialog):
         super().__init__()
         if not paths:
             return
-        self.ICONS = envs.icons.read()
         
         self.setWindowTitle("Image Viewer")
         self.resize(1460, 900)
@@ -282,7 +282,7 @@ class ImageViewerUI(QtWidgets.QDialog):
         self.layout = QtWidgets.QHBoxLayout()
         self.central_widget.setLayout(self.layout)
 
-        self.prev_button = QtWidgets.QPushButton(self.ICONS["previous"], "")
+        self.prev_button = QtWidgets.QPushButton(ICONS.get("previous"), "")
         self.prev_button.setFixedSize(40,40)
         self.prev_button.setIconSize(QtCore.QSize(35,35))
         self.prev_button.clicked.connect(self.show_previous_image)
@@ -291,7 +291,7 @@ class ImageViewerUI(QtWidgets.QDialog):
         self.image_label = QtWidgets.QLabel(self)
         self.layout.addWidget(self.image_label)
 
-        self.next_button = QtWidgets.QPushButton(self.ICONS["next"], "")
+        self.next_button = QtWidgets.QPushButton(ICONS.get("next"), "")
         self.next_button.setFixedSize(40,40)
         self.next_button.setIconSize(QtCore.QSize(35,35))
         self.next_button.clicked.connect(self.show_next_image)
@@ -324,7 +324,6 @@ class ImageViewerUI(QtWidgets.QDialog):
 class ThumbnailButton(QtWidgets.QPushButton):
     def __init__(self, path, size=(300,200)):
         super().__init__()
-        self.ICONS = envs.icons.read()
         self.path = path
         try:
             self.parent_path = path.replace(api_envs.IMAGE_SMALL_SUFFIX, "")
@@ -337,7 +336,7 @@ class ThumbnailButton(QtWidgets.QPushButton):
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.load_image(path)
 
-        version_button = QtWidgets.QPushButton(self.ICONS["add_version"], "")
+        version_button = QtWidgets.QPushButton(ICONS.get("add_version"), "")
         version_button.setMaximumSize(40,40)
         version_button.setIconSize(QtCore.QSize(35,35))
 

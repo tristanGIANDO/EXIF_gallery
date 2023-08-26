@@ -9,22 +9,22 @@ from datalens.ui_image import ImageInfosUI, ImageViewerUI
 from datalens.ui_user import UserInfosUI
 from datalens.ui_utils import CreateAlbumUI, ActionButton
 from datalens.web import website
-   
+
+ICONS = envs.Icons()
+
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("%s v-%s"%(__infos__.__title__,
                                        __infos__.__version__))
-        # self.setWindowIcon(envs.self.ICONS["logo"])
+        self.setWindowIcon(ICONS.get("logo"))
         self.resize(1800, 800)
 
         self._db = Database()
         self._current_album = ""
         self._current_files = []
 
-        self.ICONS = envs.icons.read()
-        
         self.create_widgets()
         self.create_actions()
         self.create_layouts()
@@ -47,34 +47,34 @@ class MainUI( QtWidgets.QMainWindow):
         self.albums_cb.setFont(QtGui.QFont("Arial", 12, QtGui.QFont.Bold))
 
     def create_actions(self):
-        self.add_files_action = QtWidgets.QAction(self.ICONS["add_file"], "Add File", self)
+        self.add_files_action = QtWidgets.QAction(ICONS.get("add_file"), "Add File", self)
         
         self.remove_files_action = QtWidgets.QAction(
-             self.ICONS["remove_file"], "Remove File", self)
+             ICONS.get("remove_file"), "Remove File", self)
         
         self.reload_files_action = QtWidgets.QAction(
-             self.ICONS["reload"], "Reload", self)
+             ICONS.get("reload"), "Reload", self)
         
         self.view_mode_action = QtWidgets.QAction(
-             self.ICONS["card"], "Change View Mode", self)
+             ICONS.get("card"), "Change View Mode", self)
 
         self.viewer_action = QtWidgets.QAction(
-             self.ICONS["viewer"], "Image Viewer", self)
+             ICONS.get("viewer"), "Image Viewer", self)
         
         self.web_action = QtWidgets.QAction(
-             self.ICONS["website"], "Website", self)
+             ICONS.get("website"), "Website", self)
         
         self.user_action = QtWidgets.QAction(
-             self.ICONS["user"], "About you", self)
+             ICONS.get("user"), "About you", self)
         
         self.create_album_action = QtWidgets.QAction(
-             self.ICONS["add_album"], "Create Album", self)
+             ICONS.get("add_album"), "Create Album", self)
         
         self.delete_album_action = QtWidgets.QAction(
-             self.ICONS["remove_album"], "Delete Album", self)
+             ICONS.get("remove_album"), "Delete Album", self)
         
         self.graph_action = QtWidgets.QAction(
-             self.ICONS["graph"], "Show graph", self)
+             ICONS.get("graph"), "Show graph", self)
         
         
         self.create_album_btn = ActionButton(self.create_album_action)
@@ -269,11 +269,11 @@ class MainUI( QtWidgets.QMainWindow):
                 if self.list_wdg.isHidden():
                     self.list_wdg.setVisible(True)
                     self.tree.setVisible(False)
-                    self.view_mode_action.setIcon(self.ICONS["list"])
+                    self.view_mode_action.setIcon(ICONS.get("list"))
                 else:
                     self.list_wdg.setVisible(False)
                     self.tree.setVisible(True)
-                    self.view_mode_action.setIcon(self.ICONS["card"])
+                    self.view_mode_action.setIcon(ICONS.get("card"))
                     
     def on_viewer_triggered(self):
         paths = []

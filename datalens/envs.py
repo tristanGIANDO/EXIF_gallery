@@ -1,20 +1,21 @@
-from pathlib import Path
 from PyQt5 import QtGui
+import os
 
-class Icons(object):
-    def __init__(self, data) -> None:
-        path = Path(__file__)
-        self.icons_root = path.parent / "icons"
-        self._result = {}
-        self.data = data
-        
-    def read(self):
-        for k, v in self.data.items():
-            self._result[k] = QtGui.QIcon(str(self.icons_root / v))
-        return self._result
-        
+class Icons():
+    def __init__(self):
+        self._root = os.path.join(os.path.dirname(__file__), "icons")
+        self._cache = {}
 
-icons = Icons({
+    def get(self, key):
+        if key in self._cache:
+            return self._cache[key]
+        
+        path = os.path.join(self._root, ICONS.get(key))
+        icon = QtGui.QIcon(path)
+        self._cache[path] = icon
+        return icon
+
+ICONS = {
     "logo" : "logo.png",
     "add_file" : "add_image.png",
     "remove_file" : "remove_image.png",
@@ -39,7 +40,7 @@ icons = Icons({
     5 : "5.png",
     6 : "6.png",
     7 : "7.png"
-})
+}
 
 # global infos
 G_ID = "ID"
