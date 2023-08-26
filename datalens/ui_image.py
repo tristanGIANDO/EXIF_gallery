@@ -9,18 +9,25 @@ from datalens.ui_features import WorldMapUI
 ICONS = envs.Icons()
 
 class ImageInfosUI(QtWidgets.QDialog):
-    def __init__(self):
+    def __init__(self, author=None):
         super().__init__()
     
         self._exif = {}
         self._image_path = ""
         self._brut_path = ""
+        if author:
+            self._author = author
+        else:
+            self._author = ""
 
         self.setWindowTitle("Image Details")
         self.resize(1000, 600)
+        self.setWindowIcon(ICONS.get("logo"))
 
         self.create_widgets()
         self.create_layouts()
+
+        self._update()
 
     def create_widgets(self):
         # Image buttons
@@ -67,8 +74,10 @@ class ImageInfosUI(QtWidgets.QDialog):
 
         # Button
         self.ok_btn = QtWidgets.QPushButton("OK")
+        self.ok_btn.setFixedSize(QtCore.QSize(80,30))
         self.ok_btn.clicked.connect(self._accept)
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
+        self.cancel_btn.setFixedSize(QtCore.QSize(80,30))
         self.cancel_btn.clicked.connect(self.deleteLater)
         
     def create_layouts(self):
@@ -191,9 +200,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         else:
             self.add_brut_btn.setEnabled(True)
 
-        # self.v_image_layout.removeWidget(self.image_lbl)
-
-        self.subject_le.setText(self._exif.get(api_envs.SUBJECT, ""))
+        self.subject_le.setText(self._exif.get(api_envs.SUBJECT, "Subject"))
         self.album_le.setText(self._exif.get(api_envs.ALBUM, ""))
         try:
             date = [int(d) for d in self._exif.get(api_envs.DATE).split(" ")[0].split(":")]
@@ -202,11 +209,12 @@ class ImageInfosUI(QtWidgets.QDialog):
             q_date = QtCore.QDate.currentDate()
         self.date_le.setDate(q_date)
         self.location_le.setText(self._exif.get(api_envs.LOCATION, ""))
-        self.exposure_le.setValue(float(self._exif.get(api_envs.EXPOSURE_TIME, 0)))
-        self.focal_le.setValue(float(self._exif.get(api_envs.FOCAL, 0)))
-        self.iso_le.setValue(int(self._exif.get(api_envs.ISO, 0)))
-        self.aperture_le.setValue(float(self._exif.get(api_envs.F_NUMBER, 0)))
-        self.author_le.setText(self._exif.get(api_envs.AUTHOR, ""))
+        self.lights_le.setValue(1)
+        self.exposure_le.setValue(float(self._exif.get(api_envs.EXPOSURE_TIME, 0.01)))
+        self.focal_le.setValue(float(self._exif.get(api_envs.FOCAL, 35)))
+        self.iso_le.setValue(int(self._exif.get(api_envs.ISO, 100)))
+        self.aperture_le.setValue(float(self._exif.get(api_envs.F_NUMBER, 3.5)))
+        self.author_le.setText(self._exif.get(api_envs.AUTHOR, self._author))
         self.maker_le.setText(self._exif.get(api_envs.MAKE,""))
         self.model_le.setText(self._exif.get(api_envs.MODEL,""))
         self.comment_le.setText(self._exif.get(api_envs.COMMENT,""))
@@ -288,6 +296,7 @@ class ImageViewerUI(QtWidgets.QDialog):
         
         self.setWindowTitle("Image Viewer")
         self.resize(1460, 900)
+        self.setWindowIcon(ICONS.get("logo"))
         self.central_widget = QtWidgets.QWidget(self)
 
         self.layout = QtWidgets.QHBoxLayout()

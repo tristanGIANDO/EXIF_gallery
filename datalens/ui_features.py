@@ -184,6 +184,7 @@ class WorldMapUI(QtWidgets.QDialog):
         super().__init__()
         self.setWindowTitle("Select a location")
         self.setGeometry(100, 100, 800, 600)
+        self.setWindowIcon(ICONS.get("logo"))
 
         self._longitude_shift = 0.0
         self._latitude_shift = 20.0

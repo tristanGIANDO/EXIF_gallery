@@ -3,13 +3,15 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from datalens import envs
 from datalens.api import envs as api_envs
 
+ICONS = envs.Icons()
+
 class UserInfosUI(QtWidgets.QDialog):
     def __init__(self, user=None):
         super().__init__()
     
         self.setWindowTitle("About you")
         self.resize(300, 300)
-
+        self.setWindowIcon(ICONS.get("logo"))
         self.create_widgets()
         self.create_layouts()
 

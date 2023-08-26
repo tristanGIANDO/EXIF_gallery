@@ -2,7 +2,10 @@ import typing
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QWidget
 from datalens.ui_image import ImageInfosUI
-from datalens.api import envs
+from datalens.api import envs as api_envs
+from datalens import envs
+
+ICONS = envs.Icons()
 
 class WorkspaceTree( QtWidgets.QTreeWidget):
     def __init__(self):
@@ -40,7 +43,8 @@ class CreateAlbumUI(QtWidgets.QDialog):
         super().__init__()
 
         self.setWindowTitle("Create Album")
-        self.resize(300, 70)
+        self.resize(350, 90)
+        self.setWindowIcon(ICONS.get("logo"))
 
         main_layout = QtWidgets.QVBoxLayout(self)
         font_bold = QtGui.QFont("Arial", 8, QtGui.QFont.Bold)
@@ -70,8 +74,11 @@ class CreateAlbumUI(QtWidgets.QDialog):
 
         buttons_layout = QtWidgets.QHBoxLayout()
         self.ok_btn = QtWidgets.QPushButton("Create Album")
+        self.ok_btn.setIcon(ICONS.get("add_album"))
+        self.ok_btn.setIconSize(QtCore.QSize(25,25))
         self.ok_btn.clicked.connect(self._accept)
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
+        self.cancel_btn.setFixedSize(80,30)
         self.cancel_btn.clicked.connect(self.deleteLater)
         buttons_layout.addWidget(self.ok_btn)
         buttons_layout.addWidget(self.cancel_btn)
@@ -85,8 +92,8 @@ class CreateAlbumUI(QtWidgets.QDialog):
 
     def read(self):
         return {
-            envs.ALBUM_NAME : self.album_name_le.text(),
-            envs.ALBUM_TYPE : self.album_type_cb.currentText()
+            api_envs.ALBUM_NAME : self.album_name_le.text(),
+            api_envs.ALBUM_TYPE : self.album_type_cb.currentText()
         }
     
 class ActionButton(QtWidgets.QPushButton):

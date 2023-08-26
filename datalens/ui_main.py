@@ -206,7 +206,12 @@ class MainUI( QtWidgets.QMainWindow):
         return [f for f in self._db._files.select_rows() if f[3] == album]
 
     def open_image_info(self):
-        ui = ImageInfosUI()
+        user = self._db._you.get_user()
+        if user:
+            author = f"{user[1]} {user[2]}"
+        else:
+            author = None
+        ui = ImageInfosUI(author)
         if ui.exec_():
             data = ui.read()
             data["album"] = self._current_album
