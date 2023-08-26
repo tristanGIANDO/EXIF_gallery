@@ -45,7 +45,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
                 self.setBackground(i, QtGui.QColor(240,240,240))
         
         # subject
-        self.set_column(HEADERS.index(envs.G_SUBJECT))
+        self.set_column(HEADERS.index(envs.G_SUBJECT), font=True)
         # make
         self.set_column(HEADERS.index(envs.G_MAKE))
         contents = self._contents.get("maker", [])
@@ -86,10 +86,12 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         light_box= SpinWdg(self, idx,
                          int(self._data[idx-1]))
         # exposure
+        # self.setIcon(HEADERS.index(envs.G_EXPOSURE_TIME), ICONS.get("x"))
         exposure_box = SpinWdg(self, HEADERS.index(envs.G_EXPOSURE_TIME), 
                                float(self._data[HEADERS.index(envs.G_EXPOSURE_TIME)-1]), 
                                mode="double")
         # total time
+        # self.setIcon(HEADERS.index(envs.A_TOTAL_TIME), ICONS.get("="))
         self.set_column(HEADERS.index(envs.A_TOTAL_TIME), font=True)
         # location
         self.set_column(HEADERS.index(envs.G_LOCATION))

@@ -44,9 +44,7 @@ The package needs PyQt5 and Pillow.
 
 From a console, run :
 ```
-pip install PyQt5
-pip install pillow
-pip install mysql-connector-python
+pip install PyQt5 pillow mysql-connector-python scipy cartopy geopy matplotlib
 ```
 
 # API DOCUMENTATION

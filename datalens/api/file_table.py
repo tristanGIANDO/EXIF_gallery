@@ -142,12 +142,10 @@ class FileTable(object):
         self._cursor.execute(request, values)
         self._server.commit()
 
-    # fileTable
     def select_rows(self):
         self._cursor.execute(f"SELECT * FROM {self._name}")
         return self._cursor.fetchall()
     
-    # fileTable
     def select_from_column(self, column:str, value:str):
         request = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
         self._cursor.execute(request)
@@ -162,8 +160,7 @@ class FileTable(object):
         result = self.get(envs.DATE, id)
         if result:
             return result[0][0]
-    
-    # fileTable
+ 
     def update(self, column:str, id:str, new_value:str):
         # global update
         try:
@@ -177,8 +174,7 @@ class FileTable(object):
             self._update_total_time(str(id))
         elif column == envs.DATE:
             self._update_moon_phase(new_value, str(id))
-    
-    # fileTable
+
     def delete_from(self, id:int, path:str):
         request = f"DELETE FROM {self._name} WHERE {envs.ID} = '{str(id)}'"
         self._cursor.execute(request)
@@ -205,7 +201,6 @@ class FileTable(object):
 
     def _update_moon_phase(self, date, id:str):
         moon_phase = api_utils.get_moon_phase(date)
-
         try:
             sql = f"UPDATE {self._name} SET {envs.MOON_PHASE} = '{moon_phase}' WHERE ({envs.ID} = '{id}')"
             self._cursor.execute(sql)

@@ -24,17 +24,21 @@ class MainUI( QtWidgets.QMainWindow):
         self._db = Database()
         self._current_album = ""
         self._current_files = []
-
+        
         self.create_widgets()
+        
         self.create_actions()
+        
         self.create_layouts()
         self.create_connections()
-
+        
         self._update_albums()
+        
         self._update_files()
         self._update_user()
 
         self.set_view()
+        return
 
     def create_widgets(self):
         self.title = QtWidgets.QLabel("DataLens")
@@ -157,6 +161,7 @@ class MainUI( QtWidgets.QMainWindow):
         
     def _update_albums(self, album_name = None):
         self.albums_cb.clear()
+        self.albums_cb.blockSignals(True)
         name = ""
         for album_data in self._db._albums.select_rows() or ():
             if len(album_data) >= 2:
@@ -167,6 +172,8 @@ class MainUI( QtWidgets.QMainWindow):
             self._current_album = album_name
         else:
             self._current_album = name
+
+        self.albums_cb.blockSignals(False)
         self.albums_cb.setCurrentText(self._current_album)
         
     def _update_user(self):
@@ -175,7 +182,7 @@ class MainUI( QtWidgets.QMainWindow):
             try:
                 self.user_action.setIcon( QtGui.QIcon(user[4]))
             except:
-                pass
+                self.user_action.setIcon( ICONS.get("logo"))
 
     def get_album_files(self, album = None):
         if not album:

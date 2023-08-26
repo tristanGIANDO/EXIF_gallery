@@ -1,6 +1,8 @@
 import os
 from datalens import envs
 
+ICONS = envs.Icons()
+
 def create_website(paths:list[str], delivery_path:str,
                    user:list[str]=None, overlays:str=None,
                    albums:list[str]=["Home"], website_name:str="datalens_portfolio"):
@@ -10,7 +12,7 @@ def create_website(paths:list[str], delivery_path:str,
     """
     title = "My portfolio"
     subtitle = "Powered by Datalens"
-    thumbnail = envs.main_icon
+    thumbnail = ICONS.get("logo")
 
     if len(user) >= 3:
         title = f"{user[1]} {user[2]}" # first name + last name
@@ -25,7 +27,7 @@ def create_website(paths:list[str], delivery_path:str,
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href={envs.main_icon} type="image/x-icon">\n
+    <link rel="icon" href={ICONS.get("logo")} type="image/x-icon">\n
     <title>{title} portfolio</title>\n
     '''
 

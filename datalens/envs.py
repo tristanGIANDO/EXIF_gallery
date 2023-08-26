@@ -32,6 +32,8 @@ ICONS = {
     "website" : "website.png",
     "user" : "user.png",
     "graph" : "graph.png",
+    "x" : "mult.png",
+    "=" : "equal.png",
     0 : "0.png",
     1 : "1.png",
     2 : "2.png",
