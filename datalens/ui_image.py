@@ -326,6 +326,10 @@ class ThumbnailButton(QtWidgets.QPushButton):
         super().__init__()
         self.ICONS = envs.icons.read()
         self.path = path
+        try:
+            self.parent_path = path.replace(api_envs.IMAGE_SMALL_SUFFIX, "")
+        except:
+            self.parent_path = path.replace(api_envs.BRUT_SMALL_SUFFIX, "")
 
         self.setFixedSize(size[0],size[1])
 
@@ -347,7 +351,7 @@ class ThumbnailButton(QtWidgets.QPushButton):
         self.clicked.connect(self.on_button_clicked)
 
     def on_button_clicked(self):
-        ui = ImageViewerUI([self.path])
+        ui = ImageViewerUI([self.parent_path])
         ui.exec_()
 
     def load_image(self, image_path):
