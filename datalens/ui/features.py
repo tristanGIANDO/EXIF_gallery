@@ -9,6 +9,7 @@ import cartopy.feature as cfeature
 from geopy.geocoders import Nominatim
 from datetime import datetime
 from datalens.ui import envs
+from datalens.api import utils
 
 ICONS = envs.Icons()
 
@@ -238,6 +239,7 @@ class WorldMapUI(QtWidgets.QDialog):
         if event.inaxes is not None:
             lon, lat = self.ax.transData.inverted().transform((event.x, event.y))
             self.text.setText(self.get_location_name(lat,lon))
+            utils.get_bortle_level(lat, lon)
 
     def get_location_name(self, latitude, longitude):
         geolocator = Nominatim(user_agent="WorldMapUI")

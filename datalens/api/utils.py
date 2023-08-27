@@ -1,10 +1,9 @@
 import os, shutil, math, decimal, datetime
-# from skyfield.api import Topos, load
+from skyfield.api import Topos, load
 from datalens.api import envs
-import os
 from pathlib import Path
 from PIL import Image
-# from PIL.ExifTags import TAGS
+import ephem
 
 def copy_file(path:str, album:str, id:str) ->str:
     """copy file to dir
@@ -53,22 +52,21 @@ def get_moon_phase(date):
 
    return int(index) & 7
 
-def get_bortle_level():
-    latitude = 43.599916923299425
-    longitude = 3.8750995364824687
+def get_bortle_level(latitude, longitude):
+    observer = ephem.Observer()
+    observer.lat = str(latitude)
+    observer.lon = str(longitude)
 
-    ts = load.timescale()
-    planete = load('de421.bsp')
-    lieu = Topos(latitude_degrees=latitude, longitude_degrees=longitude)
+    sun = ephem.Sun()
+    sun.compute(observer)
+    magnitude_limite = sun.mag
 
-    t = ts.now()
-    astres = planete['hip']
-    astres_at_lieu = astres.at(t).observe(lieu)
-    apparent = astres_at_lieu.apparent()
-    magnitude_limite = apparent.mag
+    bortle_score = determine_bortle_score(magnitude_limite)
+    print(f"Le score Bortle de ce lieu est : {bortle_score}")
 
+def determine_bortle_score(magnitude_limite):
     if magnitude_limite <= 2.0:
-            return 1
+        return 1
     elif magnitude_limite <= 4.0:
         return 2
     elif magnitude_limite <= 4.5:
@@ -87,7 +85,7 @@ def get_bortle_level():
         return 9
     else:
         return 10
-
+    
 def get_exifs(path):
     if not os.path.isfile(path):
         # raise FileNotFoundError(f"{path} is not a file.")
@@ -128,10 +126,4 @@ def resize_image(path:str, w:int, h:int):
     return result
 
 if __name__=="__main__":
-    paths = [r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\icons\0.png",
-             r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\icons\1.png",
-             r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\icons\2.png",
-             r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens\icons\3.png"
-             ]
-    
-    create_website(paths, r"C:\Users\giand\OneDrive\Documents\packages\PHOTO_GALLERY\dev\datalens")
+    get_bortle_level()
