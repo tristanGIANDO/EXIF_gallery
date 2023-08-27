@@ -1,9 +1,9 @@
 import typing
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QWidget
-from datalens.ui_image import ImageInfosUI
+from datalens.ui.image import ImageInfosUI
 from datalens.api import envs as api_envs
-from datalens import envs
+from datalens.ui import envs
 
 ICONS = envs.Icons()
 

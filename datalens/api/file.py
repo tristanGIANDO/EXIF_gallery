@@ -1,6 +1,6 @@
 import traceback, os
 from pathlib import Path
-from datalens.api import envs, api_utils
+from datalens.api import envs, utils
 
 class FileTable(object):
     def __init__(self, server) -> None:
@@ -101,14 +101,14 @@ class FileTable(object):
         values += (exposure,)
 
         # total time
-        values += (api_utils.convert_minutes_to_datetime(lights * exposure / 60),)
+        values += (utils.convert_minutes_to_datetime(lights * exposure / 60),)
 
         # location
         values += (data.get(envs.LOCATION, ""),)
         # bortle
         values += (data.get(envs.BORTLE, 0),)
         # moon
-        values += (api_utils.get_moon_phase(data.get(envs.DATE)),)
+        values += (utils.get_moon_phase(data.get(envs.DATE)),)
         # software
         values += (data.get(envs.SOFTWARE, ""),)
         # author
@@ -190,7 +190,7 @@ class FileTable(object):
         self._cursor.execute(request)
         result = self._cursor.fetchall()
         minutes = float(result[0][0]) * float(result[0][1]) / 60
-        total_time = api_utils.convert_minutes_to_datetime(minutes)
+        total_time = utils.convert_minutes_to_datetime(minutes)
 
         try:
             sql = f"UPDATE {self._name} SET {envs.TOTAL_TIME} = '{total_time}' WHERE ({envs.ID} = '{id}')"
@@ -200,7 +200,7 @@ class FileTable(object):
             print(traceback.print_exc())
 
     def _update_moon_phase(self, date, id:str):
-        moon_phase = api_utils.get_moon_phase(date)
+        moon_phase = utils.get_moon_phase(date)
         try:
             sql = f"UPDATE {self._name} SET {envs.MOON_PHASE} = '{moon_phase}' WHERE ({envs.ID} = '{id}')"
             self._cursor.execute(sql)
@@ -211,7 +211,7 @@ class FileTable(object):
     def conform_file(sekf, path, album, id):
         if not os.path.isfile(path):
             return
-        image_large_path = api_utils.copy_file(path, album, id)
-        image_small_path = api_utils.resize_image(image_large_path, 300, 200)
+        image_large_path = utils.copy_file(path, album, id)
+        image_small_path = utils.resize_image(image_large_path, 300, 200)
 
         return image_large_path

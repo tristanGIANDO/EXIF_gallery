@@ -1,14 +1,14 @@
 import sys, webbrowser
 from PyQt5 import QtWidgets,QtCore, QtGui
-from datalens import __infos__, envs
+from datalens import __infos__
 from datalens.api.database import Database
 from datalens.api import envs as api_envs
-from datalens.api.graphix import GraphixUI
-from datalens.ui_astrophoto import AstroWorkspaceTree, AstroListWidget
-from datalens.ui_image import ImageInfosUI, ImageViewerUI
-from datalens.ui_user import UserInfosUI
-from datalens.ui_utils import CreateAlbumUI, ActionButton
-from datalens.ui_features import create_website
+from datalens.ui.astrophoto import AstroWorkspaceTree, AstroListWidget
+from datalens.ui.image import ImageInfosUI, ImageViewerUI
+from datalens.ui.user import UserInfosUI
+from datalens.ui.utils import CreateAlbumUI, ActionButton
+from datalens.ui.features import create_website, GraphUI
+from datalens.ui import envs
 
 ICONS = envs.Icons()
 
@@ -326,7 +326,7 @@ class MainUI( QtWidgets.QMainWindow):
             date = f"{splits[0]},{splits[1]},{splits[2]}"
             dates.append(date)
 
-        ui = GraphixUI(dates)
+        ui = GraphUI(dates)
         ui.exec_()
 
     def on_web_triggered(self):
@@ -381,7 +381,7 @@ class MainUI( QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(open(r"datalens\styles\lightstyle.qss").read())
+    app.setStyleSheet(open(r"datalens\ui\styles\lightstyle.qss").read())
 
     ui = MainUI()
     ui.show()

@@ -1,10 +1,10 @@
 import sys
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from datalens import envs
+from datalens.ui import envs
 from datalens.api import envs as api_envs
-from datalens.api import api_utils
-from datalens.ui_features import WorldMapUI
+from datalens.api import utils
+from datalens.ui.features import WorldMapUI
 
 ICONS = envs.Icons()
 
@@ -273,14 +273,14 @@ class ImageInfosUI(QtWidgets.QDialog):
         if path:
             self._image_path = path
             if not self._exif:
-                self._exif = api_utils.get_exifs(path)
+                self._exif = utils.get_exifs(path)
             self._update()
     
     def on_add_brut_clicked(self):
         path = self.open_file_dialog()
         if path:
             self._brut_path = path
-            self._exif = api_utils.get_exifs(path)
+            self._exif = utils.get_exifs(path)
             self._update()
 
     def on_location_clicked(self):
@@ -344,16 +344,18 @@ class ImageViewerUI(QtWidgets.QDialog):
 class ThumbnailButton(QtWidgets.QPushButton):
     def __init__(self, path, size=None):
         super().__init__()
-        self.path = path
-        try:
-            self.parent_path = path.replace(api_envs.IMAGE_SMALL_SUFFIX, "")
-        except:
-            self.parent_path = path.replace(api_envs.BRUT_SMALL_SUFFIX, "")
-
         if not size:
             size = (300,200)
         self.setFixedSize(size[0],size[1])
 
+        self.path = path
+        self._versions = []
+        try:
+            self.parent_path = path.replace(api_envs.IMAGE_SMALL_SUFFIX, "")
+        except:
+            self.parent_path = path.replace(api_envs.BRUT_SMALL_SUFFIX, "")
+        self._versions.append(self.parent_path)
+        
         self.image_label = QtWidgets.QLabel(self)
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
         self.load_image(path)
@@ -369,19 +371,41 @@ class ThumbnailButton(QtWidgets.QPushButton):
         
         self.setLayout(stacked_layout)
 
-        self.clicked.connect(self.on_button_clicked)
+        self.clicked.connect(self.on_image_clicked)
 
-    def on_button_clicked(self):
-        ui = ImageViewerUI([self.parent_path])
-        ui.exec_()
+    def open_file_dialog(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.ReadOnly
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Open Image",
+            "",
+            "Images (*.png *.jpg *.jpeg *.gif *.bmp);;All Files (*)",
+            options=options
+        )
 
+        if file_name:
+            return file_name
+        else:
+            return ""
+    
     def load_image(self, image_path):
         pixmap = QtGui.QPixmap(image_path)
         if not pixmap.isNull():
-            aspect_ratio = pixmap.width() / pixmap.height()
-            self.image_label.setPixmap(pixmap.scaledToHeight(self.height(), mode=QtCore.Qt.SmoothTransformation))
+            self.image_label.setPixmap(pixmap.scaledToHeight(
+                self.height(),
+                mode=QtCore.Qt.SmoothTransformation))
         else:
             self.image_label.setText("Failed to load image")
+        
+    def on_image_clicked(self):
+        ui = ImageViewerUI(self._versions)
+        ui.exec_()
+
+    def on_add_version_clicked(self):
+        path = self.open_file_dialog()
+        if path:
+            pass
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

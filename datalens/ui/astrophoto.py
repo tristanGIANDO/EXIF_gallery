@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
 from pathlib import Path
-from datalens.ui_utils import WorkspaceTree, SpinWdg, ComboBoxWdg
-from datalens import envs
+from datalens.ui.utils import WorkspaceTree, SpinWdg, ComboBoxWdg
+from datalens.ui import envs
 from datalens.api import envs as api_envs
-from datalens.ui_image import ThumbnailButton
+from datalens.ui.image import ThumbnailButton
 import os
 
 ICONS = envs.Icons()
