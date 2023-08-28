@@ -5,44 +5,45 @@ class Icons():
     def __init__(self):
         self._root = os.path.join(os.path.dirname(__file__), "icons")
         self._cache = {}
+        self._icons = {
+            "logo" : "logo.png",
+            "add_file" : "add_image.png",
+            "remove_file" : "remove_image.png",
+            "add_album" : "add_album.png",
+            "add_version" : "add_version.png",
+            "remove_album" : "remove_album.png",
+            "reload" : "reload.png",
+            "full" : "full_screen.png",
+            "previous" : "arrow_left.png",
+            "next" : "arrow_right.png",
+            "list" : "list.png",
+            "card" : "card.png",
+            "viewer" : "viewer.png",
+            "website" : "website.png",
+            "user" : "user.png",
+            "graph" : "graph.png",
+            "x" : "mult.png",
+            "=" : "equal.png",
+            0 : "0.png",
+            1 : "1.png",
+            2 : "2.png",
+            3 : "3.png",
+            4 : "4.png",
+            5 : "5.png",
+            6 : "6.png",
+            7 : "7.png"
+        }
 
     def get(self, key):
         if key in self._cache:
             return self._cache[key]
         
-        path = os.path.join(self._root, ICONS.get(key))
+        path = os.path.join(self._root, self._icons.get(key))
         icon = QtGui.QIcon(path)
         self._cache[path] = icon
         return icon
 
-ICONS = {
-    "logo" : "logo.png",
-    "add_file" : "add_image.png",
-    "remove_file" : "remove_image.png",
-    "add_album" : "add_album.png",
-    "add_version" : "add_version.png",
-    "remove_album" : "remove_album.png",
-    "reload" : "reload.png",
-    "full" : "full_screen.png",
-    "previous" : "arrow_left.png",
-    "next" : "arrow_right.png",
-    "list" : "list.png",
-    "card" : "card.png",
-    "viewer" : "viewer.png",
-    "website" : "website.png",
-    "user" : "user.png",
-    "graph" : "graph.png",
-    "x" : "mult.png",
-    "=" : "equal.png",
-    0 : "0.png",
-    1 : "1.png",
-    2 : "2.png",
-    3 : "3.png",
-    4 : "4.png",
-    5 : "5.png",
-    6 : "6.png",
-    7 : "7.png"
-}
+ICONS = Icons()
 
 # global infos
 G_ID = "ID"

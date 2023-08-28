@@ -28,12 +28,12 @@ class AlbumTable(object):
                 {envs.ALBUM_TYPE} VARCHAR(45)\
                 )"
 
-            request = f"CREATE TABLE {self._name} {data}"
-            self._cursor.execute(request)
+            sql = f"CREATE TABLE {self._name} {data}"
+            self._cursor.execute(sql)
 
     def delete(self):
-        request = f"DROP TABLE {self._name}"
-        self._cursor.execute(request)
+        sql = f"DROP TABLE {self._name}"
+        self._cursor.execute(sql)
 
     def insert_into(self, data:dict):
         # first name
@@ -42,10 +42,10 @@ class AlbumTable(object):
         # last name
         values += (data.get(envs.ALBUM_TYPE, ""),)
 
-        request = f"INSERT INTO {self._name} \
+        sql = f"INSERT INTO {self._name} \
         ({envs.ALBUM_NAME},{envs.ALBUM_TYPE}) VALUES (%s,%s)"
 
-        self._cursor.execute(request, values)
+        self._cursor.execute(sql, values)
         self._server.commit()
 
     def select_rows(self):
@@ -53,8 +53,8 @@ class AlbumTable(object):
         return self._cursor.fetchall()
 
     def select_from_column(self, column:str, value:str):
-        request = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
-        self._cursor.execute(request)
+        sql = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
+        self._cursor.execute(sql)
         return self._cursor.fetchall()
 
     def update(self, column:str, id:str, new_value:str):
@@ -66,12 +66,12 @@ class AlbumTable(object):
             pass
 
     def delete_album(self, album_name):
-        request = f"DELETE FROM {self._name} WHERE {envs.ALBUM_NAME} = '{album_name}'"
-        self._cursor.execute(request)
+        sql = f"DELETE FROM {self._name} WHERE {envs.ALBUM_NAME} = '{album_name}'"
+        self._cursor.execute(sql)
         self._server.commit()
 
-        request = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'"
-        self._cursor.execute(request)
+        sql = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'"
+        self._cursor.execute(sql)
         self._server.commit()
 
         path = os.path.join(envs.ROOT, album_name)

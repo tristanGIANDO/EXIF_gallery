@@ -1,5 +1,6 @@
-import traceback, os
+import traceback, os, shutil
 from pathlib import Path
+from PIL import Image
 from datalens.api import envs, utils
 
 class FileTable(object):
@@ -47,12 +48,12 @@ class FileTable(object):
                 {envs.PATH_BRUT} VARCHAR(250)\
                 )"
 
-            request = f"CREATE TABLE {self._name} {data}"
-            self._cursor.execute(request)
+            sql = f"CREATE TABLE {self._name} {data}"
+            self._cursor.execute(sql)
 
     def delete(self):
-        request = f"DROP TABLE {self._name}"
-        self._cursor.execute(request)
+        sql = f"DROP TABLE {self._name}"
+        self._cursor.execute(sql)
 
     def insert_into(self, data:dict):
         id = data.get(envs.ID)
@@ -63,7 +64,7 @@ class FileTable(object):
 
         # path
         album = data.get(envs.ALBUM)
-        path = self.conform_file(data.get(envs.PATH), album, id)
+        path = self.conform_os_file(data.get(envs.PATH), id)
         if not path:
             return
         values += (path,)
@@ -118,12 +119,12 @@ class FileTable(object):
         # date
         values += (data.get(envs.DATE),)
         # brut
-        brut = self.conform_file(data.get(envs.PATH_BRUT, ""), album, str(id) + "-brut")
+        brut = self.conform_os_file(data.get(envs.PATH_BRUT, ""), str(id), version=0)
         if not brut:
             brut = ""
         values += (brut,)
 
-        request = f"INSERT INTO {self._name} \
+        sql = f"INSERT INTO {self._name} \
         ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
         {envs.ALBUM},{envs.MAKE},{envs.MODEL}, \
         {envs.MOUNT},{envs.FOCAL},{envs.F_NUMBER}, \
@@ -139,7 +140,7 @@ class FileTable(object):
                             %s,%s,%s,\
                                 %s,%s,%s)"
 
-        self._cursor.execute(request, values)
+        self._cursor.execute(sql, values)
         self._server.commit()
 
     def select_rows(self):
@@ -147,13 +148,13 @@ class FileTable(object):
         return self._cursor.fetchall()
     
     def select_from_column(self, column:str, value:str):
-        request = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
-        self._cursor.execute(request)
+        sql = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
+        self._cursor.execute(sql)
         return self._cursor.fetchall()
     
     def get(self, column:str, id:str):
-        request = f"SELECT {column} FROM {self._name} WHERE {envs.ID} ='{id}'"
-        self._cursor.execute(request)
+        sql = f"SELECT {column} FROM {self._name} WHERE {envs.ID} ='{id}'"
+        self._cursor.execute(sql)
         return self._cursor.fetchall()
     
     def get_date(self, id:str):
@@ -176,8 +177,8 @@ class FileTable(object):
             self._update_moon_phase(new_value, str(id))
 
     def delete_from(self, id:int, path:str):
-        request = f"DELETE FROM {self._name} WHERE {envs.ID} = '{str(id)}'"
-        self._cursor.execute(request)
+        sql = f"DELETE FROM {self._name} WHERE {envs.ID} = '{str(id)}'"
+        self._cursor.execute(sql)
         self._server.commit()
 
         path = Path(path)
@@ -186,8 +187,8 @@ class FileTable(object):
     
     def _update_total_time(self, id:str):
         # get epxosure total time
-        request = f"SELECT {envs.LIGHTS},{envs.EXPOSURE_TIME} FROM {self._name} WHERE {envs.ID} = '{id}'"
-        self._cursor.execute(request)
+        sql = f"SELECT {envs.LIGHTS},{envs.EXPOSURE_TIME} FROM {self._name} WHERE {envs.ID} = '{id}'"
+        self._cursor.execute(sql)
         result = self._cursor.fetchall()
         minutes = float(result[0][0]) * float(result[0][1]) / 60
         total_time = utils.convert_minutes_to_datetime(minutes)
@@ -207,11 +208,32 @@ class FileTable(object):
             self._server.commit()
         except:
             print(traceback.print_exc())
+    
+    def conform_os_file(self, src_path, id, version=1):
+        # 0.ext == brut
+        # 1.ext == first version
+        # 1-small.ext == first version thumbnail
 
-    def conform_file(sekf, path, album, id):
-        if not os.path.isfile(path):
-            return
-        image_large_path = utils.copy_file(path, album, id)
-        image_small_path = utils.resize_image(image_large_path, 300, 200)
+        if os.path.isfile(src_path):
+            # create ID directory
+            root = os.path.join(envs.ROOT, str(id))
+            if not os.path.isdir(root):
+                os.makedirs(root)
+            
+            ext = os.path.splitext(src_path)[-1]
+            # create high resolution image path
+            dst_full_path = os.path.join(root, f"{str(version)}{ext}")
+            while os.path.isfile(dst_full_path):
+                version += 1
+                dst_full_path = os.path.join(root, f"{str(version)}{ext}")
 
-        return image_large_path
+            shutil.copy(src_path, dst_full_path)
+
+            # reduce image
+            image = Image.open(dst_full_path)
+            image.thumbnail((300,200))
+            dst_small_path = os.path.join(os.path.dirname(dst_full_path),
+                                          f"{str(version)}{envs.IMAGE_SMALL_SUFFIX}{ext}")
+            image.save(dst_small_path)
+
+            return dst_full_path

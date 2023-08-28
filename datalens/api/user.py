@@ -29,12 +29,12 @@ class UserTable(object):
                 {envs.PATH} VARCHAR(255)\
                 )"
 
-            request = f"CREATE TABLE {self._name} {data}"
-            self._cursor.execute(request)
+            sql = f"CREATE TABLE {self._name} {data}"
+            self._cursor.execute(sql)
 
     def delete(self):
-        request = f"DROP TABLE {self._name}"
-        self._cursor.execute(request)
+        sql = f"DROP TABLE {self._name}"
+        self._cursor.execute(sql)
 
     def insert_into(self, data:dict):
         values = ("0",)
@@ -50,10 +50,10 @@ class UserTable(object):
         # thumbnail
         values += (data.get(envs.PATH, ""),)
 
-        request = f"INSERT INTO {self._name} \
+        sql = f"INSERT INTO {self._name} \
         ({envs.ID},{envs.FIRST_NAME},{envs.LAST_NAME},{envs.DESC},{envs.PATH}) VALUES (%s,%s,%s,%s,%s)"
 
-        self._cursor.execute(request, values)
+        self._cursor.execute(sql, values)
         self._server.commit()
 
     def select_rows(self):
@@ -61,8 +61,8 @@ class UserTable(object):
         return self._cursor.fetchall()
     
     def select_from_column(self, column:str, value:str):
-        request = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
-        self._cursor.execute(request)
+        sql = f"SELECT * FROM {self._name} WHERE {column} ='{value}'"
+        self._cursor.execute(sql)
         return self._cursor.fetchall()
     
     def update(self, column:str, new_value:str):

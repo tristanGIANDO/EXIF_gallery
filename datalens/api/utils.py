@@ -1,29 +1,8 @@
-import os, shutil, math, decimal, datetime
-from skyfield.api import Topos, load
+import os, math, decimal, datetime
 from datalens.api import envs
 from pathlib import Path
 from PIL import Image
 import ephem
-
-def copy_file(path:str, album:str, id:str) ->str:
-    """copy file to dir
-
-    Args:
-        path (str): _description_
-        id (str): _description_
-
-    Returns:
-        str: _description_
-    """
-    if os.path.isfile(path):
-        new_dir_path = os.path.join(envs.ROOT, album)
-        if not os.path.isdir(new_dir_path):
-            os.makedirs(new_dir_path)
-        
-        new_path = os.path.join(new_dir_path, f"{id}{os.path.splitext(path)[-1]}")
-        shutil.copy(path, new_path)
-
-        return new_path
        
 def convert_minutes_to_datetime(time):
     """convert

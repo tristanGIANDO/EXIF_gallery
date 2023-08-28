@@ -11,8 +11,6 @@ from datetime import datetime
 from datalens.ui import envs
 from datalens.api import utils
 
-ICONS = envs.Icons()
-
 def create_website(paths:list[str], delivery_path:str,
                    user:list[str]=None, overlays:str=None,
                    albums:list[str]=["Home"], website_name:str="datalens_portfolio"):
@@ -22,7 +20,7 @@ def create_website(paths:list[str], delivery_path:str,
     """
     title = "My portfolio"
     subtitle = "Powered by Datalens"
-    thumbnail = ICONS.get("logo")
+    thumbnail = envs.ICONS.get("logo")
 
     if len(user) >= 3:
         title = f"{user[1]} {user[2]}" # first name + last name
@@ -37,7 +35,7 @@ def create_website(paths:list[str], delivery_path:str,
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href={ICONS.get("logo")} type="image/x-icon">\n
+    <link rel="icon" href={envs.ICONS.get("logo")} type="image/x-icon">\n
     <title>{title} portfolio</title>\n
     '''
 
@@ -187,7 +185,7 @@ class WorldMapUI(QtWidgets.QDialog):
         super().__init__()
         self.setWindowTitle("Select a location")
         self.setGeometry(100, 100, 800, 600)
-        self.setWindowIcon(ICONS.get("logo"))
+        self.setWindowIcon(envs.ICONS.get("logo"))
 
         self._longitude_shift = 0.0
         self._latitude_shift = 20.0

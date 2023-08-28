@@ -1,11 +1,6 @@
-import typing
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QWidget
-from datalens.ui.image import ImageInfosUI
 from datalens.api import envs as api_envs
 from datalens.ui import envs
-
-ICONS = envs.Icons()
 
 class WorkspaceTree( QtWidgets.QTreeWidget):
     def __init__(self):
@@ -44,7 +39,7 @@ class CreateAlbumUI(QtWidgets.QDialog):
 
         self.setWindowTitle("Create Album")
         self.resize(350, 90)
-        self.setWindowIcon(ICONS.get("logo"))
+        self.setWindowIcon(envs.ICONS.get("logo"))
 
         main_layout = QtWidgets.QVBoxLayout(self)
         font_bold = QtGui.QFont("Arial", 8, QtGui.QFont.Bold)
@@ -74,7 +69,7 @@ class CreateAlbumUI(QtWidgets.QDialog):
 
         buttons_layout = QtWidgets.QHBoxLayout()
         self.ok_btn = QtWidgets.QPushButton("Create Album")
-        self.ok_btn.setIcon(ICONS.get("add_album"))
+        self.ok_btn.setIcon(envs.ICONS.get("add_album"))
         self.ok_btn.setIconSize(QtCore.QSize(25,25))
         self.ok_btn.clicked.connect(self._accept)
         self.cancel_btn = QtWidgets.QPushButton("Cancel")

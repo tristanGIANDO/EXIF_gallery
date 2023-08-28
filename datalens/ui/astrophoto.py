@@ -6,8 +6,6 @@ from datalens.api import envs as api_envs
 from datalens.ui.image import ThumbnailButton
 import os
 
-ICONS = envs.Icons()
-
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
            envs.G_SUBJECT, envs.G_DESC, envs.G_MAKE, envs.G_MODEL,
            envs.A_MOUNT, envs.G_FOCAL, envs.G_F_NUMBER, envs.G_ISO,
@@ -102,7 +100,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         i = HEADERS.index(envs.A_MOON_PHASE)
         self.setText(i, envs.MOON_PHASES.get(self._data[i-1]))
         self.setIcon(HEADERS.index(envs.A_MOON_PHASE),
-                     ICONS.get(self._data[15]))
+                     envs.ICONS.get(self._data[15]))
         # soft
         self.set_column(HEADERS.index(envs.G_SOFTWARE))
         contents = self._contents.get("software", [])
@@ -126,7 +124,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self.image_thumbnail = ThumbnailButton(path=str(small_image_path), size=size)
 
         # get small brut path
-        small_brut_path = img_path.parent / (img_path.stem + api_envs.BRUT_SMALL_SUFFIX + img_path.suffix)
+        small_brut_path = img_path.parent / ("0" + api_envs.IMAGE_SMALL_SUFFIX + img_path.suffix)
         if os.path.isfile(small_brut_path):
             self.brut_thumbnail = ThumbnailButton(path=str(small_brut_path), size=size)
 
