@@ -46,6 +46,7 @@ class FileTable(object):
                 {envs.COMMENT} VARCHAR(255),\
                 {envs.DATE} VARCHAR(25),\
                 {envs.PATH_BRUT} VARCHAR(250)\
+                {envs.CURRENT_VERSION} VARCHAR(3) \
                 )"
 
             sql = f"CREATE TABLE {self._name} {data}"
@@ -123,6 +124,8 @@ class FileTable(object):
         if not brut:
             brut = ""
         values += (brut,)
+        # current version
+        values += (os.path.splitext(os.path.basename(path))[0],)
 
         sql = f"INSERT INTO {self._name} \
         ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
@@ -131,14 +134,14 @@ class FileTable(object):
         {envs.ISO},{envs.LIGHTS},{envs.EXPOSURE_TIME}, \
         {envs.TOTAL_TIME},{envs.LOCATION},{envs.BORTLE}, \
         {envs.MOON_PHASE},{envs.SOFTWARE},{envs.AUTHOR}, \
-        {envs.COMMENT},{envs.DATE},{envs.PATH_BRUT} \
+        {envs.COMMENT},{envs.DATE},{envs.PATH_BRUT},{envs.CURRENT_VERSION} \
         ) VALUES (%s,%s,%s,\
             %s,%s,%s,\
                 %s,%s,%s,\
                     %s,%s,%s,\
                         %s,%s,%s,\
                             %s,%s,%s,\
-                                %s,%s,%s)"
+                                %s,%s,%s,%s)"
 
         self._cursor.execute(sql, values)
         self._server.commit()
@@ -159,6 +162,96 @@ class FileTable(object):
     
     def get_date(self, id:str):
         result = self.get(envs.DATE, id)
+        if result:
+            return result[0][0]
+        
+    def get_path(self, id:str) ->str:
+        result = self.get(envs.PATH, id)
+        if result:
+            return result[0][0]
+        
+    def get_subject(self, id:str) ->str:
+        result = self.get(envs.SUBJECT, id)
+        if result:
+            return result[0][0]
+        
+    def get_make(self, id:str) ->str:
+        result = self.get(envs.MAKE, id)
+        if result:
+            return result[0][0]
+        
+    def get_model(self, id:str) ->str:
+        result = self.get(envs.MODEL, id)
+        if result:
+            return result[0][0]
+
+    def get_mount(self, id:str) ->str:
+        result = self.get(envs.MOUNT, id)
+        if result:
+            return result[0][0]
+        
+    def get_focal(self, id:str) ->str:
+        result = self.get(envs.FOCAL, id)
+        if result:
+            return result[0][0]
+
+    def get_f_number(self, id:str) ->str:
+        result = self.get(envs.F_NUMBER, id)
+        if result:
+            return result[0][0]
+        
+    def get_iso(self, id:str) ->str:
+        result = self.get(envs.ISO, id)
+        if result:
+            return result[0][0]
+        
+    def get_exposure_time(self, id:str) ->str:
+        result = self.get(envs.EXPOSURE_TIME, id)
+        if result:
+            return result[0][0]
+        
+    def get_lights(self, id:str) ->str:
+        result = self.get(envs.LIGHTS, id)
+        if result:
+            return result[0][0]
+        
+    def get_total_time(self, id:str) ->str:
+        result = self.get(envs.TOTAL_TIME, id)
+        if result:
+            return result[0][0]
+        
+    def get_location(self, id:str) ->str:
+        result = self.get(envs.LOCATION, id)
+        if result:
+            return result[0][0]
+        
+    def get_software(self, id:str) ->str:
+        result = self.get(envs.SOFTWARE, id)
+        if result:
+            return result[0][0]
+        
+    def get_moon_phase(self, id:str) ->str:
+        result = self.get(envs.MOON_PHASE, id)
+        if result:
+            return result[0][0]
+        
+    def get_author(self, id:str) ->str:
+        result = self.get(envs.AUTHOR, id)
+        if result:
+            return result[0][0]
+        
+    def get_comment(self, id:str) ->str:
+        result = self.get(envs.COMMENT, id)
+        if result:
+            return result[0][0]
+        
+    def get_bortle(self, id:str) ->str:
+        result = self.get(envs.BORTLE, id)
+        if result:
+            return result[0][0]
+                        
+    def get_current_version(self, id:str):
+        result = self.get(envs.CURRENT_VERSION, id)
         if result:
             return result[0][0]
  

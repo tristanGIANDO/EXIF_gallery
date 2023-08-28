@@ -16,117 +16,134 @@ HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE,
 NB_SECTIONS = len(HEADERS)
 
 class AstroFileItem(QtWidgets.QTreeWidgetItem):
-    def __init__(self, parent, data, contents = {}, *args, **kwargs):
+    def __init__(self, parent, db, id, contents = {}, *args, **kwargs):
         super(AstroFileItem, self).__init__(*args, **kwargs)
-        if not data:
-            return
         self._parent = parent
-        self._data = data
+        self._db = db
+        self._id = id
         self._contents = contents
-        self._update()
-
-    def set_column(self,idx, inc=1, font=False):
-        self.setText(idx, str(self._data[idx-inc]))
-        if font:
-            self.setFont(idx, QtGui.QFont("Arial", 9, QtGui.QFont.Bold))
-
-    def _update(self, size = None):
-        #id
-        self.setText(0, self._data[0]) 
-        # path
-        img_path = Path(self._data[1])
-        self.setText(1, str(img_path))
 
         for i in range(2,NB_SECTIONS):
             self.setTextAlignment(i, QtCore.Qt.AlignCenter)
             if i % 2 == 0:
                 self.setBackground(i, QtGui.QColor(240,240,240))
-        
+
+        self.setSizeHint(2,QtCore.QSize(20,20))
+
+        self._update()
+
+    def _update(self, size = None):
+        #id
+        self.setText(0, self._id)
+
+        # path
+        img_path = Path(self._db._files.get_path(self._id))
+        self.setText(1, str(img_path))
+
         # subject
-        self.set_column(HEADERS.index(envs.G_SUBJECT), font=True)
+        self.setText(HEADERS.index(envs.G_SUBJECT),
+                     self._db._files.get_subject(self._id))
+        self.setFont(HEADERS.index(envs.G_SUBJECT),
+                     QtGui.QFont("Arial", 9, QtGui.QFont.Bold))
+        
         # make
-        self.set_column(HEADERS.index(envs.G_MAKE))
+        self.setText(HEADERS.index(envs.G_MAKE),
+                     self._db._files.get_make(self._id))
         contents = self._contents.get("maker", [])
         maker_cb = ComboBoxWdg(self,HEADERS.index(envs.G_MAKE),
                                contents)
+        
         # model
-        self.set_column(HEADERS.index(envs.G_MODEL))
+        self.setText(HEADERS.index(envs.G_MODEL),
+                     self._db._files.get_model(self._id))
         contents = self._contents.get("model", [])
         model_cb = ComboBoxWdg(self,HEADERS.index(envs.G_MODEL),
                                contents)
+        
         # mount
-        self.set_column(HEADERS.index(envs.A_MOUNT))
+        self.setText(HEADERS.index(envs.A_MOUNT),
+                     self._db._files.get_mount(self._id))
+        
         # focal
-        self.set_column(HEADERS.index(envs.G_FOCAL))
-        focal_box = SpinWdg(self, HEADERS.index(envs.G_FOCAL),
-                            int(self._data[HEADERS.index(envs.G_FOCAL)-1]))
+        focal = self._db._files.get_focal(self._id)
+        self.setText(HEADERS.index(envs.G_FOCAL), str(focal))
+        focal_box = SpinWdg(self, HEADERS.index(envs.G_FOCAL), int(focal))
+        
         # f number
-        self.set_column(HEADERS.index(envs.G_F_NUMBER))
-        f_box = SpinWdg(self, HEADERS.index(envs.G_F_NUMBER), 
-                        float(self._data[HEADERS.index(envs.G_F_NUMBER)-1]), 
-                        mode="double")
+        f_number = self._db._files.get_f_number(self._id)
+        self.setText(HEADERS.index(envs.G_F_NUMBER),
+                     str(f_number))
+        f_box = SpinWdg(self, HEADERS.index(envs.G_F_NUMBER), float(f_number), mode="double")
+        
         # iso
-        idx = HEADERS.index(envs.G_ISO)
-        self.set_column(idx)
-        iso_box= SpinWdg(self, idx,
-                         int(self._data[idx-1]))
-
-        r = int(self._data[HEADERS.index(envs.G_ISO)-1]/100*3.5)
+        iso = self._db._files.get_iso(self._id)
+        self.setText(HEADERS.index(envs.G_ISO), str(iso))
+        iso_box= SpinWdg(self, HEADERS.index(envs.G_ISO), int(iso))
+        r = int(iso/100*3.5)
         if r > 255:
             r = 255
         iso_color = QtGui.QColor(r, 100, 30)
         iso_icon = QtGui.QPixmap(20,20)
         iso_icon.fill(iso_color)
         self.setIcon(HEADERS.index(envs.G_ISO), QtGui.QIcon(iso_icon))
+        
         # nb lights
-        idx = HEADERS.index(envs.A_LIGHTS)
-        self.set_column(idx)
-        light_box= SpinWdg(self, idx,
-                         int(self._data[idx-1]))
+        lights = self._db._files.get_lights(self._id)
+        self.setText(HEADERS.index(envs.A_LIGHTS), str(lights))
+        light_box= SpinWdg(self, HEADERS.index(envs.A_LIGHTS), int(lights))
+
         # exposure
-        exposure_box = SpinWdg(self, HEADERS.index(envs.G_EXPOSURE_TIME), 
-                               float(self._data[HEADERS.index(envs.G_EXPOSURE_TIME)-1]), 
-                               mode="double")
+        exposure = self._db._files.get_exposure_time(self._id)
+        self.setText(HEADERS.index(envs.G_EXPOSURE_TIME), str(exposure))
+        exposure_box = SpinWdg(self, HEADERS.index(envs.G_EXPOSURE_TIME),
+                               float(exposure), mode="double")
         # total time
-        self.set_column(HEADERS.index(envs.A_TOTAL_TIME), font=True)
+        self.setText(HEADERS.index(envs.A_TOTAL_TIME),
+                     self._db._files.get_total_time(self._id)) # in UI ??
         # location
-        self.set_column(HEADERS.index(envs.G_LOCATION))
+        self.setText(HEADERS.index(envs.G_LOCATION),
+                     self._db._files.get_location(self._id))
         # bortle
-        self.set_column(HEADERS.index(envs.A_BORTLE))
-        bortle_box = SpinWdg(self, HEADERS.index(envs.A_BORTLE), 
-                             int(self._data[HEADERS.index(envs.A_BORTLE)-1]))
-        self.setSizeHint(2,QtCore.QSize(20,20))
+        bortle = self._db._files.get_bortle(self._id)
+        self.setText(HEADERS.index(envs.A_BORTLE), str(bortle))
+        bortle_box = SpinWdg(self, HEADERS.index(envs.A_BORTLE), int(bortle))
+        
         # moon
-        i = HEADERS.index(envs.A_MOON_PHASE)
-        self.setText(i, envs.MOON_PHASES.get(self._data[i-1]))
-        self.setIcon(HEADERS.index(envs.A_MOON_PHASE),
-                     envs.ICONS.get(self._data[15]))
+        moon = self._db._files.get_moon_phase(self._id)
+        self.setText(HEADERS.index(envs.A_MOON_PHASE), envs.MOON_PHASES.get(moon))
+        self.setIcon(HEADERS.index(envs.A_MOON_PHASE), envs.ICONS.get(moon))
+
         # soft
-        self.set_column(HEADERS.index(envs.G_SOFTWARE))
+        self.setText(HEADERS.index(envs.G_SOFTWARE),
+                     self._db._files.get_software(self._id))
         contents = self._contents.get("software", [])
         soft_cb = ComboBoxWdg(self,HEADERS.index(envs.G_SOFTWARE),
                                contents)
+        
         # author
-        self.set_column(HEADERS.index(envs.G_AUTHOR))
+        self.setText(HEADERS.index(envs.G_AUTHOR),
+                     self._db._files.get_author(self._id))
         contents = self._contents.get("author", [])
         author_cb = ComboBoxWdg(self,HEADERS.index(envs.G_AUTHOR),
                                contents)
         # comment
-        self.set_column(HEADERS.index(envs.G_COMMENT))
+        self.setText(HEADERS.index(envs.G_COMMENT),
+                     self._db._files.get_comment(self._id))
         # date
-        self.set_column(HEADERS.index(envs.G_DATE))
-        date_box = SpinWdg(self, HEADERS.index(envs.G_DATE), 
-                           self._data[HEADERS.index(envs.G_DATE)-1], 
-                           mode="date")
+        date = self._db._files.get_date(self._id)
+        self.setText(HEADERS.index(envs.G_DATE), str(date))
+        date_box = SpinWdg(self,HEADERS.index(envs.G_DATE),date,mode="date")
 
         # get small image path
         small_image_path = img_path.parent / (img_path.stem + api_envs.IMAGE_SMALL_SUFFIX + img_path.suffix)
-        self.image_thumbnail = ThumbnailButton(path=str(small_image_path), size=size)
+        self.image_thumbnail = ThumbnailButton(path=str(small_image_path),
+                                               size=size)
 
         # get small brut path
         small_brut_path = img_path.parent / ("0" + api_envs.IMAGE_SMALL_SUFFIX + img_path.suffix)
         if os.path.isfile(small_brut_path):
-            self.brut_thumbnail = ThumbnailButton(path=str(small_brut_path), size=size)
+            self.brut_thumbnail = ThumbnailButton(path=str(small_brut_path),
+                                                  size=size)
 
         # ADD ITEM
         self._parent.addTopLevelItem(self)
@@ -144,13 +161,14 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self._parent.setItemWidget(self, HEADERS.index(envs.G_AUTHOR), author_cb)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_DATE), date_box)
         if os.path.isfile(small_brut_path):
-            self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT), self.brut_thumbnail)
+            self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT),
+                                       self.brut_thumbnail)
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self, server):
         super(AstroWorkspaceTree, self).__init__()
 
-        self._server = server
+        self._db = server
         self._contents = self.get_contents()
         self._items = []
 
@@ -162,8 +180,8 @@ class AstroWorkspaceTree(WorkspaceTree):
         self.header().setSectionHidden(4, True) # Album
         self.setIconSize(QtCore.QSize(30,30))
 
-    def add_item(self, file_row):
-        item = AstroFileItem(self, file_row, self._contents)
+    def add_item(self, id):
+        item = AstroFileItem(self, self._db, id, self._contents)
         self._items.append(item)
   
     def get_column_index(self, item, column):
@@ -207,12 +225,12 @@ class AstroWorkspaceTree(WorkspaceTree):
         elif column == HEADERS.index(envs.G_DATE):
             db_column = api_envs.DATE
         
-        self._server._files.update(db_column, item.text(0), item.text(column))
+        self._db._files.update(db_column, item.text(0), item.text(column))
         self._contents = self.get_contents()
 
     def get_contents(self):
         def check(p_list, col, item):
-            x = self._server._files.get(col, item)
+            x = self._db._files.get(col, item)
             if x and x not in p_list:
                 p_list.append(x[0][0])
             return p_list
@@ -221,7 +239,7 @@ class AstroWorkspaceTree(WorkspaceTree):
         makers = []
         authors = []
         softs = []
-        for file in self._server._files.select_rows():
+        for file in self._db._files.select_rows():
             makers = check(makers, "make", file[0])
             models = check(models, "model", file[0])
             authors = check(authors, "author", file[0])

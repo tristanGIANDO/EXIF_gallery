@@ -30,6 +30,7 @@ AUTHOR = "author"
 COMMENT = "comment"
 DATE = "date"
 PATH_BRUT = "brutPath"
+CURRENT_VERSION = "currentVersion"
 
 EXIF_TO_DATABASE_MAPPING = {
         270 : DESC,
@@ -49,7 +50,6 @@ EXIF_TO_DATABASE_MAPPING = {
     }
 
 IMAGE_SMALL_SUFFIX = "-small"
-BRUT_SMALL_SUFFIX = "-brut-small"
 
 # user table
 FIRST_NAME = "first_name"

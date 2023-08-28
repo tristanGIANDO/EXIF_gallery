@@ -168,7 +168,8 @@ class MainUI( QtWidgets.QMainWindow):
 
         self._current_files = self.get_album_files()
         for file in self._current_files:
-            self.tree.add_item(file)
+            id = file[0]
+            self.tree.add_item(id)
             self.list_wdg.add_item(file)
 
         self.tree.blockSignals(False)
