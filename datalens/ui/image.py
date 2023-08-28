@@ -369,6 +369,7 @@ class ThumbnailButton(QtWidgets.QPushButton):
         self.setLayout(stacked_layout)
 
         self.clicked.connect(self.on_image_clicked)
+        version_button.clicked.connect(self.on_add_version_clicked)
 
     def open_file_dialog(self):
         options = QtWidgets.QFileDialog.Options()
