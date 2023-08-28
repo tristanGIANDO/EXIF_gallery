@@ -246,10 +246,10 @@ class AstroWorkspaceTree(WorkspaceTree):
             softs = check(softs, "software", file[0])
             
         return {
-            "maker" : makers,
-            "model" : models,
-            "author" : authors,
-            "software" : softs
+            "maker" : list(set(makers)),
+            "model" : list(set(models)),
+            "author" : list(set(authors)),
+            "software" : list(set(softs))
             }
 
     def get_items(self):
