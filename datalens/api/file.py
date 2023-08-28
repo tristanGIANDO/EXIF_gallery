@@ -27,11 +27,11 @@ class FileTable(object):
             data = f"( \
                 {envs.ID} VARCHAR(30),\
                 {envs.PATH} VARCHAR(250),\
-                {envs.SUBJECT} VARCHAR(45),\
+                {envs.SUBJECT} VARCHAR(100),\
                 {envs.ALBUM} VARCHAR(100),\
-                {envs.MAKE} VARCHAR(45),\
-                {envs.MODEL} VARCHAR(45),\
-                {envs.MOUNT} VARCHAR(45),\
+                {envs.MAKE} VARCHAR(100),\
+                {envs.MODEL} VARCHAR(100),\
+                {envs.MOUNT} VARCHAR(100),\
                 {envs.FOCAL} INT(6),\
                 {envs.F_NUMBER} VARCHAR(3),\
                 {envs.ISO} INT(5),\
@@ -43,9 +43,9 @@ class FileTable(object):
                 {envs.MOON_PHASE} INT(1),\
                 {envs.SOFTWARE} VARCHAR(250),\
                 {envs.AUTHOR} VARCHAR(100),\
-                {envs.COMMENT} VARCHAR(255),\
+                {envs.COMMENT} VARCHAR(900),\
                 {envs.DATE} VARCHAR(25),\
-                {envs.PATH_BRUT} VARCHAR(250)\
+                {envs.PATH_BRUT} VARCHAR(250),\
                 {envs.CURRENT_VERSION} VARCHAR(3) \
                 )"
 
