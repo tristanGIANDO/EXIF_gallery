@@ -1,0 +1,13 @@
+UI 
+* versioning
+* fix combowdg in tree (show non unique items)
+* add limit to text when adding a file (max 45 etc)
+    Pour ça on peut faire un check de la length de chaque string avant d'envoyer la request.
+
+API
+* versioning
+* cache images 
+
+FEATURES TO ADD
+* rotate / flip images in image viewer
+* add multiple files, edit later
