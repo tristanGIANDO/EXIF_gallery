@@ -1,5 +1,5 @@
 <h1 align="center" style="margin:1em;">
-    <img src="datalens/icons/logo.png"
+    <img src="datalens/ui/icons/logo.png"
          alt="DataLens"></a>
 </h1>
 
