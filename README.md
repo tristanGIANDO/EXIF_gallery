@@ -1,13 +1,37 @@
-<h1 align="center" style="margin:1em;">
-    <img src="datalens/icons/logo.png"
-         alt="DataLens"></a>
+**Copyright (c) 2023 tristanGIANDO**
+
+*Permission is hereby granted, free of charge, to any person obtaining a copy*
+*of this software and associated documentation files (the "Software"), to deal*
+*in the Software without restriction, including without limitation the rights*
+*to use, copy, modify, merge, publish, distribute, sublicense, and/or sell*
+*copies of the Software, and to permit persons to whom the Software is*
+*furnished to do so, subject to the following conditions:*
+
+*The above copyright notice and this permission notice shall be included in all*
+*copies or substantial portions of the Software.*
+
+*THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR*
+*IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,*
+*FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE*
+*AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER*
+*LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,*
+*OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE*
+*SOFTWARE.*
+
+<h1 align="center">
+    DataLens
 </h1>
 
-<h4 align="center">
-    DataLens is a tool designed to give photographers an overview of their photos.
-</h4>
+<h2 align="center" style="margin:1em;">
+    <img src="datalens/ui/icons/logo.png"
+         alt="DataLens"></a>
+</h2>
 
-# DATALENS
+<h3 align="center">
+    A tool designed to give photographers an overview of their photos.
+</h3>
+
+# FEATURES
 What every photographer will need:
 * a portfolio
 * a website
@@ -75,22 +99,4 @@ db.get_rows()
 |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
 |0|-|Manon S.|Portrait|some test|me|Canon70D|135mm|2.8|1600|1/1200|-|here|Photoshop|-|-|24/12/23|bla bla bla|
 
-**Copyright (c) 2023 tristanGIANDO**
 
-*Permission is hereby granted, free of charge, to any person obtaining a copy*
-*of this software and associated documentation files (the "Software"), to deal*
-*in the Software without restriction, including without limitation the rights*
-*to use, copy, modify, merge, publish, distribute, sublicense, and/or sell*
-*copies of the Software, and to permit persons to whom the Software is*
-*furnished to do so, subject to the following conditions:*
-
-*The above copyright notice and this permission notice shall be included in all*
-*copies or substantial portions of the Software.*
-
-*THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR*
-*IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,*
-*FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE*
-*AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER*
-*LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,*
-*OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE*
-*SOFTWARE.*
