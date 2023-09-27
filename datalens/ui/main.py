@@ -17,7 +17,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.setWindowTitle("%s v-%s"%(__infos__.__title__,
                                        __infos__.__version__))
         self.setWindowIcon(envs.ICONS.get("logo"))
-        self.resize(1800, 800)
+        self.resize(1850, 800)
 
         self._db = Database()
         self._current_album = ""
@@ -43,7 +43,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.title.setFont(QtGui.QFont("Impact", 16))
 
         self.tree = AstroWorkspaceTree(self._db)
-        self.list_wdg = AstroListWidget()
+        self.list_wdg = AstroListWidget(self._db)
         self.albums_cb = QtWidgets.QComboBox()
         self.albums_cb.setFixedSize(200,40)
         self.albums_cb.setFont(QtGui.QFont("Arial", 12, QtGui.QFont.Bold))

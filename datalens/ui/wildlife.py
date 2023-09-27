@@ -9,15 +9,15 @@ import os
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
            envs.G_SUBJECT, envs.G_DESC, envs.G_MAKE, envs.G_MODEL,
            envs.A_MOUNT, envs.G_FOCAL, envs.G_F_NUMBER, envs.G_ISO,
-           envs.A_LIGHTS, envs.G_EXPOSURE_TIME, envs.A_TOTAL_TIME,
-           envs.G_LOCATION, envs.A_BORTLE, envs.A_MOON_PHASE, 
+           envs.G_EXPOSURE_TIME,
+           envs.G_LOCATION,
            envs.G_SOFTWARE, envs.G_AUTHOR, envs.G_COMMENT, envs.G_DATE,
            envs.G_PATH_BRUT]
 NB_SECTIONS = len(HEADERS)
 
-class AstroFileItem(QtWidgets.QTreeWidgetItem):
+class WildLifeFilteItem(QtWidgets.QTreeWidgetItem):
     def __init__(self, parent, db, id, contents = {}, *args, **kwargs):
-        super(AstroFileItem, self).__init__(*args, **kwargs)
+        super(WildLifeFilteItem, self).__init__(*args, **kwargs)
         self._parent = parent
         self._db = db
         self._id = id
@@ -86,32 +86,16 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         iso_icon = QtGui.QPixmap(20,20)
         iso_icon.fill(iso_color)
         self.setIcon(HEADERS.index(envs.G_ISO), QtGui.QIcon(iso_icon))
-        
-        # nb lights
-        lights = self._db._files.get_lights(self._id)
-        self.setText(HEADERS.index(envs.A_LIGHTS), str(lights))
-        light_box= SpinWdg(self, HEADERS.index(envs.A_LIGHTS), int(lights))
 
         # exposure
         exposure = self._db._files.get_exposure_time(self._id)
         self.setText(HEADERS.index(envs.G_EXPOSURE_TIME), str(exposure))
         exposure_box = SpinWdg(self, HEADERS.index(envs.G_EXPOSURE_TIME),
                                float(exposure), mode="double")
-        # total time
-        self.setText(HEADERS.index(envs.A_TOTAL_TIME),
-                     self._db._files.get_total_time(self._id)) # in UI ??
+
         # location
         self.setText(HEADERS.index(envs.G_LOCATION),
                      self._db._files.get_location(self._id))
-        # bortle
-        bortle = self._db._files.get_bortle(self._id)
-        self.setText(HEADERS.index(envs.A_BORTLE), str(bortle))
-        bortle_box = SpinWdg(self, HEADERS.index(envs.A_BORTLE), int(bortle))
-        
-        # moon
-        moon = self._db._files.get_moon_phase(self._id)
-        self.setText(HEADERS.index(envs.A_MOON_PHASE), envs.MOON_PHASES.get(moon))
-        self.setIcon(HEADERS.index(envs.A_MOON_PHASE), envs.ICONS.get(moon))
 
         # soft
         self.setText(HEADERS.index(envs.G_SOFTWARE),
@@ -136,13 +120,13 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
 
         # get small image path
         small_image_path = img_path.parent / (img_path.stem + api_envs.IMAGE_SMALL_SUFFIX + img_path.suffix)
-        self.image_thumbnail = ThumbnailButton(self._db, path=str(small_image_path),
+        self.image_thumbnail = ThumbnailButton(path=str(small_image_path),
                                                size=size)
 
         # get small brut path
         small_brut_path = img_path.parent / ("0" + api_envs.IMAGE_SMALL_SUFFIX + img_path.suffix)
         if os.path.isfile(small_brut_path):
-            self.brut_thumbnail = ThumbnailButton(self._db, path=str(small_brut_path),
+            self.brut_thumbnail = ThumbnailButton(path=str(small_brut_path),
                                                   size=size)
 
         # ADD ITEM
@@ -154,8 +138,6 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self._parent.setItemWidget(self, HEADERS.index(envs.G_FOCAL), focal_box)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_F_NUMBER), f_box)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_ISO), iso_box)
-        self._parent.setItemWidget(self, HEADERS.index(envs.A_LIGHTS), light_box)
-        self._parent.setItemWidget(self, HEADERS.index(envs.A_BORTLE), bortle_box)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_EXPOSURE_TIME), exposure_box)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_SOFTWARE), soft_cb)
         self._parent.setItemWidget(self, HEADERS.index(envs.G_AUTHOR), author_cb)
@@ -164,9 +146,9 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
             self._parent.setItemWidget(self, HEADERS.index(envs.G_PATH_BRUT),
                                        self.brut_thumbnail)
 
-class AstroWorkspaceTree(WorkspaceTree):
+class WildLifeTree(WorkspaceTree):
     def __init__(self, server):
-        super(AstroWorkspaceTree, self).__init__()
+        super(WildLifeTree, self).__init__()
 
         self._db = server
         self._contents = self.get_contents()
@@ -181,7 +163,7 @@ class AstroWorkspaceTree(WorkspaceTree):
         self.setIconSize(QtCore.QSize(30,30))
 
     def add_item(self, id):
-        item = AstroFileItem(self, self._db, id, self._contents)
+        item = WildLifeFilteItem(self, self._db, id, self._contents)
         self._items.append(item)
   
     def get_column_index(self, item, column):
@@ -206,16 +188,10 @@ class AstroWorkspaceTree(WorkspaceTree):
             db_column = api_envs.F_NUMBER
         elif column == HEADERS.index(envs.G_ISO):
             db_column = api_envs.ISO
-        elif column == HEADERS.index(envs.A_LIGHTS):
-            db_column = api_envs.LIGHTS
         elif column == HEADERS.index(envs.G_EXPOSURE_TIME):
             db_column = api_envs.EXPOSURE_TIME
         elif column == HEADERS.index(envs.G_LOCATION):
             db_column = api_envs.LOCATION
-        elif column == HEADERS.index(envs.A_BORTLE):
-            db_column = api_envs.BORTLE
-        elif column == HEADERS.index(envs.A_MOON_PHASE):
-            db_column = api_envs.MOON_PHASE
         elif column == HEADERS.index(envs.G_SOFTWARE):
             db_column = api_envs.SOFTWARE
         elif column == HEADERS.index(envs.G_AUTHOR):
@@ -255,10 +231,10 @@ class AstroWorkspaceTree(WorkspaceTree):
     def get_items(self):
         return self._items
         
-class AstroListWidget(QtWidgets.QListWidget):
-    def __init__(self, db) -> None:
-        super(AstroListWidget, self).__init__()
-        self._db = db
+class WildLifeListWidget(QtWidgets.QListWidget):
+    def __init__(self) -> None:
+        super(WildLifeListWidget, self).__init__()
+
         self.setResizeMode(QtWidgets.QListView.Adjust)
         self.setViewMode(QtWidgets.QListWidget.IconMode)
         self.setFlow(QtWidgets.QListView.LeftToRight)
@@ -269,7 +245,7 @@ class AstroListWidget(QtWidgets.QListWidget):
 
     def add_item(self, data):
         # self.clear()
-        thumbnail = ThumbnailButton(self._db, data[1])
+        thumbnail = ThumbnailButton(data[1])
         task_wdg_item = QtWidgets.QListWidgetItem()
         task_wdg_item.setSizeHint(thumbnail.sizeHint())
 

@@ -4,6 +4,7 @@ DB_NAME = "db01"
 FILE_TABLE_NAME = "files"
 USER_TABLE_NAME = "user"
 ALBUM_TABLE_NAME = "album"
+VERSION_TABLE_NAME = "version"
 
 ROOT = Path.home() / ".database"
 
@@ -58,3 +59,7 @@ LAST_NAME = "last_name"
 # album table
 ALBUM_NAME = "name"
 ALBUM_TYPE = "type"
+
+# album table
+VERSION_PATH = "version_path"
+VERSION_PARENT = "version_parent"

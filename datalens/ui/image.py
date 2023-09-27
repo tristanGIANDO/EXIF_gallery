@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from datalens.ui import envs
@@ -340,12 +340,13 @@ class ImageViewerUI(QtWidgets.QDialog):
             self.show_image()
 
 class ThumbnailButton(QtWidgets.QPushButton):
-    def __init__(self, path, size=None):
+    def __init__(self, db, path, size=None):
         super().__init__()
         if not size:
             size = (300,200)
         self.setFixedSize(size[0],size[1])
 
+        self._db = db
         self.path = path
         self._versions = []
 
@@ -403,7 +404,12 @@ class ThumbnailButton(QtWidgets.QPushButton):
     def on_add_version_clicked(self):
         path = self.open_file_dialog()
         if path:
-            pass
+            parent_dir = os.path.dirname(self.parent_path)
+            filtered_files = [f for f in os.listdir(parent_dir) if "-" not in f]
+            last_version_file = max(filtered_files)
+            nb_version = int(last_version_file[0]) + 1
+
+            self._db._versions.insert_into(path, self.parent_path, nb_version)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

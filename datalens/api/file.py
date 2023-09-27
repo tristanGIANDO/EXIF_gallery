@@ -334,11 +334,3 @@ class FileTable(object):
                 self.update(envs.CURRENT_VERSION, id, version)
 
             return dst_full_path
-        
-    def get_versions(self, id):
-        path = self.get_path(id)
-        basename = os.path.basename(path)
-
-        versions = []
-        # for i in range(self.get_current_version(id)):
-        #     version = os.path.join(path, basename.replace(str(i), str(i)))
