@@ -348,11 +348,12 @@ class ThumbnailButton(QtWidgets.QPushButton):
 
         self._db = db
         self.path = path
-        self._versions = []
-
+        self.parent_id = os.path.basename(os.path.dirname(self.path))
         self.parent_path = path.replace(api_envs.IMAGE_SMALL_SUFFIX, "")
-        
-        self._versions.append(self.parent_path)
+
+        # get versions
+        self._versions = [self.parent_path]
+        self._versions += self._db._versions.get_versions_paths(self.parent_id)
         
         self.image_label = QtWidgets.QLabel(self)
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -407,9 +408,9 @@ class ThumbnailButton(QtWidgets.QPushButton):
             parent_dir = os.path.dirname(self.parent_path)
             filtered_files = [f for f in os.listdir(parent_dir) if "-" not in f]
             last_version_file = max(filtered_files)
-            nb_version = int(last_version_file[0]) + 1
+            # nb_version = int(last_version_file[0]) + 1
 
-            self._db._versions.insert_into(path, self.parent_path, nb_version)
+            self._db._versions.insert_into(path, self.parent_id)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

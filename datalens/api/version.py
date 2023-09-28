@@ -26,7 +26,7 @@ class VersionTable(object):
             data = f"( \
                 {envs.ID} INT AUTO_INCREMENT PRIMARY KEY,\
                 {envs.VERSION_PATH} VARCHAR(250),\
-                {envs.VERSION_PARENT} VARCHAR(250)\
+                {envs.VERSION_PARENT_ID} VARCHAR(250)\
                 )"
 
             sql = f"CREATE TABLE {self._name} {data}"
@@ -36,19 +36,18 @@ class VersionTable(object):
         sql = f"DROP TABLE {self._name}"
         self._cursor.execute(sql)
 
-    def insert_into(self, version_path, parent_path, nb_version):
+    def insert_into(self, version_path, parent_id):
         # version path
-        id = os.path.dirname(parent_path)
-        path = self.conform_os_file(version_path, id, version=nb_version)
-        if not path:
+        version_path = self.conform_os_file(version_path, parent_id, version=2)
+        if not version_path:
             return
-        values = (path,)
+        values = (version_path,)
 
-        # parent path
-        values += (parent_path,)
+        # parent id
+        values += (parent_id,)
 
         sql = f"INSERT INTO {self._name} \
-        ({envs.VERSION_PATH},{envs.VERSION_PARENT}) VALUES (%s,%s)"
+        ({envs.VERSION_PATH},{envs.VERSION_PARENT_ID}) VALUES (%s,%s)"
 
         self._cursor.execute(sql, values)
         self._server.commit()
@@ -109,10 +108,19 @@ class VersionTable(object):
 
             return dst_full_path
         
-    def get_versions_from_id(self, id):
-        path = self.get_path(id)
-        basename = os.path.basename(path)
+    def get_versions(self, id):
+        return self.select_from_column(envs.VERSION_PARENT_ID, id)
 
-        versions = []
+        # path = self.get_path(id)
+        # basename = os.path.basename(path)
+
+        # versions = []
         # for i in range(self.get_current_version(id)):
         #     version = os.path.join(path, basename.replace(str(i), str(i)))
+
+    def get_versions_paths(self, id):
+        versions = self.select_from_column(envs.VERSION_PARENT_ID, id)
+        if versions:
+            return [v[1] for v in versions]
+        else:
+            return []

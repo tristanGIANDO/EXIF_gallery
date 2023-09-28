@@ -62,4 +62,4 @@ ALBUM_TYPE = "type"
 
 # album table
 VERSION_PATH = "version_path"
-VERSION_PARENT = "version_parent"
+VERSION_PARENT_ID = "parent_id"
