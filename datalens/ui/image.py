@@ -293,7 +293,7 @@ class ImageViewerUI(QtWidgets.QDialog):
             return
         
         self.setWindowTitle("Image Viewer")
-        self.resize(1460, 900)
+        self.resize(1600, 900)
         self.setWindowIcon(envs.ICONS.get("logo"))
         self.central_widget = QtWidgets.QWidget(self)
 
@@ -325,6 +325,7 @@ class ImageViewerUI(QtWidgets.QDialog):
             pixmap = QtGui.QPixmap(self.image_paths[self.current_index])
             pixmap = pixmap.scaled(1600, 900, aspectRatioMode=QtCore.Qt.KeepAspectRatio)
             self.image_label.setPixmap(pixmap)
+            self.image_label.setAlignment(QtCore.Qt.AlignCenter)
 
             self.prev_button.setEnabled(self.current_index > 0)
             self.next_button.setEnabled(self.current_index < len(self.image_paths) - 1)

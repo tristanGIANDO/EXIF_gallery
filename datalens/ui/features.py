@@ -1,5 +1,5 @@
 import os, sys
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -7,9 +7,10 @@ import matplotlib.dates as mdates
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from geopy.geocoders import Nominatim
-from datetime import datetime
+from datetime import datetime, timedelta
 from datalens.ui import envs
 from datalens.api import utils
+from collections import Counter
 
 def create_website(paths:list[str], delivery_path:str,
                    user:list[str]=None, overlays:str=None,
@@ -295,14 +296,55 @@ class WorldMapUI(QtWidgets.QDialog):
         self.reject()
 
 class GraphUI(QtWidgets.QDialog):
-    def __init__(self, dates):
+    def __init__(self, db, files):
         super().__init__()
         self.setWindowTitle("Number of photos taken")
         self.setGeometry(100, 100, 800, 600)
 
+        self._db = db
+        self._dates = []
+        self._times = []
+        self._isos = []
+        self._fnumbers = []
+        for file in files:
+            id = file[0]
+            str_date = self._db._files.get_date(id)
+            splits = str_date.split(",")
+            date = f"{splits[0]},{splits[1]},{splits[2]}"
+            self._dates.append(date)
+            self._times.append(self._db._files.get_total_time(id))
+            self._isos.append(self._db._files.get_iso(id))
+            self._fnumbers.append(self._db._files.get_f_number(id))
+
+        # favourites
+        fav_layout = QtWidgets.QVBoxLayout()
+        self.total_time_lbl = QtWidgets.QLabel("Your average exposure time is :")
+        self.total_time_lbl.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
+        self.total_time_nb_lbl = QtWidgets.QLabel()
+        self.total_time_nb_lbl.setFont(QtGui.QFont("Arial", 14, QtGui.QFont.Bold))
+
+        self.iso_lbl = QtWidgets.QLabel("Your favourite ISO is :")
+        self.iso_lbl.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
+        self.iso_nb_lbl = QtWidgets.QLabel()
+        self.iso_nb_lbl.setFont(QtGui.QFont("Arial", 14, QtGui.QFont.Bold))
+
+        self.fnumber_lbl = QtWidgets.QLabel("Your favourite LENS APERTURE is :")
+        self.fnumber_lbl.setFont(QtGui.QFont("Arial", 10, QtGui.QFont.Bold))
+        self.fnumber_nb_lbl = QtWidgets.QLabel()
+        self.fnumber_nb_lbl.setFont(QtGui.QFont("Arial", 14, QtGui.QFont.Bold))
+
+        fav_layout.addWidget(self.total_time_lbl)
+        fav_layout.addWidget(self.total_time_nb_lbl)
+        fav_layout.addWidget(self.iso_lbl)
+        fav_layout.addWidget(self.iso_nb_lbl)
+        fav_layout.addWidget(self.fnumber_lbl)
+        fav_layout.addWidget(self.fnumber_nb_lbl)
+        fav_layout.addStretch(1)
+
+        # GRAPH
         # convert and conform datetime format
         converted_dates = []
-        for str_date in dates:
+        for str_date in self._dates or []:
             converted_dates.append([int(i) for i in str_date.split(",")])
         self.all_dates = [datetime(i[0],i[1],i[2]) for i in converted_dates]
 
@@ -315,13 +357,15 @@ class GraphUI(QtWidgets.QDialog):
         self._dates = list(self._all_data.keys())
         self._counts = list(self._all_data.values())
 
-        layout = QtWidgets.QVBoxLayout(self)
+        layout = QtWidgets.QHBoxLayout(self)
 
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
         layout.addWidget(self.canvas)
+        layout.addLayout(fav_layout)
 
         self.plot_graph()
+        self.update_favourites()
 
     def plot_graph(self):
         self.figure.clear()
@@ -339,6 +383,26 @@ class GraphUI(QtWidgets.QDialog):
 
         self.figure.autofmt_xdate()
         self.canvas.draw()
+
+    def update_favourites(self):
+        # total time
+        lengths = [datetime.strptime(d, "%H:%M:%S") - datetime.strptime("0:0:0", "%H:%M:%S") for d in self._times]
+        sums = sum(lengths, timedelta())
+        time = str(sums / len(lengths))
+        if "." in time:
+            time = time.split(".")[0]
+        text =  f"{str(time)} hours"
+        self.total_time_nb_lbl.setText(text)
+
+        # iso
+        count = Counter(self._isos)
+        fav, c = count.most_common(1)[0]
+        self.iso_nb_lbl.setText(str(fav))
+
+        # f number
+        count = Counter(self._fnumbers)
+        fav, c = count.most_common(1)[0]
+        self.fnumber_nb_lbl.setText(str(fav))
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

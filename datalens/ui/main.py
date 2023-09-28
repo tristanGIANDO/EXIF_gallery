@@ -317,15 +317,7 @@ class MainUI( QtWidgets.QMainWindow):
 
     def on_graph_triggered(self):
         files = self._db._files.select_rows()
-        dates = []
-        for file in files:
-            id = file[0]
-            str_date = self._db._files.get_date(id)
-            splits = str_date.split(",")
-            date = f"{splits[0]},{splits[1]},{splits[2]}"
-            dates.append(date)
-
-        ui = GraphUI(dates)
+        ui = GraphUI(self._db, files)
         ui.exec_()
 
     def on_web_triggered(self):
