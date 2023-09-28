@@ -354,10 +354,12 @@ class ThumbnailButton(QtWidgets.QPushButton):
         # get versions
         self._versions = [self.parent_path]
         self._versions += self._db._versions.get_versions_paths(self.parent_id)
+
+        self.last_version = self._versions[-1]
         
         self.image_label = QtWidgets.QLabel(self)
         self.image_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.load_image(path)
+        self.load_image(self.last_version)
 
         version_button = QtWidgets.QPushButton(envs.ICONS.get("add_version"), "")
         version_button.setMaximumSize(40,40)

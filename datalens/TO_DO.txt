@@ -1,10 +1,14 @@
 UI 
-* versioning
+* show last version small in ThumbnailButton
+* show last versions in ImageViewer global
+* show brutes in imageViewer Thumbnail
+
 * add limit to text when adding a file (max 45 etc)
     Pour ça on peut faire un check de la length de chaque string avant d'envoyer la request.
 
 API
-* versioning
+* delete file
+* delete version
 * cache images 
 
 FEATURES TO ADD
