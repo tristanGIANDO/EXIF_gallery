@@ -70,7 +70,7 @@ class AlbumTable(object):
         self._cursor.execute(sql)
         self._server.commit()
 
-        sql = f"DELETE FROM {envs.FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'"
+        sql = f"DELETE FROM {envs.ASTRO_FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'"
         self._cursor.execute(sql)
         self._server.commit()
 

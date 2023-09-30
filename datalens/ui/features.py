@@ -308,13 +308,13 @@ class GraphUI(QtWidgets.QDialog):
         self._fnumbers = []
         for file in files:
             id = file[0]
-            str_date = self._db._files.get_date(id)
+            str_date = self._db._astro_files.get_date(id)
             splits = str_date.split(",")
             date = f"{splits[0]},{splits[1]},{splits[2]}"
             self._dates.append(date)
-            self._times.append(self._db._files.get_total_time(id))
-            self._isos.append(self._db._files.get_iso(id))
-            self._fnumbers.append(self._db._files.get_f_number(id))
+            self._times.append(self._db._astro_files.get_total_time(id))
+            self._isos.append(self._db._astro_files.get_iso(id))
+            self._fnumbers.append(self._db._astro_files.get_f_number(id))
 
         # favourites
         fav_layout = QtWidgets.QVBoxLayout()

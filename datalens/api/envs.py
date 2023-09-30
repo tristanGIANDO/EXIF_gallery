@@ -1,7 +1,7 @@
 from pathlib import Path
 
 DB_NAME = "db01"
-FILE_TABLE_NAME = "files"
+ASTRO_FILE_TABLE_NAME = "files"
 USER_TABLE_NAME = "user"
 ALBUM_TABLE_NAME = "album"
 VERSION_TABLE_NAME = "version"

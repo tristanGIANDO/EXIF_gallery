@@ -1,16 +1,22 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from datalens.api import envs as api_envs
 from datalens.ui import envs
+from datalens.ui.image import ThumbnailButton
 
 class WorkspaceTree( QtWidgets.QTreeWidget):
-    def __init__(self):
+    def __init__(self, server):
         super().__init__()
+
+        self._db = server
+        self._contents = self.get_contents()
+        self._items = []
         self.setRootIsDecorated(False)
         self.setSortingEnabled(True)
         self.header().sectionsMovable()
  
         self.header().setSectionHidden(0, True) # ID
-        self.header().setSectionHidden(1, True) # Path
+
+        self.setIconSize(QtCore.QSize(30,30))
 
     def remove_tree_item(self):
         selected_items = self.selectedItems()
@@ -32,6 +38,33 @@ class WorkspaceTree( QtWidgets.QTreeWidget):
             else:
                 parent.removeChild(item)
         return item
+        
+    def get_items(self):
+        return self._items
+    
+    def get_contents(self):
+        def check(p_list, col, item):
+            x = self._db._astro_files.get(col, item)
+            if x and x not in p_list:
+                p_list.append(x[0][0])
+            return p_list
+        
+        models = []
+        makers = []
+        authors = []
+        softs = []
+        for file in self._db._astro_files.select_rows():
+            makers = check(makers, "make", file[0])
+            models = check(models, "model", file[0])
+            authors = check(authors, "author", file[0])
+            softs = check(softs, "software", file[0])
+            
+        return {
+            "maker" : list(set(makers)),
+            "model" : list(set(models)),
+            "author" : list(set(authors)),
+            "software" : list(set(softs))
+            }
 
 class CreateAlbumUI(QtWidgets.QDialog):
     def __init__(self):
@@ -159,3 +192,35 @@ class ComboBoxWdg(QtWidgets.QWidget):
         if not value:
             return
         self.item.setText(self.column, value)
+
+class ListWidget(QtWidgets.QListWidget):
+    def __init__(self, db) -> None:
+        super(ListWidget, self).__init__()
+        self._db = db
+        self.setResizeMode(QtWidgets.QListView.Adjust)
+        self.setViewMode(QtWidgets.QListWidget.IconMode)
+        self.setFlow(QtWidgets.QListView.LeftToRight)
+        self.setGridSize(QtCore.QSize(500,300))
+        self.setSpacing(1)
+        self.setWordWrap(True)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+    def add_item(self, data):
+        # self.clear()
+        thumbnail = ThumbnailButton(self._db, data[1], size=(500,300))
+        task_wdg_item = QtWidgets.QListWidgetItem()
+        task_wdg_item.setSizeHint(thumbnail.sizeHint())
+
+        self.addItem(task_wdg_item)
+        self.setItemWidget(task_wdg_item, thumbnail)
+
+        self.sortItems(QtCore.Qt.SortOrder.AscendingOrder)
+
+def iso_color(iso):
+    r = int(iso/100*3.5)
+    if r > 255:
+        r = 255
+    iso_color = QtGui.QPixmap(20,20)
+    iso_color.fill(QtGui.QColor(r, 100, 30))
+
+    return iso_color

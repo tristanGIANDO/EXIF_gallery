@@ -3,11 +3,11 @@ from pathlib import Path
 from PIL import Image
 from datalens.api import envs, utils
 
-class FileTable(object):
+class AstroFileTable(object):
     def __init__(self, server) -> None:
         self._server = server
         self._cursor = server.cursor(buffered=True)
-        self._name = envs.FILE_TABLE_NAME
+        self._name = envs.ASTRO_FILE_TABLE_NAME
 
         self.create()
 
