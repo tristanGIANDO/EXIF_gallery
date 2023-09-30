@@ -3,7 +3,7 @@ from pathlib import Path
 from datalens.ui.utils import WorkspaceTree, SpinWdg, ComboBoxWdg
 from datalens.ui import envs
 from datalens.api import envs as api_envs
-from datalens.ui.image import ThumbnailButton
+from datalens.ui.image import ThumbnailButton, ImageInfosUI
 from datalens.ui.utils import iso_color
 import os
 
@@ -213,3 +213,93 @@ class AstroWorkspaceTree(WorkspaceTree):
         
         self._db._astro_files.update(db_column, item.text(0), item.text(column))
         self._contents = self.get_contents()
+
+class AstroImageInfosUI(ImageInfosUI):
+    def __init__(self, author=None, album_type=None):
+        super().__init__()
+
+    def create_widgets(self):
+        # in the grids
+        self.lights_le = QtWidgets.QSpinBox()
+        self.lights_le.setMaximum(9999)
+        self.mount_le = QtWidgets.QLineEdit()
+
+    def create_layouts(self):
+        self.lights_lbl = QtWidgets.QLabel(envs.A_LIGHTS)
+        
+        self.mount_lbl = QtWidgets.QLabel(envs.A_MOUNT)
+        
+        
+        font_bold = QtGui.QFont("Arial", 8, QtGui.QFont.Bold)
+        for column_lbl in [self.subject_lbl, self.desc_lbl, self.date_lbl, self.location_lbl, self.lights_lbl,
+                           self.exposure_lbl, self.iso_lbl, self.aperture_lbl,
+                           self.focal_lbl, self.mount_lbl, self.author_lbl, self.model_lbl,
+                           self.maker_lbl, self.process_lbl, self.comment_lbl]:
+                column_lbl.setFont(font_bold)
+
+        # Acquisition grid
+        acquisition_gb = QtWidgets.QGroupBox("Acquisition Details")
+        grid_layout = QtWidgets.QGridLayout(acquisition_gb)
+        
+        pos = 0
+        for label, wdg in zip([self.date_lbl, self.location_lbl, self.lights_lbl,
+                               self.exposure_lbl, self.iso_lbl, self.aperture_lbl],
+                              [self.date_le, self.location_le, self.lights_le,
+                               self.exposure_le, self.iso_le, self.aperture_le]):
+            grid_layout.addWidget(label, pos, 0)
+            grid_layout.addWidget(wdg, pos, 1)
+            pos += 1
+ 
+        self.v_layout.addWidget(acquisition_gb)
+        self.v_layout.addWidget(self.location_btn)
+
+        # Equipment grid
+        equipment_gb = QtWidgets.QGroupBox("Equipment Details")
+        grid_layout = QtWidgets.QGridLayout(equipment_gb)
+        
+        pos = 0
+        for label, wdg in zip([self.maker_lbl,self.model_lbl, self.focal_lbl, self.mount_lbl],
+                              [self.maker_le, self.model_le, self.focal_le, self.mount_le]):
+            grid_layout.addWidget(label, pos, 0)
+            grid_layout.addWidget(wdg, pos, 1)
+            pos += 1
+ 
+        self.v_layout.addWidget(equipment_gb)
+
+        # more grid
+        more_gb = QtWidgets.QGroupBox("More info")
+        grid_layout = QtWidgets.QGridLayout(more_gb)
+        
+        pos = 0
+        for label, wdg in zip([self.author_lbl, self.process_lbl, self.comment_lbl],
+                              [self.author_le, self.process_le, self.comment_le]):
+            grid_layout.addWidget(label, pos, 0)
+            grid_layout.addWidget(wdg, pos, 1)
+            pos += 1
+ 
+        self.v_layout.addWidget(more_gb)
+
+    def _type_update(self):
+        self.lights_le.setValue(1)
+
+    def read(self):
+        return {api_envs.ID : self._exif.get(api_envs.ID),
+                api_envs.SUBJECT : self.subject_le.text(),
+                api_envs.PATH : self._image_path,
+                api_envs.ALBUM : self.album_le.text(),
+                api_envs.MAKE : self.maker_le.text(),
+                api_envs.MODEL : self.model_le.text(),
+                api_envs.MOUNT : self.mount_le.text(),
+                api_envs.FOCAL : self.focal_le.value(),
+                api_envs.F_NUMBER : self.aperture_le.value(),
+                api_envs.ISO : self.iso_le.value(),
+                api_envs.LIGHTS : self.lights_le.value(),
+                api_envs.EXPOSURE_TIME : self.exposure_le.value(),
+                api_envs.LOCATION : self.location_le.text(),
+                api_envs.BORTLE : 0,
+                api_envs.MOON_PHASE : 0,
+                api_envs.SOFTWARE : self.process_le.text(),
+                api_envs.AUTHOR : self.author_le.text(),
+                api_envs.COMMENT : self.comment_le.text(),
+                api_envs.DATE : self.date_le.text(),
+                api_envs.PATH_BRUT : self._brut_path}

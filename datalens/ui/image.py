@@ -6,8 +6,10 @@ from datalens.api import envs as api_envs
 from datalens.api import utils
 from datalens.ui.features import WorldMapUI
 
+
+# create inheritance and derive from / don't write "if", "elif"...
 class ImageInfosUI(QtWidgets.QDialog):
-    def __init__(self, author=None):
+    def __init__(self, author=None, album_type=None):
         super().__init__()
     
         self._exif = {}
@@ -22,12 +24,6 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.resize(1000, 600)
         self.setWindowIcon(envs.ICONS.get("logo"))
 
-        self.create_widgets()
-        self.create_layouts()
-
-        self._update()
-
-    def create_widgets(self):
         # Image buttons
         self.add_image_btn = QtWidgets.QPushButton("Load Image(JPG,PNG)")
         self.add_image_btn.setIcon(envs.ICONS.get("add_file"))
@@ -46,30 +42,6 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.image_lbl = QtWidgets.QLabel()
         self.brut_lbl = QtWidgets.QLabel()
 
-        # in the grids
-        self.subject_le = QtWidgets.QLineEdit()
-        self.album_le = QtWidgets.QLineEdit()
-        self.date_le = QtWidgets.QDateEdit()
-        self.date_le.setDisplayFormat("yyyy, MM, dd")
-        self.location_le = QtWidgets.QLineEdit()
-        self.lights_le = QtWidgets.QSpinBox()
-        self.lights_le.setMaximum(9999)
-        self.exposure_le = QtWidgets.QDoubleSpinBox()
-        self.exposure_le.setMaximum(9999.9999)
-        self.focal_le = QtWidgets.QDoubleSpinBox()
-        self.focal_le.setMaximum(9999.9)
-        self.iso_le = QtWidgets.QSpinBox()
-        self.iso_le.setMaximum(99999)
-        self.aperture_le = QtWidgets.QDoubleSpinBox()
-        self.aperture_le.setMaximum(99.9)
-        self.maker_le = QtWidgets.QLineEdit()
-        self.model_le = QtWidgets.QLineEdit()
-        
-        self.mount_le = QtWidgets.QLineEdit()
-        self.process_le = QtWidgets.QLineEdit()
-        self.author_le = QtWidgets.QLineEdit()
-        self.comment_le = QtWidgets.QLineEdit()
-
         # Button
         self.ok_btn = QtWidgets.QPushButton("OK")
         self.ok_btn.setFixedSize(QtCore.QSize(80,30))
@@ -77,10 +49,9 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
         self.cancel_btn.setFixedSize(QtCore.QSize(80,30))
         self.cancel_btn.clicked.connect(self.deleteLater)
-        
-    def create_layouts(self):
+
         # Main layout
-        main_layout = QtWidgets.QHBoxLayout(self)
+        self.main_layout = QtWidgets.QHBoxLayout(self)
 
         # Images
         adds_layout = QtWidgets.QHBoxLayout()
@@ -92,100 +63,65 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.v_image_layout.addWidget(self.image_lbl)
         self.v_image_layout.addWidget(self.brut_lbl)
 
-        main_layout.addLayout(self.v_image_layout)
+        self.main_layout.addLayout(self.v_image_layout)
+        self.v_layout = QtWidgets.QVBoxLayout()
+        self.main_layout.addLayout(self.v_layout)
 
-        # Grids
-        v_layout = QtWidgets.QVBoxLayout()
-        main_layout.addLayout(v_layout)
-        
         # Labels
-        subject_lbl = QtWidgets.QLabel(envs.G_SUBJECT)
-        desc_lbl = QtWidgets.QLabel(envs.G_DESC)
+        self.subject_lbl = QtWidgets.QLabel(envs.G_SUBJECT)
+        self.desc_lbl = QtWidgets.QLabel(envs.G_DESC)
         # acquisition
-        date_lbl = QtWidgets.QLabel(envs.G_DATE)
-        location_lbl = QtWidgets.QLabel(envs.G_LOCATION)
-        lights_lbl = QtWidgets.QLabel(envs.A_LIGHTS)
-        exposure_lbl = QtWidgets.QLabel(envs.G_EXPOSURE_TIME)
-        iso_lbl = QtWidgets.QLabel(envs.G_ISO)
-        aperture_lbl = QtWidgets.QLabel(envs.G_F_NUMBER)
+        self.date_lbl = QtWidgets.QLabel(envs.G_DATE)
+        self.location_lbl = QtWidgets.QLabel(envs.G_LOCATION)
+        self.exposure_lbl = QtWidgets.QLabel(envs.G_EXPOSURE_TIME)
+        self.iso_lbl = QtWidgets.QLabel(envs.G_ISO)
+        self.aperture_lbl = QtWidgets.QLabel(envs.G_F_NUMBER)
         # equipment
-        maker_lbl = QtWidgets.QLabel(envs.G_MAKE)
-        model_lbl = QtWidgets.QLabel(envs.G_MODEL)
-        focal_lbl = QtWidgets.QLabel(envs.G_FOCAL)
-        mount_lbl = QtWidgets.QLabel(envs.A_MOUNT)
+        self.maker_lbl = QtWidgets.QLabel(envs.G_MAKE)
+        self.model_lbl = QtWidgets.QLabel(envs.G_MODEL)
+        self.focal_lbl = QtWidgets.QLabel(envs.G_FOCAL)
         # 
-        author_lbl = QtWidgets.QLabel(envs.G_AUTHOR)
-        process_lbl = QtWidgets.QLabel(envs.G_SOFTWARE)
-        comment_lbl = QtWidgets.QLabel(envs.G_COMMENT)
-        
-        font_bold = QtGui.QFont("Arial", 8, QtGui.QFont.Bold)
-        for column_lbl in [subject_lbl, desc_lbl, date_lbl, location_lbl, lights_lbl,
-                           exposure_lbl, iso_lbl, aperture_lbl,
-                           focal_lbl, mount_lbl, author_lbl, model_lbl,
-                           maker_lbl, process_lbl, comment_lbl]:
-                column_lbl.setFont(font_bold)
+        self.author_lbl = QtWidgets.QLabel(envs.G_AUTHOR)
+        self.process_lbl = QtWidgets.QLabel(envs.G_SOFTWARE)
+        self.comment_lbl = QtWidgets.QLabel(envs.G_COMMENT)
 
-        # global grid
-        global_gb = QtWidgets.QGroupBox()
-        grid_layout = QtWidgets.QGridLayout(global_gb)
-        
-        pos = 0
-        for label, wdg in zip([subject_lbl, desc_lbl],
-                              [self.subject_le, self.album_le]):
-            grid_layout.addWidget(label, pos, 0)
-            grid_layout.addWidget(wdg, pos, 1)
-            pos += 1
- 
-        v_layout.addWidget(global_gb)
+        # line edits
+        self.subject_le = QtWidgets.QLineEdit()
+        self.album_le = QtWidgets.QLineEdit()
+        self.date_le = QtWidgets.QDateEdit()
+        self.date_le.setDisplayFormat("yyyy, MM, dd")
+        self.location_le = QtWidgets.QLineEdit()
+        self.exposure_le = QtWidgets.QDoubleSpinBox()
+        self.exposure_le.setMaximum(9999.9999)
+        self.focal_le = QtWidgets.QDoubleSpinBox()
+        self.focal_le.setMaximum(9999.9)
+        self.iso_le = QtWidgets.QSpinBox()
+        self.iso_le.setMaximum(99999)
+        self.aperture_le = QtWidgets.QDoubleSpinBox()
+        self.aperture_le.setMaximum(99.9)
+        self.maker_le = QtWidgets.QLineEdit()
+        self.model_le = QtWidgets.QLineEdit()
+        self.process_le = QtWidgets.QLineEdit()
+        self.author_le = QtWidgets.QLineEdit()
+        self.comment_le = QtWidgets.QLineEdit()
 
-        # Acquisition grid
-        acquisition_gb = QtWidgets.QGroupBox("Acquisition Details")
-        grid_layout = QtWidgets.QGridLayout(acquisition_gb)
-        
-        pos = 0
-        for label, wdg in zip([date_lbl, location_lbl, lights_lbl,
-                               exposure_lbl, iso_lbl, aperture_lbl],
-                              [self.date_le, self.location_le, self.lights_le,
-                               self.exposure_le, self.iso_le, self.aperture_le]):
-            grid_layout.addWidget(label, pos, 0)
-            grid_layout.addWidget(wdg, pos, 1)
-            pos += 1
- 
-        v_layout.addWidget(acquisition_gb)
-        v_layout.addWidget(self.location_btn)
+        self.h_layout = QtWidgets.QHBoxLayout()
+        self.h_layout.addWidget(self.ok_btn)
+        self.h_layout.addWidget(self.cancel_btn)
+        self.h_layout.addStretch(1)
 
-        # Equipment grid
-        equipment_gb = QtWidgets.QGroupBox("Equipment Details")
-        grid_layout = QtWidgets.QGridLayout(equipment_gb)
-        
-        pos = 0
-        for label, wdg in zip([maker_lbl,model_lbl, focal_lbl, mount_lbl],
-                              [self.maker_le, self.model_le, self.focal_le, self.mount_le]):
-            grid_layout.addWidget(label, pos, 0)
-            grid_layout.addWidget(wdg, pos, 1)
-            pos += 1
- 
-        v_layout.addWidget(equipment_gb)
+        self.create_widgets()
+        self.create_layouts()
 
-        # more grid
-        more_gb = QtWidgets.QGroupBox("More info")
-        grid_layout = QtWidgets.QGridLayout(more_gb)
-        
-        pos = 0
-        for label, wdg in zip([author_lbl, process_lbl, comment_lbl],
-                              [self.author_le, self.process_le, self.comment_le]):
-            grid_layout.addWidget(label, pos, 0)
-            grid_layout.addWidget(wdg, pos, 1)
-            pos += 1
- 
-        v_layout.addWidget(more_gb)
+        self.v_layout.addLayout(self.h_layout)
 
-        # Buttons
-        h_layout = QtWidgets.QHBoxLayout()
-        h_layout.addWidget(self.ok_btn)
-        h_layout.addWidget(self.cancel_btn)
-        h_layout.addStretch(1)
-        v_layout.addLayout(h_layout)
+        self._update()
+
+    def create_widgets(self):
+        pass
+
+    def create_layouts(self):
+        pass
  
     def _update(self):
         # buttons
@@ -207,7 +143,7 @@ class ImageInfosUI(QtWidgets.QDialog):
             q_date = QtCore.QDate.currentDate()
         self.date_le.setDate(q_date)
         self.location_le.setText(self._exif.get(api_envs.LOCATION, ""))
-        self.lights_le.setValue(1)
+        
         self.exposure_le.setValue(float(self._exif.get(api_envs.EXPOSURE_TIME, 0.01)))
         self.focal_le.setValue(float(self._exif.get(api_envs.FOCAL, 35)))
         self.iso_le.setValue(int(self._exif.get(api_envs.ISO, 100)))
@@ -230,6 +166,11 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.brut_lbl.setPixmap(brut_pixmap)
         # self.v_image_layout.addWidget(self.brut_lbl)
 
+        self._type_update()
+
+    def _type_update(self):
+        pass
+
     def _accept(self):
         self.deleteLater()
         self.accept()
@@ -251,11 +192,9 @@ class ImageInfosUI(QtWidgets.QDialog):
                 api_envs.ALBUM : self.album_le.text(),
                 api_envs.MAKE : self.maker_le.text(),
                 api_envs.MODEL : self.model_le.text(),
-                api_envs.MOUNT : self.mount_le.text(),
                 api_envs.FOCAL : self.focal_le.value(),
                 api_envs.F_NUMBER : self.aperture_le.value(),
                 api_envs.ISO : self.iso_le.value(),
-                api_envs.LIGHTS : self.lights_le.value(),
                 api_envs.EXPOSURE_TIME : self.exposure_le.value(),
                 api_envs.LOCATION : self.location_le.text(),
                 api_envs.BORTLE : 0,

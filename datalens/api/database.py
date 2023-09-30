@@ -1,6 +1,6 @@
 import mysql.connector
 from datalens.api import envs
-from datalens.api.file import AstroFileTable
+from datalens.api.astro import AstroFileTable
 from datalens.api.user import UserTable
 from datalens.api.album import AlbumTable
 from datalens.api.version import VersionTable

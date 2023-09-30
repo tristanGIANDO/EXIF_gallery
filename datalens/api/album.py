@@ -48,6 +48,11 @@ class AlbumTable(object):
         self._cursor.execute(sql, values)
         self._server.commit()
 
+    def get_type(self, name:str):
+        sql = f"SELECT {envs.ALBUM_TYPE} FROM {self._name} WHERE {envs.ALBUM_NAME} ='{name}'"
+        self._cursor.execute(sql)
+        return self._cursor.fetchall()[0][0]
+    
     def select_rows(self):
         self._cursor.execute(f"SELECT * FROM {self._name}")
         return self._cursor.fetchall()

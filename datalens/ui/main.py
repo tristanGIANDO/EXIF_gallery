@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets,QtCore, QtGui
 from datalens import __infos__
 from datalens.api.database import Database
 from datalens.api import envs as api_envs
-from datalens.ui.astrophoto import AstroWorkspaceTree
+from datalens.ui.astrophoto import AstroWorkspaceTree, AstroImageInfosUI
 from datalens.ui.image import ImageInfosUI, ImageViewerUI
 from datalens.ui.user import UserInfosUI
 from datalens.ui.utils import CreateAlbumUI, ActionButton, ListWidget
@@ -21,6 +21,7 @@ class MainUI( QtWidgets.QMainWindow):
 
         self._db = Database()
         self._current_album = ""
+        self._current_album_type = ""
         self._current_files = []
         
         self.create_widgets()
@@ -188,6 +189,8 @@ class MainUI( QtWidgets.QMainWindow):
         else:
             self._current_album = name
 
+        self._current_album_type = self._db._albums.get_type(self._current_album)
+
         self.albums_cb.blockSignals(False)
         self.albums_cb.setCurrentText(self._current_album)
         
@@ -210,7 +213,11 @@ class MainUI( QtWidgets.QMainWindow):
             author = f"{user[1]} {user[2]}"
         else:
             author = None
-        ui = ImageInfosUI(author)
+
+        if self._current_album_type == "Astro":
+            ui = AstroImageInfosUI(author)
+        else:
+            ui = ImageInfosUI(author)
         if ui.exec_():
             data = ui.read()
             data["album"] = self._current_album
