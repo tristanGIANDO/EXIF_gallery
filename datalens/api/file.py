@@ -270,13 +270,20 @@ class FileTable(object):
             self._update_moon_phase(new_value, str(id))
 
     def delete_from(self, id:int, path:str):
+        # delete from file table
         sql = f"DELETE FROM {self._name} WHERE {envs.ID} = '{str(id)}'"
         self._cursor.execute(sql)
         self._server.commit()
 
+        # delete from version table
+        sql = f"DELETE FROM {envs.VERSION_TABLE_NAME} WHERE {envs.VERSION_PARENT_ID} = '{str(id)}'"
+        self._cursor.execute(sql)
+        self._server.commit()
+
+        # delete from os
         path = Path(path)
-        os.remove(path)
-        os.remove(path.parent / (path.stem + envs.IMAGE_SMALL_SUFFIX + path.suffix))
+        shutil.rmtree(path.parent)
+        # os.remove(path.parent / (path.stem + envs.IMAGE_SMALL_SUFFIX + path.suffix))
     
     def _update_total_time(self, id:str):
         # get epxosure total time
