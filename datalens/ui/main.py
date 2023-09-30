@@ -299,14 +299,14 @@ class MainUI( QtWidgets.QMainWindow):
                             self.view_mode_action]:
                     action.setEnabled(True)
                 # central view
-                if self.list_wdg.isHidden():
-                    self.list_wdg.setVisible(True)
-                    self.tree.setVisible(False)
-                    self.view_mode_action.setIcon(envs.ICONS.get("list"))
-                else:
-                    self.list_wdg.setVisible(False)
+                if self.tree.isHidden():
                     self.tree.setVisible(True)
+                    self.list_wdg.setVisible(False)
                     self.view_mode_action.setIcon(envs.ICONS.get("card"))
+                else:
+                    self.tree.setVisible(False)
+                    self.list_wdg.setVisible(True)
+                    self.view_mode_action.setIcon(envs.ICONS.get("list"))
                     
     def on_viewer_triggered(self):
         paths = []
@@ -347,7 +347,9 @@ class MainUI( QtWidgets.QMainWindow):
 
     def on_album_changed(self):
         self._current_album = self.albums_cb.currentText()
+        # self._update_albums()
         self._update_files()
+        self.set_view()
     
     def on_delete_album_triggered(self):
         album_name = self.albums_cb.currentText()

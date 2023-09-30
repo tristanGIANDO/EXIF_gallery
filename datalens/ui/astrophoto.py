@@ -262,14 +262,14 @@ class AstroListWidget(QtWidgets.QListWidget):
         self.setResizeMode(QtWidgets.QListView.Adjust)
         self.setViewMode(QtWidgets.QListWidget.IconMode)
         self.setFlow(QtWidgets.QListView.LeftToRight)
-        self.setGridSize(QtCore.QSize(300,200))
-        self.setSpacing(5)
+        self.setGridSize(QtCore.QSize(500,300))
+        self.setSpacing(1)
         self.setWordWrap(True)
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
     def add_item(self, data):
         # self.clear()
-        thumbnail = ThumbnailButton(self._db, data[1])
+        thumbnail = ThumbnailButton(self._db, data[1], size=(500,300))
         task_wdg_item = QtWidgets.QListWidgetItem()
         task_wdg_item.setSizeHint(thumbnail.sizeHint())
 
