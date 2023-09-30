@@ -85,6 +85,7 @@ class CreateAlbumUI(QtWidgets.QDialog):
         album_type_lbl.setFont(font_bold)
         self.album_type_cb = QtWidgets.QComboBox()
         self.album_type_cb.addItems(["Astro",
+                                     "Standard",
                                      "Landscape",
                                      "People",
                                      "Studio",

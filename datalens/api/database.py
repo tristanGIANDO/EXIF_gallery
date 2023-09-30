@@ -1,6 +1,7 @@
 import mysql.connector
 from datalens.api import envs
 from datalens.api.astro import AstroFileTable
+from datalens.api.standard import StandardFileTable
 from datalens.api.user import UserTable
 from datalens.api.album import AlbumTable
 from datalens.api.version import VersionTable
@@ -26,6 +27,7 @@ class Database(object):
     self._you = UserTable(self._server)
     self._albums = AlbumTable(self._server)
     self._astro_files = AstroFileTable(self._server)
+    self._standard_files = StandardFileTable(self._server)
     self._versions = VersionTable(self._server)
     
   def connect(self, user:str, password:str):

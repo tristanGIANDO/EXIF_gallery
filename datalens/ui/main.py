@@ -4,6 +4,7 @@ from datalens import __infos__
 from datalens.api.database import Database
 from datalens.api import envs as api_envs
 from datalens.ui.astrophoto import AstroWorkspaceTree, AstroImageInfosUI
+from datalens.ui.standard import StandardWorkspaceTree, StandardImageInfosUI
 from datalens.ui.image import ImageInfosUI, ImageViewerUI
 from datalens.ui.user import UserInfosUI
 from datalens.ui.utils import CreateAlbumUI, ActionButton, ListWidget
@@ -23,6 +24,13 @@ class MainUI( QtWidgets.QMainWindow):
         self._current_album = ""
         self._current_album_type = ""
         self._current_files = []
+
+        if self._current_album_type == "Astro":
+            self._db_root = self._db._astro_files
+            self.tree = AstroWorkspaceTree(self._db)
+        else:
+            self._db_root = self._db._standard_files
+            self.tree = StandardWorkspaceTree(self._db)
         
         self.create_widgets()
         
@@ -42,8 +50,6 @@ class MainUI( QtWidgets.QMainWindow):
     def create_widgets(self):
         self.title = QtWidgets.QLabel("DataLens")
         self.title.setFont(QtGui.QFont("Impact", 16))
-
-        self.tree = AstroWorkspaceTree(self._db)
         self.list_wdg = ListWidget(self._db)
         self.albums_cb = QtWidgets.QComboBox()
         self.albums_cb.setFixedSize(200,40)
@@ -205,7 +211,7 @@ class MainUI( QtWidgets.QMainWindow):
     def get_album_files(self, album = None):
         if not album:
             album = self._current_album
-        return [f for f in self._db._astro_files.select_rows() if f[3] == album]
+        return [f for f in self._db_root.select_rows() if f[3] == album]
 
     def open_image_info(self):
         user = self._db._you.get_user()
@@ -217,11 +223,11 @@ class MainUI( QtWidgets.QMainWindow):
         if self._current_album_type == "Astro":
             ui = AstroImageInfosUI(author)
         else:
-            ui = ImageInfosUI(author)
+            ui = StandardImageInfosUI(author)
         if ui.exec_():
             data = ui.read()
             data["album"] = self._current_album
-            self._db._astro_files.insert_into(data)
+            self._db_root.insert_into(data)
             self._update_files()
             self.set_view()
     
@@ -249,7 +255,7 @@ class MainUI( QtWidgets.QMainWindow):
         item = self.tree.remove_tree_item()
         if not item:
             return
-        self._db._astro_files.delete_from(item.text(0),
+        self._db_root.delete_from(item.text(0),
                                     item.text(1))
 
     def on_item_changed(self, item, column):
@@ -323,7 +329,7 @@ class MainUI( QtWidgets.QMainWindow):
         ui.exec_()
 
     def on_graph_triggered(self):
-        files = self._db._astro_files.select_rows()
+        files = self._db_root.select_rows()
         ui = GraphUI(self._db, files)
         ui.exec_()
 
@@ -335,7 +341,7 @@ class MainUI( QtWidgets.QMainWindow):
         
         paths = []
         overlays = []
-        for file_data in self._db._astro_files.select_rows():
+        for file_data in self._db_root.select_rows():
             paths.append(file_data[1])
             overlays.append(file_data[2])
 
