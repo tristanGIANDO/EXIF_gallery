@@ -44,7 +44,7 @@ class WorkspaceTree( QtWidgets.QTreeWidget):
     
     def get_contents(self):
         def check(p_list, col, item):
-            x = self._db._astro_files.get(col, item)
+            x = self._db._files.get(col, item)
             if x and x not in p_list:
                 p_list.append(x[0][0])
             return p_list
@@ -53,7 +53,7 @@ class WorkspaceTree( QtWidgets.QTreeWidget):
         makers = []
         authors = []
         softs = []
-        for file in self._db._astro_files.select_rows():
+        for file in self._db._files.select_rows():
             makers = check(makers, "make", file[0])
             models = check(models, "model", file[0])
             authors = check(authors, "author", file[0])

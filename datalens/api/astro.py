@@ -34,8 +34,7 @@ class AstroFileTable(FileTable):
                 {envs.AUTHOR} VARCHAR(100),\
                 {envs.COMMENT} VARCHAR(900),\
                 {envs.DATE} VARCHAR(25),\
-                {envs.PATH_BRUT} VARCHAR(250),\
-                {envs.CURRENT_VERSION} VARCHAR(3) \
+                {envs.PATH_BRUT} VARCHAR(250) \
                 )"
 
             sql = f"CREATE TABLE {self._name} {data}"

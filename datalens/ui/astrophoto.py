@@ -41,94 +41,94 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         self.setText(0, self._id)
 
         # path
-        img_path = Path(self._db._astro_files.get_path(self._id))
+        img_path = Path(self._db._files.get_path(self._id))
         self.setText(1, str(img_path))
 
         # subject
         self.setText(idx(envs.G_SUBJECT),
-                     self._db._astro_files.get_subject(self._id))
+                     self._db._files.get_subject(self._id))
         self.setFont(idx(envs.G_SUBJECT),
                      QtGui.QFont("Arial", 9, QtGui.QFont.Bold))
         
         # make
         self.setText(idx(envs.G_MAKE),
-                     self._db._astro_files.get_make(self._id))
+                     self._db._files.get_make(self._id))
         contents = self._contents.get("maker", [])
         maker_cb = ComboBoxWdg(self,idx(envs.G_MAKE),
                                contents)
         
         # model
         self.setText(idx(envs.G_MODEL),
-                     self._db._astro_files.get_model(self._id))
+                     self._db._files.get_model(self._id))
         contents = self._contents.get("model", [])
         model_cb = ComboBoxWdg(self,idx(envs.G_MODEL),
                                contents)
         
         # mount
         self.setText(idx(envs.A_MOUNT),
-                     self._db._astro_files.get_mount(self._id))
+                     self._db._files.get_mount(self._id))
         
         # focal
-        focal = self._db._astro_files.get_focal(self._id)
+        focal = self._db._files.get_focal(self._id)
         self.setText(idx(envs.G_FOCAL), str(focal))
         focal_box = SpinWdg(self, idx(envs.G_FOCAL), int(focal))
         
         # f number
-        f_number = self._db._astro_files.get_f_number(self._id)
+        f_number = self._db._files.get_f_number(self._id)
         self.setText(idx(envs.G_F_NUMBER),
                      str(f_number))
         f_box = SpinWdg(self, idx(envs.G_F_NUMBER), float(f_number), mode="double")
         
         # iso
-        iso = self._db._astro_files.get_iso(self._id)
+        iso = self._db._files.get_iso(self._id)
         self.setText(idx(envs.G_ISO), str(iso))
         iso_box= SpinWdg(self, idx(envs.G_ISO), int(iso))
         self.setIcon(idx(envs.G_ISO), QtGui.QIcon(iso_color(iso)))
         
         # nb lights
-        lights = self._db._astro_files.get_lights(self._id)
+        lights = self._db._files.get_lights(self._id)
         self.setText(idx(envs.A_LIGHTS), str(lights))
         light_box= SpinWdg(self, idx(envs.A_LIGHTS), int(lights))
 
         # exposure
-        exposure = self._db._astro_files.get_exposure_time(self._id)
+        exposure = self._db._files.get_exposure_time(self._id)
         self.setText(idx(envs.G_EXPOSURE_TIME), str(exposure))
         exposure_box = SpinWdg(self, idx(envs.G_EXPOSURE_TIME),
                                float(exposure), mode="double")
         # total time
         self.setText(idx(envs.A_TOTAL_TIME),
-                     self._db._astro_files.get_total_time(self._id)) # in UI ??
+                     self._db._files.get_total_time(self._id)) # in UI ??
         # location
         self.setText(idx(envs.G_LOCATION),
-                     self._db._astro_files.get_location(self._id))
+                     self._db._files.get_location(self._id))
         # bortle
-        bortle = self._db._astro_files.get_bortle(self._id)
+        bortle = self._db._files.get_bortle(self._id)
         self.setText(idx(envs.A_BORTLE), str(bortle))
         bortle_box = SpinWdg(self, idx(envs.A_BORTLE), int(bortle))
         
         # moon
-        moon = self._db._astro_files.get_moon_phase(self._id)
+        moon = self._db._files.get_moon_phase(self._id)
         self.setText(idx(envs.A_MOON_PHASE), envs.MOON_PHASES.get(moon))
         self.setIcon(idx(envs.A_MOON_PHASE), envs.ICONS.get(moon))
 
         # soft
         self.setText(idx(envs.G_SOFTWARE),
-                     self._db._astro_files.get_software(self._id))
+                     self._db._files.get_software(self._id))
         contents = self._contents.get("software", [])
         soft_cb = ComboBoxWdg(self,idx(envs.G_SOFTWARE),
                                contents)
         
         # author
         self.setText(idx(envs.G_AUTHOR),
-                     self._db._astro_files.get_author(self._id))
+                     self._db._files.get_author(self._id))
         contents = self._contents.get("author", [])
         author_cb = ComboBoxWdg(self,idx(envs.G_AUTHOR),
                                contents)
         # comment
         self.setText(idx(envs.G_COMMENT),
-                     self._db._astro_files.get_comment(self._id))
+                     self._db._files.get_comment(self._id))
         # date
-        date = self._db._astro_files.get_date(self._id)
+        date = self._db._files.get_date(self._id)
         self.setText(idx(envs.G_DATE), str(date))
         date_box = SpinWdg(self,idx(envs.G_DATE),date,mode="date")
 
@@ -211,7 +211,7 @@ class AstroWorkspaceTree(WorkspaceTree):
         elif column == idx(envs.G_DATE):
             db_column = api_envs.DATE
         
-        self._db._astro_files.update(db_column, item.text(0), item.text(column))
+        self._db._files.update(db_column, item.text(0), item.text(column))
         self._contents = self.get_contents()
 
 class AstroImageInfosUI(ImageInfosUI):
