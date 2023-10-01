@@ -21,31 +21,22 @@ class MainUI( QtWidgets.QMainWindow):
         self.resize(1850, 800)
 
         self._db = Database()
+        self._db_root = ""
         self._current_album = ""
         self._current_album_type = ""
         self._current_files = []
-
-        if self._current_album_type == "Astro":
-            self._db_root = self._db._astro_files
-            self.tree = AstroWorkspaceTree(self._db)
-        else:
-            self._db_root = self._db._standard_files
-            self.tree = StandardWorkspaceTree(self._db)
         
         self.create_widgets()
-        
         self.create_actions()
-        
         self.create_layouts()
-        self.create_connections()
-        
+    
         self._update_albums()
-        
         self._update_files()
         self._update_user()
 
+        self.create_connections()
+
         self.set_view()
-        return
 
     def create_widgets(self):
         self.title = QtWidgets.QLabel("DataLens")
@@ -54,6 +45,9 @@ class MainUI( QtWidgets.QMainWindow):
         self.albums_cb = QtWidgets.QComboBox()
         self.albums_cb.setFixedSize(200,40)
         self.albums_cb.setFont(QtGui.QFont("Arial", 12, QtGui.QFont.Bold))
+        # trees
+        self.astro_tree = AstroWorkspaceTree(self._db)
+        self.standard_tree = StandardWorkspaceTree(self._db)
 
     def create_actions(self):
         self.add_files_action = QtWidgets.QAction(envs.ICONS.get("add_file"), "Add File", self)
@@ -143,7 +137,8 @@ class MainUI( QtWidgets.QMainWindow):
 
         # main self.central_layout
         self.central_layout = QtWidgets.QVBoxLayout()
-        self.central_layout.addWidget(self.tree)
+        self.central_layout.addWidget(self.astro_tree)
+        self.central_layout.addWidget(self.standard_tree)
         self.central_layout.addWidget(self.list_wdg)
         self.central_layout.addWidget(self.create_album_btn)
         self.central_layout.addWidget(self.add_files_btn)
@@ -154,7 +149,8 @@ class MainUI( QtWidgets.QMainWindow):
         self.setCentralWidget(central_widget)
 
     def create_connections(self):
-        self.tree.itemChanged.connect(self.on_item_changed)
+        self.astro_tree.itemChanged.connect(self.on_item_changed)
+        self.standard_tree.itemChanged.connect(self.on_item_changed)
         self.add_files_action.triggered.connect(self.on_add_files_clicked)
         self.remove_files_action.triggered.connect(self.on_remove_files_clicked)
         self.reload_files_action.triggered.connect(self._update_files)
@@ -169,17 +165,24 @@ class MainUI( QtWidgets.QMainWindow):
         self.image_size_action.triggered.connect(self.on_image_size_triggered)
 
     def _update_files(self):
-        self.tree.blockSignals(True)
-        self.tree.clear()
+        self.astro_tree.blockSignals(True)
+        self.astro_tree.clear()
+        self.standard_tree.blockSignals(True)
+        self.standard_tree.clear()
         self.list_wdg.clear()
 
         self._current_files = self.get_album_files()
+        print(self._current_files)
         for file in self._current_files:
             id = file[0]
-            self.tree.add_item(id)
             self.list_wdg.add_item(file)
+            if self._current_album_type == "Astro":
+                self.astro_tree.add_item(id)
+            else:
+                self.standard_tree.add_item(id)
 
-        self.tree.blockSignals(False)
+        self.astro_tree.blockSignals(False)
+        self.standard_tree.blockSignals(False)
         
     def _update_albums(self, album_name = None):
         self.albums_cb.clear()
@@ -197,6 +200,14 @@ class MainUI( QtWidgets.QMainWindow):
 
         self._current_album_type = self._db._albums.get_type(self._current_album)
 
+        print(self._current_album)
+        if self._current_album_type == "Astro":
+            print("astro root")
+            self._db_root = self._db._astro_files
+        else:
+            print("standard_root")
+            self._db_root = self._db._standard_files
+
         self.albums_cb.blockSignals(False)
         self.albums_cb.setCurrentText(self._current_album)
         
@@ -211,7 +222,12 @@ class MainUI( QtWidgets.QMainWindow):
     def get_album_files(self, album = None):
         if not album:
             album = self._current_album
-        return [f for f in self._db_root.select_rows() if f[3] == album]
+     
+        if self._current_album_type == "Astro":
+            return [f for f in self._db._astro_files.select_rows() if f[3] == album]
+        else:
+            return [f for f in self._db._standard_files.select_rows() if f[3] == album]
+ 
 
     def open_image_info(self):
         user = self._db._you.get_user()
@@ -227,6 +243,7 @@ class MainUI( QtWidgets.QMainWindow):
         if ui.exec_():
             data = ui.read()
             data["album"] = self._current_album
+            self._update_albums()
             self._db_root.insert_into(data)
             self._update_files()
             self.set_view()
@@ -252,14 +269,20 @@ class MainUI( QtWidgets.QMainWindow):
         self.open_user_info()
 
     def on_remove_files_clicked(self):
-        item = self.tree.remove_tree_item()
+        if self._current_album_type == "Astro":
+            item = self.astro_tree.remove_tree_item()
+        else:
+            item = self.standard_tree.remove_tree_item()
         if not item:
             return
         self._db_root.delete_from(item.text(0),
                                     item.text(1))
 
     def on_item_changed(self, item, column):
-        self.tree.update_item(item, column)
+        if self._current_album_type == "Astro":
+            self.astro_tree.update_item(item, column)
+        else:
+            self.standard_tree.update_item(item, column)
 
     def on_view_triggered(self):
         self.set_view()
@@ -281,7 +304,8 @@ class MainUI( QtWidgets.QMainWindow):
                 action.setEnabled(False)
             # central view
             self.list_wdg.setVisible(False)
-            self.tree.setVisible(False)
+            self.astro_tree.setVisible(False)
+            self.standard_tree.setVisible(False)
         else:
             if not self._current_files:
                 # start buttons
@@ -298,7 +322,8 @@ class MainUI( QtWidgets.QMainWindow):
                     action.setEnabled(True)
                 # central view
                 self.list_wdg.setVisible(False)
-                self.tree.setVisible(False)
+                self.astro_tree.setVisible(False)
+                self.standard_tree.setVisible(False)
             else:
                 # start buttons
                 self.create_album_btn.setVisible(False)
@@ -312,14 +337,28 @@ class MainUI( QtWidgets.QMainWindow):
                             self.view_mode_action]:
                     action.setEnabled(True)
                 # central view
-                if self.tree.isHidden():
-                    self.tree.setVisible(True)
-                    self.list_wdg.setVisible(False)
-                    self.view_mode_action.setIcon(envs.ICONS.get("card"))
+                if self._current_album_type == "Astro":
+                    if self.astro_tree.isHidden():
+                        self.astro_tree.setVisible(True)
+                        self.standard_tree.setVisible(False)
+                        self.list_wdg.setVisible(False)
+                        self.view_mode_action.setIcon(envs.ICONS.get("card"))
+                    else:
+                        self.astro_tree.setVisible(False)
+                        self.standard_tree.setVisible(False)
+                        self.list_wdg.setVisible(True)
+                        self.view_mode_action.setIcon(envs.ICONS.get("list"))
                 else:
-                    self.tree.setVisible(False)
-                    self.list_wdg.setVisible(True)
-                    self.view_mode_action.setIcon(envs.ICONS.get("list"))
+                    if self.standard_tree.isHidden():
+                        self.astro_tree.setVisible(False)
+                        self.standard_tree.setVisible(True)
+                        self.list_wdg.setVisible(False)
+                        self.view_mode_action.setIcon(envs.ICONS.get("card"))
+                    else:
+                        self.astro_tree.setVisible(False)
+                        self.standard_tree.setVisible(False)
+                        self.list_wdg.setVisible(True)
+                        self.view_mode_action.setIcon(envs.ICONS.get("list"))
                     
     def on_viewer_triggered(self):
         paths = []
@@ -360,7 +399,8 @@ class MainUI( QtWidgets.QMainWindow):
 
     def on_album_changed(self):
         self._current_album = self.albums_cb.currentText()
-        # self._update_albums()
+        self._current_album_type = self._db._albums.get_type(self._current_album)
+        print(self._current_album, self._current_album_type)
         self._update_files()
         self.set_view()
     
@@ -379,7 +419,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.set_view()
 
     def on_image_size_triggered(self):
-        for item in self.tree.get_items() or []:
+        for item in self.astro_tree.get_items() or self.standard_tree.get_items():
             try:
                 item._update((100,66))
             except:

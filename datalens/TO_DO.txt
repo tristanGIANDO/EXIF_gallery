@@ -7,10 +7,10 @@ UI
     Pour ça on peut faire un check de la length de chaque string avant d'envoyer la request.
 
 API
-* delete file
 * delete version
 * cache images 
 
 FEATURES TO ADD
+* Export metadata !
 * rotate / flip images in image viewer
 * add multiple files, edit later
