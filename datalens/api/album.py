@@ -78,7 +78,4 @@ class AlbumTable(object):
         sql = f"DELETE FROM {envs.ASTRO_FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'"
         self._cursor.execute(sql)
         self._server.commit()
-
-        path = os.path.join(envs.ROOT, album_name)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
+        

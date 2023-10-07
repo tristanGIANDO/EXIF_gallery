@@ -30,6 +30,8 @@ class MainUI( QtWidgets.QMainWindow):
         self._update_albums()
         self._update_user()
 
+        self.set_view()
+
     def create_widgets(self):
         self.title = QtWidgets.QLabel("DataLens")
         self.title.setFont(QtGui.QFont("Impact", 16))
@@ -243,6 +245,16 @@ class MainUI( QtWidgets.QMainWindow):
                 self.list_wdg.setVisible(False)
                 self.create_album_btn.setVisible(False)
                 self.add_files_btn.setVisible(False)
+            else:
+                self.tree.setVisible(False)
+                self.list_wdg.setVisible(False)
+                self.create_album_btn.setVisible(False)
+                self.add_files_btn.setVisible(True)
+        else:
+            self.tree.setVisible(False)
+            self.list_wdg.setVisible(False)
+            self.create_album_btn.setVisible(True)
+            self.add_files_btn.setVisible(False)
 
         # if not self._current_album:
         #     # start buttons
