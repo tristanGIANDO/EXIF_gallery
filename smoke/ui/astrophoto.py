@@ -5,6 +5,7 @@ from smoke.ui import envs
 from smoke.api import envs as api_envs
 from smoke.ui.image import ThumbnailButton, ImageInfosUI
 from smoke.ui.utils import iso_color, bortle_color
+from smoke.ui.features import copy_metadata_to_clipboard
 import os
 
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
@@ -29,11 +30,12 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
 
         for i in range(2,NB_SECTIONS):
             self.setTextAlignment(i, QtCore.Qt.AlignCenter)
+            self.setToolTip(i, self._db._files.get_comment(self._id))
             if i % 2 == 0:
                 self.setBackground(i, QtGui.QColor(240,240,240))
 
         self.setSizeHint(2,QtCore.QSize(20,20))
-
+        
         self._update()
     
     def _update(self, size = None):
@@ -126,8 +128,9 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         author_cb = ComboBoxWdg(self,idx(envs.G_AUTHOR),
                                contents)
         # comment
+        comment = self._db._files.get_comment(self._id)
         self.setText(idx(envs.G_COMMENT),
-                     self._db._files.get_comment(self._id))
+                     comment)
         # date
         date = self._db._files.get_date(self._id)
         self.setText(idx(envs.G_DATE), str(date))
@@ -160,6 +163,20 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         #     self._parent.setItemWidget(self, idx(envs.G_PATH_BRUT),
         #                                self.brut_thumbnail)
 
+    def contextMenuEvent(self, event):
+        # Créez le menu contextuel
+        menu = QtWidgets.QMenu(self)
+        action1 = menu.addAction("Action 1")
+        action2 = menu.addAction("Action 2")
+
+        # Affichez le menu contextuel et récupérez l'action sélectionnée
+        action = menu.exec_(self.mapToGlobal(event.pos()))
+
+        if action == action1:
+            print("Action 1 sélectionnée")
+        elif action == action2:
+            print("Action 2 sélectionnée")
+
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self, server):
         super(AstroWorkspaceTree, self).__init__(server)
@@ -172,10 +189,27 @@ class AstroWorkspaceTree(WorkspaceTree):
         self.header().setSectionHidden(4, True) # Album
         self.header().setSectionHidden(21, True) # Brut
 
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._show_context_menu)
+
+    def _show_context_menu(self, position):
+        copy_to_clipboard_action = QtWidgets.QAction("Copy To Clipboard")
+        copy_to_clipboard_action.triggered.connect(self.on_copy_to_clipboard_triggered)
+
+        add_comment_action = QtWidgets.QAction("Copy To Clipboard")
+        menu = QtWidgets.QMenu(self)
+        menu.addAction(copy_to_clipboard_action)
+        menu.exec_(self.mapToGlobal(position))
+
+    def on_copy_to_clipboard_triggered(self):
+        id = self.currentItem()._id
+        file = self._db._files.select_from_column("id", str(id))[0]
+        copy_metadata_to_clipboard(file)
+
     def add_item(self, id):
         item = AstroFileItem(self, self._db, id, self._contents)
         self._items.append(item)
-        
+
     def update_item(self, item, column):
         db_column = None
         if column == idx(envs.G_SUBJECT):

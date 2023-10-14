@@ -94,8 +94,8 @@ class CreateAlbumUI(QtWidgets.QDialog):
         
         grid_layout = QtWidgets.QGridLayout()
         pos = 0
-        for label, wdg in zip([album_name_lbl, album_type_lbl],
-                              [self.album_name_le, self.album_type_cb]):
+        for label, wdg in zip([album_name_lbl],
+                              [self.album_name_le]):
             grid_layout.addWidget(label, 0, pos)
             grid_layout.addWidget(wdg, 1, pos)
             pos += 1
@@ -122,7 +122,7 @@ class CreateAlbumUI(QtWidgets.QDialog):
     def read(self):
         return {
             api_envs.ALBUM_NAME : self.album_name_le.text(),
-            api_envs.ALBUM_TYPE : self.album_type_cb.currentText()
+            api_envs.ALBUM_TYPE : "Astro"
         }
     
 class ActionButton(QtWidgets.QPushButton):

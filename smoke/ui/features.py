@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from smoke.ui import envs
 from smoke.api import utils
 from collections import Counter
+import pyperclip
 
 def create_website(paths:list[str], delivery_path:str,
                    user:list[str]=None, overlays:str=None,
@@ -403,6 +404,23 @@ class GraphUI(QtWidgets.QDialog):
         count = Counter(self._fnumbers)
         fav, c = count.most_common(1)[0]
         self.fnumber_nb_lbl.setText(str(fav))
+
+def copy_metadata_to_clipboard(file):
+    # ('2814749767436477', 'C:\\Users\\giand\\.database\\2814749767436477\\1.jpeg', 'r_light_stacked2-topaz', 'aa', '', '', '', 35, '3.5', 100, 1, '0.01', '00:00:00', '', 4, 0, 'Topaz Photo AI 1.1.8', '', '', '2023, 10, 14', '')
+    # name
+    data = f"**{file[2]}**\n"
+    # material
+    data += f"{file[4]} {file[5]} - {file[6]} \n"
+    # settings
+    data += f"{file[7]}mm f/{file[8]} - ISO {file[9]}\n"
+    # astro
+    data += f"{file[10]}x{file[11]}s ({file[12]}) Bortle {file[14]}\n"
+    # soft
+    data += f"Processed with {file[16]}\n\n"
+    # comment
+    data += f"{file[18]}"
+    
+    pyperclip.copy(data)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
