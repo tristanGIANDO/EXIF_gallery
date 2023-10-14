@@ -1,9 +1,9 @@
 import mysql.connector
-from datalens.api import envs
-from datalens.api.astro import AstroFileTable
-from datalens.api.user import UserTable
-from datalens.api.album import AlbumTable
-from datalens.api.version import VersionTable
+from smoke.api import envs
+from smoke.api.astro import AstroFileTable
+from smoke.api.user import UserTable
+from smoke.api.album import AlbumTable
+from smoke.api.version import VersionTable
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:

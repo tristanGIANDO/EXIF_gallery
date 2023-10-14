@@ -1,10 +1,10 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
 from pathlib import Path
-from datalens.ui.utils import WorkspaceTree, SpinWdg, ComboBoxWdg
-from datalens.ui import envs
-from datalens.api import envs as api_envs
-from datalens.ui.image import ThumbnailButton, ImageInfosUI
-from datalens.ui.utils import iso_color
+from smoke.ui.utils import WorkspaceTree, SpinWdg, ComboBoxWdg
+from smoke.ui import envs
+from smoke.api import envs as api_envs
+from smoke.ui.image import ThumbnailButton, ImageInfosUI
+from smoke.ui.utils import iso_color
 import os
 
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 

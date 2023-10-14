@@ -1,4 +1,4 @@
-from datalens.api import envs
+from smoke.api import envs
 
 class UserTable(object):
     def __init__(self, server) -> None:

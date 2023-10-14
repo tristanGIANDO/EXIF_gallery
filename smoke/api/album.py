@@ -1,4 +1,4 @@
-from datalens.api import envs
+from smoke.api import envs
 import os,shutil
 
 class AlbumTable(object):

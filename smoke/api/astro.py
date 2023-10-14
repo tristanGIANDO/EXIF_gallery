@@ -1,8 +1,8 @@
 import traceback, os, shutil
 from pathlib import Path
 from PIL import Image
-from datalens.api import envs, utils
-from datalens.api.file import FileTable
+from smoke.api import envs, utils
+from smoke.api.file import FileTable
 
 class AstroFileTable(FileTable):
     def __init__(self, server) -> None:

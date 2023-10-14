@@ -1,14 +1,14 @@
 import sys, webbrowser
 from PyQt5 import QtWidgets,QtCore, QtGui
-from datalens import __infos__
-from datalens.api.database import Database
-from datalens.api import envs as api_envs
-from datalens.ui.astrophoto import AstroWorkspaceTree, AstroImageInfosUI
-from datalens.ui.image import ImageViewerUI
-from datalens.ui.user import UserInfosUI
-from datalens.ui.utils import CreateAlbumUI, ActionButton, ListWidget
-from datalens.ui.features import create_website, GraphUI
-from datalens.ui import envs
+from smoke import __infos__
+from smoke.api.database import Database
+from smoke.api import envs as api_envs
+from smoke.ui.astrophoto import AstroWorkspaceTree, AstroImageInfosUI
+from smoke.ui.image import ImageViewerUI
+from smoke.ui.user import UserInfosUI
+from smoke.ui.utils import CreateAlbumUI, ActionButton, ListWidget
+from smoke.ui.features import create_website, GraphUI
+from smoke.ui import envs
 
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
@@ -33,7 +33,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.set_view()
 
     def create_widgets(self):
-        self.title = QtWidgets.QLabel("DataLens")
+        self.title = QtWidgets.QLabel("smoke")
         self.title.setFont(QtGui.QFont("Impact", 16))
         self.list_wdg = ListWidget(self._db)
         self.albums_cb = QtWidgets.QComboBox()
@@ -162,6 +162,7 @@ class MainUI( QtWidgets.QMainWindow):
                 name = album_data[1]
             self.albums_cb.addItem(name)
     
+        self._current_album = name
         self.albums_cb.blockSignals(False)
         self.albums_cb.setCurrentText(name)
         self._update_files()
@@ -176,6 +177,7 @@ class MainUI( QtWidgets.QMainWindow):
             self.tree.add_item(file[0])
 
         self.tree.blockSignals(False)
+        self.set_view()
         
     def _update_user(self):
         user = self._db._you.get_user()
@@ -241,18 +243,28 @@ class MainUI( QtWidgets.QMainWindow):
     def set_view(self):
         if self._current_album:
             if self.get_album_files():
-                self.tree.setVisible(True)
-                self.list_wdg.setVisible(False)
+
+                if self.tree.isHidden():
+                    self.tree.setVisible(True)
+                    self.list_wdg.setVisible(False)
+                    self.view_mode_action.setIcon(envs.ICONS.get("card"))
+                else:
+                    self.tree.setVisible(False)
+                    self.list_wdg.setVisible(True)
+                    self.view_mode_action.setIcon(envs.ICONS.get("list"))
+
                 self.create_album_btn.setVisible(False)
                 self.add_files_btn.setVisible(False)
             else:
                 self.tree.setVisible(False)
                 self.list_wdg.setVisible(False)
+
                 self.create_album_btn.setVisible(False)
                 self.add_files_btn.setVisible(True)
         else:
             self.tree.setVisible(False)
             self.list_wdg.setVisible(False)
+
             self.create_album_btn.setVisible(True)
             self.add_files_btn.setVisible(False)
 
@@ -375,7 +387,7 @@ class MainUI( QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(open(r"datalens\ui\styles\lightstyle.qss").read())
+    app.setStyleSheet(open(r"smoke\ui\styles\lightstyle.qss").read())
 
     ui = MainUI()
     ui.show()

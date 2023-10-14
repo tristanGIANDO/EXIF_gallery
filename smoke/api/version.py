@@ -1,5 +1,5 @@
 import os, shutil
-from datalens.api import envs, utils
+from smoke.api import envs, utils
 from PIL import Image
 
 class VersionTable(object):

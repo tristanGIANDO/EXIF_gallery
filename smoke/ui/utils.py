@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
-from datalens.api import envs as api_envs
-from datalens.ui import envs
-from datalens.ui.image import ThumbnailButton
+from smoke.api import envs as api_envs
+from smoke.ui import envs
+from smoke.ui.image import ThumbnailButton
 
 class WorkspaceTree( QtWidgets.QTreeWidget):
     def __init__(self, server):

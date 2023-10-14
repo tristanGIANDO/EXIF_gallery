@@ -8,19 +8,19 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from geopy.geocoders import Nominatim
 from datetime import datetime, timedelta
-from datalens.ui import envs
-from datalens.api import utils
+from smoke.ui import envs
+from smoke.api import utils
 from collections import Counter
 
 def create_website(paths:list[str], delivery_path:str,
                    user:list[str]=None, overlays:str=None,
-                   albums:list[str]=["Home"], website_name:str="datalens_portfolio"):
+                   albums:list[str]=["Home"], website_name:str="SMOKE_portfolio"):
     """
     file_path (str): the source file
     delivery_path (str): the destination folder where to write HTML file.
     """
     title = "My portfolio"
-    subtitle = "Powered by Datalens"
+    subtitle = "Powered by SMOKE"
     thumbnail = envs.ICONS.get("logo")
 
     if len(user) >= 3:
@@ -168,7 +168,7 @@ def create_website(paths:list[str], delivery_path:str,
     html_content += '''
     </div>
 <footer>
-        <p>Powered by DataLens</p>
+        <p>Powered by smoke</p>
     </footer>
 </body>
 </html>

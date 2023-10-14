@@ -19,12 +19,12 @@
 *SOFTWARE.*
 
 <h1 align="center">
-    DataLens
+    smoke
 </h1>
 
 <h2 align="center" style="margin:1em;">
-    <img src="datalens/ui/icons/logo.png"
-         alt="DataLens"></a>
+    <img src="smoke/ui/icons/logo.png"
+         alt="smoke"></a>
 </h2>
 
 <h3 align="center">

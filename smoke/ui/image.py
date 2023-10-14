@@ -1,10 +1,10 @@
 import sys, os
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from datalens.ui import envs
-from datalens.api import envs as api_envs
-from datalens.api import utils
-from datalens.ui.features import WorldMapUI
+from smoke.ui import envs
+from smoke.api import envs as api_envs
+from smoke.api import utils
+from smoke.ui.features import WorldMapUI
 
 
 # create inheritance and derive from / don't write "if", "elif"...
