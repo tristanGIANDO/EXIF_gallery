@@ -56,7 +56,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         # Images
         adds_layout = QtWidgets.QHBoxLayout()
         adds_layout.addWidget(self.add_image_btn)
-        adds_layout.addWidget(self.add_brut_btn)
+        # adds_layout.addWidget(self.add_brut_btn)
 
         self.v_image_layout = QtWidgets.QVBoxLayout()
         self.v_image_layout.addLayout(adds_layout)

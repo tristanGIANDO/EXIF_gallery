@@ -155,9 +155,9 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         for i,b in zip(idxs,boxes):
             self._parent.setItemWidget(self, i, b)
     
-        if os.path.isfile(small_brut_path):
-            self._parent.setItemWidget(self, idx(envs.G_PATH_BRUT),
-                                       self.brut_thumbnail)
+        # if os.path.isfile(small_brut_path):
+        #     self._parent.setItemWidget(self, idx(envs.G_PATH_BRUT),
+        #                                self.brut_thumbnail)
 
 class AstroWorkspaceTree(WorkspaceTree):
     def __init__(self, server):
@@ -169,6 +169,7 @@ class AstroWorkspaceTree(WorkspaceTree):
         self.header().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)   
         self.header().setSectionHidden(1, True) # Path
         self.header().setSectionHidden(4, True) # Album
+        self.header().setSectionHidden(21, True) # Brut
 
     def add_item(self, id):
         item = AstroFileItem(self, self._db, id, self._contents)

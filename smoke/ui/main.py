@@ -243,6 +243,15 @@ class MainUI( QtWidgets.QMainWindow):
     def set_view(self):
         if self._current_album:
             if self.get_album_files():
+                for action in [self.delete_album_action,
+                           self.albums_cb,
+                            self.viewer_action,
+                            self.add_files_action,
+                            self.remove_files_action,
+                            self.view_mode_action,
+                            self.graph_action,
+                            self.web_action]:
+                    action.setEnabled(True)
 
                 if self.tree.isHidden():
                     self.tree.setVisible(True)
@@ -256,12 +265,35 @@ class MainUI( QtWidgets.QMainWindow):
                 self.create_album_btn.setVisible(False)
                 self.add_files_btn.setVisible(False)
             else:
+                for action in [self.delete_album_action,
+                            self.albums_cb,
+                            self.add_files_action]:
+                    action.setEnabled(True)
+
+                for action in [
+                            self.viewer_action,
+                            self.remove_files_action,
+                            self.view_mode_action,
+                            self.graph_action,
+                            self.web_action]:
+                    action.setEnabled(False)
+
                 self.tree.setVisible(False)
                 self.list_wdg.setVisible(False)
 
                 self.create_album_btn.setVisible(False)
                 self.add_files_btn.setVisible(True)
         else:
+            for action in [self.delete_album_action,
+                           self.albums_cb,
+                            self.viewer_action,
+                            self.add_files_action,
+                            self.remove_files_action,
+                            self.view_mode_action,
+                            self.graph_action,
+                            self.web_action]:
+                    action.setEnabled(False)
+
             self.tree.setVisible(False)
             self.list_wdg.setVisible(False)
 
