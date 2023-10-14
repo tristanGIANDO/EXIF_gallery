@@ -168,7 +168,7 @@ def create_website(paths:list[str], delivery_path:str,
     html_content += '''
     </div>
 <footer>
-        <p>Powered by smoke</p>
+        <p>Powered by SMOKE</p>
     </footer>
 </body>
 </html>

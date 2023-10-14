@@ -1,4 +1,5 @@
 from smoke.api import envs
+from smoke.api import astro
 import os,shutil
 
 class AlbumTable(object):
@@ -71,10 +72,31 @@ class AlbumTable(object):
             pass
 
     def delete_album(self, album_name):
+        # delete album from album table
         sql = f"DELETE FROM {self._name} WHERE {envs.ALBUM_NAME} = '{album_name}'"
         self._cursor.execute(sql)
         self._server.commit()
 
+        # delete files from os
+        self._cursor.execute(f"SELECT {envs.PATH} FROM {envs.ASTRO_FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'")
+        files = self._cursor.fetchall()
+        print(files)
+        if files:
+            for file in files[0]:
+                path = os.path.dirname(file)
+                if os.path.dirname(path):
+                    shutil.rmtree(path)
+
+        # delete files from version table
+        self._cursor.execute(f"SELECT {envs.ID} FROM {envs.ASTRO_FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'")
+        files = self._cursor.fetchall()
+        if files:
+            for id in files[0]:
+                sql = f"DELETE FROM {envs.VERSION_TABLE_NAME} WHERE {envs.VERSION_PARENT_ID} = '{str(id)}'"
+                self._cursor.execute(sql)
+                self._server.commit()
+    
+        # delete files from album table
         sql = f"DELETE FROM {envs.ASTRO_FILE_TABLE_NAME} WHERE {envs.ALBUM} = '{album_name}'"
         self._cursor.execute(sql)
         self._server.commit()

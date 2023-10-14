@@ -108,9 +108,7 @@ class AstroFileTable(FileTable):
         if not brut:
             brut = ""
         values += (brut,)
-        # current version
-        values += (os.path.splitext(os.path.basename(path))[0],)
-
+    
         sql = f"INSERT INTO {self._name} \
         ({envs.ID},{envs.PATH},{envs.SUBJECT}, \
         {envs.ALBUM},{envs.MAKE},{envs.MODEL}, \
@@ -118,14 +116,14 @@ class AstroFileTable(FileTable):
         {envs.ISO},{envs.LIGHTS},{envs.EXPOSURE_TIME}, \
         {envs.TOTAL_TIME},{envs.LOCATION},{envs.BORTLE}, \
         {envs.MOON_PHASE},{envs.SOFTWARE},{envs.AUTHOR}, \
-        {envs.COMMENT},{envs.DATE},{envs.PATH_BRUT},{envs.CURRENT_VERSION} \
+        {envs.COMMENT},{envs.DATE},{envs.PATH_BRUT}\
         ) VALUES (%s,%s,%s,\
             %s,%s,%s,\
                 %s,%s,%s,\
                     %s,%s,%s,\
                         %s,%s,%s,\
                             %s,%s,%s,\
-                                %s,%s,%s,%s)"
+                                %s,%s,%s)"
 
         self._cursor.execute(sql, values)
         self._server.commit()
