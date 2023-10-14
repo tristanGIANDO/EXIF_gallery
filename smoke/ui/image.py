@@ -232,7 +232,9 @@ class ImageViewerUI(QtWidgets.QDialog):
             return
         
         self.setWindowTitle("Image Viewer")
-        self.resize(1600, 900)
+        # self.resize(1600, 900)
+        # self.setSizeGripEnabled(True)
+        self.adjustSize()
         self.setWindowIcon(envs.ICONS.get("logo"))
         self.central_widget = QtWidgets.QWidget(self)
 
@@ -262,7 +264,7 @@ class ImageViewerUI(QtWidgets.QDialog):
     def show_image(self):
         if 0 <= self.current_index < len(self.image_paths):
             pixmap = QtGui.QPixmap(self.image_paths[self.current_index])
-            pixmap = pixmap.scaled(1600, 900, aspectRatioMode=QtCore.Qt.KeepAspectRatio)
+            pixmap = pixmap.scaled(1840, 1000, aspectRatioMode=QtCore.Qt.KeepAspectRatio)
             self.image_label.setPixmap(pixmap)
             self.image_label.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -332,6 +334,11 @@ class ThumbnailButton(QtWidgets.QPushButton):
             return ""
     
     def load_image(self, image_path):
+        splits = os.path.splitext(image_path)
+        small_image_path = splits[0] + "-small" + splits[-1]
+        print(small_image_path)
+        if os.path.isfile(small_image_path):
+            image_path = small_image_path
         pixmap = QtGui.QPixmap(image_path)
         if not pixmap.isNull():
             self.image_label.setPixmap(pixmap.scaledToHeight(
@@ -342,6 +349,7 @@ class ThumbnailButton(QtWidgets.QPushButton):
         
     def on_image_clicked(self):
         ui = ImageViewerUI(self._versions)
+        ui.showFullScreen()
         ui.exec_()
 
     def on_add_version_clicked(self):
@@ -350,7 +358,6 @@ class ThumbnailButton(QtWidgets.QPushButton):
             parent_dir = os.path.dirname(self.parent_path)
             filtered_files = [f for f in os.listdir(parent_dir) if "-" not in f]
             last_version_file = max(filtered_files)
-            # nb_version = int(last_version_file[0]) + 1
 
             self._db._versions.insert_into(path, self.parent_id)
 

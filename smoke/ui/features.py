@@ -36,7 +36,7 @@ def create_website(paths:list[str], delivery_path:str,
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href={envs.ICONS.get("logo")} type="image/x-icon">\n
+    <link rel="icon" href={envs.ICONS.get("logo")}\n
     <title>{title} portfolio</title>\n
     '''
 
@@ -299,7 +299,7 @@ class GraphUI(QtWidgets.QDialog):
     def __init__(self, db, files):
         super().__init__()
         self.setWindowTitle("Number of photos taken")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 1000, 600)
 
         self._db = db
         self._dates = []

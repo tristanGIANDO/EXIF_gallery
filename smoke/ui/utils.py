@@ -225,3 +225,26 @@ def iso_color(iso):
     iso_color.fill(QtGui.QColor(r, 100, 30))
 
     return iso_color
+
+def bortle_color(bortle:int):
+    if bortle == 2:
+        color = QtGui.QColor(10, 25, 100)
+    elif bortle == 3:
+        color = QtGui.QColor(0, 0, 255)
+    elif bortle == 4:
+        color = QtGui.QColor(0, 255, 0)
+    elif bortle == 5:
+        color = QtGui.QColor(255, 255, 0)
+    elif bortle == 6:
+        color = QtGui.QColor(255, 145, 0)
+    elif bortle == 7:
+        color = QtGui.QColor(255, 0, 0)
+    elif bortle == 8:
+        color = QtGui.QColor(230, 230, 230)
+    else:
+        color = QtGui.QColor(0, 0, 0)
+   
+    pixmap = QtGui.QPixmap(20,20)
+    pixmap.fill(color)
+
+    return pixmap

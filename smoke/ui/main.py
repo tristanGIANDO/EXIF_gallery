@@ -299,68 +299,13 @@ class MainUI( QtWidgets.QMainWindow):
 
             self.create_album_btn.setVisible(True)
             self.add_files_btn.setVisible(False)
-
-        # if not self._current_album:
-        #     # start buttons
-        #     self.create_album_btn.setVisible(True)
-        #     self.add_files_btn.setVisible(False)
-        #     # actions
-        #     for action in [self.delete_album_action,
-        #                    self.albums_cb,
-        #                     self.viewer_action,
-        #                     self.add_files_action,
-        #                     self.remove_files_action,
-        #                     self.view_mode_action,
-        #                     self.graph_action,
-        #                     self.web_action]:
-        #         action.setEnabled(False)
-        #     # central view
-        #     self.list_wdg.setVisible(False)
-        #     self.tree.setVisible(False)
-        # else:
-        #     if not self.get_album_files():
-        #         # start buttons
-        #         self.create_album_btn.setVisible(False)
-        #         self.add_files_btn.setVisible(True)
-        #         # actions
-        #         for action in [self.viewer_action,
-        #                        self.remove_files_action,
-        #                        self.view_mode_action]:
-        #             action.setEnabled(False)
-        #         for action in [self.delete_album_action, 
-        #                        self.albums_cb,
-        #                     self.add_files_action]:
-        #             action.setEnabled(True)
-        #         # central view
-        #         self.list_wdg.setVisible(False)
-        #         self.tree.setVisible(False)
-        #     else:
-        #         # start buttons
-        #         self.create_album_btn.setVisible(False)
-        #         self.add_files_btn.setVisible(False)
-        #         # actions
-        #         for action in [self.delete_album_action, 
-        #                        self.albums_cb,
-        #                     self.viewer_action,
-        #                     self.add_files_action,
-        #                     self.remove_files_action,
-        #                     self.view_mode_action]:
-        #             action.setEnabled(True)
-        #         # central view
-        #         if self.tree.isHidden():
-        #             self.tree.setVisible(True)
-        #             self.list_wdg.setVisible(False)
-        #             self.view_mode_action.setIcon(envs.ICONS.get("card"))
-        #         else:
-        #             self.tree.setVisible(False)
-        #             self.list_wdg.setVisible(True)
-        #             self.view_mode_action.setIcon(envs.ICONS.get("list"))
                     
     def on_viewer_triggered(self):
         paths = []
         for file_data in self.get_album_files():
             paths.append(file_data[1])
         ui = ImageViewerUI(paths)
+        ui.showFullScreen()
         ui.exec_()
 
     def on_graph_triggered(self):

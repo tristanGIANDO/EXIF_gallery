@@ -4,7 +4,7 @@ from smoke.ui.utils import WorkspaceTree, SpinWdg, ComboBoxWdg
 from smoke.ui import envs
 from smoke.api import envs as api_envs
 from smoke.ui.image import ThumbnailButton, ImageInfosUI
-from smoke.ui.utils import iso_color
+from smoke.ui.utils import iso_color, bortle_color
 import os
 
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
@@ -105,6 +105,7 @@ class AstroFileItem(QtWidgets.QTreeWidgetItem):
         bortle = self._db._files.get_bortle(self._id)
         self.setText(idx(envs.A_BORTLE), str(bortle))
         bortle_box = SpinWdg(self, idx(envs.A_BORTLE), int(bortle))
+        self.setIcon(idx(envs.A_BORTLE), QtGui.QIcon(bortle_color(int(bortle))))
         
         # moon
         moon = self._db._files.get_moon_phase(self._id)
