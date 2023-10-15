@@ -1,4 +1,4 @@
-from smoke.api import envs
+from EXIF_gallery.api import envs
 
 class FileTable(object):
     def __init__(self, server) -> None:

@@ -1,9 +1,9 @@
 import mysql.connector
-from smoke.api import envs
-from smoke.api.astro import AstroFileTable
-from smoke.api.user import UserTable
-from smoke.api.album import AlbumTable
-from smoke.api.version import VersionTable
+from EXIF_gallery.api import envs
+from EXIF_gallery.api.astro import AstroFileTable
+from EXIF_gallery.api.user import UserTable
+from EXIF_gallery.api.album import AlbumTable
+from EXIF_gallery.api.version import VersionTable
 
 class Database(object):
   def __init__(self, user:str="root", password:str="1969") -> None:

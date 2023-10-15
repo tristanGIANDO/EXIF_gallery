@@ -1,5 +1,5 @@
 import os, shutil
-from smoke.api import envs, utils
+from EXIF_gallery.api import envs, utils
 from PIL import Image
 
 class VersionTable(object):

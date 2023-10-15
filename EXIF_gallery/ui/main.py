@@ -1,14 +1,14 @@
 import sys, webbrowser
 from PyQt5 import QtWidgets,QtCore, QtGui
-from smoke import __infos__
-from smoke.api.database import Database
-from smoke.api import envs as api_envs
-from smoke.ui.astrophoto import AstroWorkspaceTree, AstroImageInfosUI
-from smoke.ui.image import ImageViewerUI
-from smoke.ui.user import UserInfosUI
-from smoke.ui.utils import CreateAlbumUI, ActionButton, ListWidget
-from smoke.ui.features import create_website, GraphUI
-from smoke.ui import envs
+from EXIF_gallery import __infos__
+from EXIF_gallery.api.database import Database
+from EXIF_gallery.api import envs as api_envs
+from EXIF_gallery.ui.astrophoto import AstroWorkspaceTree, AstroImageInfosUI
+from EXIF_gallery.ui.image import ImageViewerUI
+from EXIF_gallery.ui.user import UserInfosUI
+from EXIF_gallery.ui.utils import CreateAlbumUI, ActionButton, ListWidget
+from EXIF_gallery.ui.features import create_website, GraphUI
+from EXIF_gallery.ui import envs
 
 class MainUI( QtWidgets.QMainWindow):
     def __init__(self):
@@ -33,7 +33,7 @@ class MainUI( QtWidgets.QMainWindow):
         self.set_view()
 
     def create_widgets(self):
-        self.title = QtWidgets.QLabel("smoke")
+        self.title = QtWidgets.QLabel("EXIF_gallery")
         self.title.setFont(QtGui.QFont("Impact", 16))
         self.list_wdg = ListWidget(self._db)
         self.albums_cb = QtWidgets.QComboBox()
@@ -333,6 +333,13 @@ class MainUI( QtWidgets.QMainWindow):
         ui = CreateAlbumUI()
         if ui.exec_():
             data = ui.read()
+            if not data.get("name"):
+                message_box = QtWidgets.QMessageBox.critical(
+                self,
+                "Name error", 
+                f"You need to specify a name.",
+                QtWidgets.QMessageBox.Ok)
+                return
             self._db._albums.insert_into(data)
             self._update_albums(data.get("name"))
 
@@ -364,7 +371,7 @@ class MainUI( QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(open(r"smoke\ui\styles\lightstyle.qss").read())
+    app.setStyleSheet(open(r"EXIF_gallery\ui\styles\lightstyle.qss").read())
 
     ui = MainUI()
     ui.show()

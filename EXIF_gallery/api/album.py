@@ -1,5 +1,5 @@
-from smoke.api import envs
-from smoke.api import astro
+from EXIF_gallery.api import envs
+from EXIF_gallery.api import astro
 import os,shutil
 
 class AlbumTable(object):

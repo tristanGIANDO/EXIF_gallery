@@ -1,5 +1,5 @@
 import os, math, decimal, datetime
-from smoke.api import envs
+from EXIF_gallery.api import envs
 from pathlib import Path
 from PIL import Image
 import ephem

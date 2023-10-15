@@ -1,11 +1,11 @@
 from PyQt5 import QtWidgets,QtCore, QtGui
 from pathlib import Path
-from smoke.ui.utils import WorkspaceTree, SpinWdg, ComboBoxWdg
-from smoke.ui import envs
-from smoke.api import envs as api_envs
-from smoke.ui.image import ThumbnailButton, ImageInfosUI
-from smoke.ui.utils import iso_color, bortle_color
-from smoke.ui.features import copy_metadata_to_clipboard
+from EXIF_gallery.ui.utils import WorkspaceTree, SpinWdg, ComboBoxWdg
+from EXIF_gallery.ui import envs
+from EXIF_gallery.api import envs as api_envs
+from EXIF_gallery.ui.image import ThumbnailButton, ImageInfosUI
+from EXIF_gallery.ui.utils import iso_color, bortle_color
+from EXIF_gallery.ui.features import copy_metadata_to_clipboard
 import os
 
 HEADERS = [envs.G_ID, envs.G_PATH, envs.G_IMAGE, 
@@ -251,8 +251,10 @@ class AstroWorkspaceTree(WorkspaceTree):
         self._contents = self.get_contents()
 
 class AstroImageInfosUI(ImageInfosUI):
-    def __init__(self, author=None, album_type=None):
+    def __init__(self, author="", album_type=None):
         super().__init__()
+
+        self.author_le.setText(author)
 
     def create_widgets(self):
         # in the grids
@@ -278,9 +280,9 @@ class AstroImageInfosUI(ImageInfosUI):
         grid_layout = QtWidgets.QGridLayout(acquisition_gb)
         
         pos = 0
-        for label, wdg in zip([self.date_lbl, self.location_lbl, self.lights_lbl,
+        for label, wdg in zip([self.subject_lbl,self.date_lbl, self.location_lbl, self.lights_lbl,
                                self.exposure_lbl, self.iso_lbl, self.aperture_lbl],
-                              [self.date_le, self.location_le, self.lights_le,
+                              [self.subject_le, self.date_le, self.location_le, self.lights_le,
                                self.exposure_le, self.iso_le, self.aperture_le]):
             grid_layout.addWidget(label, pos, 0)
             grid_layout.addWidget(wdg, pos, 1)

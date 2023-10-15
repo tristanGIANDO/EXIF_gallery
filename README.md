@@ -19,12 +19,12 @@
 *SOFTWARE.*
 
 <h1 align="center">
-    smoke
+    EXIF_gallery
 </h1>
 
 <h2 align="center" style="margin:1em;">
-    <img src="smoke/ui/icons/logo.png"
-         alt="smoke"></a>
+    <img src="EXIF_gallery/ui/icons/logo.png"
+         alt="EXIF_gallery"></a>
 </h2>
 
 <h3 align="center">

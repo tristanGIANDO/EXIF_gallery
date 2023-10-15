@@ -1,24 +1,21 @@
 import sys, os
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from smoke.ui import envs
-from smoke.api import envs as api_envs
-from smoke.api import utils
-from smoke.ui.features import WorldMapUI
+from EXIF_gallery.ui import envs
+from EXIF_gallery.api import envs as api_envs
+from EXIF_gallery.api import utils
+from EXIF_gallery.ui.features import WorldMapUI
 
 
 # create inheritance and derive from / don't write "if", "elif"...
 class ImageInfosUI(QtWidgets.QDialog):
-    def __init__(self, author=None, album_type=None):
+    def __init__(self, author="", album_type=None):
         super().__init__()
     
         self._exif = {}
         self._image_path = ""
         self._brut_path = ""
-        if author:
-            self._author = author
-        else:
-            self._author = ""
+        self._author = author
 
         self.setWindowTitle("Image Details")
         self.resize(1000, 600)
@@ -148,7 +145,7 @@ class ImageInfosUI(QtWidgets.QDialog):
         self.focal_le.setValue(float(self._exif.get(api_envs.FOCAL, 35)))
         self.iso_le.setValue(int(self._exif.get(api_envs.ISO, 100)))
         self.aperture_le.setValue(float(self._exif.get(api_envs.F_NUMBER, 3.5)))
-        self.author_le.setText(self._exif.get(api_envs.AUTHOR, self._author))
+        self.author_le.setText(self._author)
         self.maker_le.setText(self._exif.get(api_envs.MAKE,""))
         self.model_le.setText(self._exif.get(api_envs.MODEL,""))
         self.comment_le.setText(self._exif.get(api_envs.COMMENT,""))

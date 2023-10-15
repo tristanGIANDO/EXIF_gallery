@@ -8,20 +8,20 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from geopy.geocoders import Nominatim
 from datetime import datetime, timedelta
-from smoke.ui import envs
-from smoke.api import utils
+from EXIF_gallery.ui import envs
+from EXIF_gallery.api import utils
 from collections import Counter
 import pyperclip
 
 def create_website(paths:list[str], delivery_path:str,
                    user:list[str]=None, overlays:str=None,
-                   albums:list[str]=["Home"], website_name:str="SMOKE_portfolio"):
+                   albums:list[str]=["Home"], website_name:str="EXIF_gallery_portfolio"):
     """
     file_path (str): the source file
     delivery_path (str): the destination folder where to write HTML file.
     """
     title = "My portfolio"
-    subtitle = "Powered by SMOKE"
+    subtitle = "Powered by EXIF_gallery"
     thumbnail = envs.ICONS.get("logo")
 
     if len(user) >= 3:
@@ -169,7 +169,7 @@ def create_website(paths:list[str], delivery_path:str,
     html_content += '''
     </div>
 <footer>
-        <p>Powered by SMOKE</p>
+        <p>Powered by EXIF_gallery</p>
     </footer>
 </body>
 </html>

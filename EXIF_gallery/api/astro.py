@@ -1,8 +1,8 @@
 import traceback, os, shutil
 from pathlib import Path
 from PIL import Image
-from smoke.api import envs, utils
-from smoke.api.file import FileTable
+from EXIF_gallery.api import envs, utils
+from EXIF_gallery.api.file import FileTable
 
 class AstroFileTable(FileTable):
     def __init__(self, server) -> None:

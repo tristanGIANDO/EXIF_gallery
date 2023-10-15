@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 
-from smoke.ui import envs
-from smoke.api import envs as api_envs
+from EXIF_gallery.ui import envs
+from EXIF_gallery.api import envs as api_envs
 
 class UserInfosUI(QtWidgets.QDialog):
     def __init__(self, user=None):
