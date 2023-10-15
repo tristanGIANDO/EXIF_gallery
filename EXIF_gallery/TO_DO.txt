@@ -10,3 +10,9 @@ API
 FEATURES TO ADD
 * rotate / flip images in image viewer
 * add multiple files, edit later
+
+
+
+# DEMO API
+
+db = Database()
