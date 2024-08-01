@@ -25,47 +25,74 @@ Warning: This `README.md` is not yet complete.
     EXIF_gallery
 </h1>
 
-<h2 align="center" style="margin:1em;">
-    <img src="EXIF_gallery/ui/icons/logo.png"
-         alt="EXIF_gallery"></a>
-</h2>
-
 <h3 align="center">
     A tool designed to give photographers an overview of their photos.
 </h3>
 
-# FEATURES
-What every photographer will need:
-* a portfolio
-* a website
-* a review tool
-* an image viewer
+The full demo on LinkedIn :
+https://www.linkedin.com/posts/tristan-giandoriggio_exifabrgallery-pyqt5-mysql-activity-7120075997315485698-LBzX?utm_source=share&utm_medium=member_desktop
 
-Each photo will be able to store more data than a conventional image:
+## Introduction
+
+I do some astrophotography, and it's a field where technique is very important.
+
+However, I can never seem to remember all the settings...
+
+So, I created this tool, EXIF_gallery, that allows me to store, analyze, and compare the data from my photos.
+
+Built in PyQt5, I was able to explore SQL and HTML, as well as some more mathematical libraries.
+
+Special thanks to Manon Seve for the logo and to Gabriel Akpo-Allavo, the best of spiritual guides.
+
+It's not shown in the demo, but there are user-specific features such as inputting their own data or adding comments.
+
+The goal in the future is to adapt EXIF_gallery for other types of photography.
+
+
+**Overview**
+![overview](https://raw.githubusercontent.com/tristanGIANDO/EXIF_gallery/main/resources/_overview.png)
+
+**Statistics**
+![stats](https://raw.githubusercontent.com/tristanGIANDO/EXIF_gallery/main/resources/_stats.png)
+
+**Portfolio**
+![portfolio](https://raw.githubusercontent.com/tristanGIANDO/EXIF_gallery/main/resources/_portfolio.png)
+
+## FEATURES
+Each photo can store more data than a conventional image:
 * EXIFs
 * comments
 * processing versions
 * location of the shot
 
-Features for astrophoto, it will be possible to indicate :
+### Features for astrophoto
 * number of shots + exposure times
 * total exposure time calculated automatically
 * Bortle level
 
-##
-The script is written in **Python 3**.
+#### Example
+|ID|Image|Subject|Description|Author|Camera|Focal length|Mount|Aperture|ISO|NB lights|Exposure time|Total time|Place|Sky darkness|Moon Illumination|Processed with|Brut|Versions|Date|Comment|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|0|-|M31|some test|me|Canon70D|135mm|SA2i|2.8|1600|50|120|-|here|2|35%|Siril/Photoshop|-|-|24/12/23||
 
-### INSTALL
-The package needs PyQt5 and Pillow.
+---
+
+## INSTALL
+
+The script is written in **Python 3**.
 
 From a console, run :
 ```
-pip install PyQt5 pillow mysql-connector-python scipy cartopy geopy matplotlib
+pip3 install PyQt5 pillow mysql-connector-python scipy cartopy geopy matplotlib
 ```
 
-# API DOCUMENTATION
+## USAGE
 
-## INSTRUCTIONS FOR USE
+Run `EXIF_gallery.exe` or `main.py`.
+
+## API DOCUMENTATION
+
+### INSTRUCTIONS FOR USE
 ```py
 # create database
 db = Database()
@@ -86,8 +113,7 @@ db.get_rows()
 
 ```
 
-## PARAMETERS
-#### ASTROPHOTOGRAPHY
-|ID|Image|Subject|Description|Author|Camera|Focal length|Mount|Aperture|ISO|NB lights|Exposure time|Total time|Place|Sky darkness|Moon Illumination|Processed with|Brut|Versions|Date|Comment|
-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-|0|-|M31|some test|me|Canon70D|135mm|SA2i|2.8|1600|50|120|-|here|2|35%|Siril/Photoshop|-|-|24/12/23||
+<h2 align="center" style="margin:1em;">
+    <img src="EXIF_gallery/ui/icons/logo.png"
+         alt="EXIF_gallery"></a>
+</h2>
