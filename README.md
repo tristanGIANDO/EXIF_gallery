@@ -1,6 +1,3 @@
-
-Warning: This `README.md` is not yet complete.
-=======
 **Copyright (c) 2023 tristanGIANDO**
 
 *Permission is hereby granted, free of charge, to any person obtaining a copy*
@@ -29,8 +26,7 @@ Warning: This `README.md` is not yet complete.
     A tool designed to give photographers an overview of their photos.
 </h3>
 
-The full demo on LinkedIn :
-https://www.linkedin.com/posts/tristan-giandoriggio_exifabrgallery-pyqt5-mysql-activity-7120075997315485698-LBzX?utm_source=share&utm_medium=member_desktop
+[![LinkedIn](https://img.shields.io/badge/LinkedIn_Demo-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/tristan-giandoriggio_exifabrgallery-pyqt5-mysql-activity-7120075997315485698-LBzX?utm_source=share&utm_medium=member_desktop)
 
 ## Introduction
 
